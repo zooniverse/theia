@@ -10,11 +10,12 @@ RUN apt-get update \
   # https://gist.github.com/cspanring/5680334 for gdal-bin
 
 RUN pip install \
-  && pipenv
+  pipenv
 
 WORKDIR /usr/src/app
 
-COPY requirements.txt ./
+COPY Pipfile ./
+COPY Pipfile.lock ./
 
 RUN pipenv install --system --deploy
 
