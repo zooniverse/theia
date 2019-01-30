@@ -9,6 +9,11 @@ verify_ssl = true
 django = "*"
 pillow = "*"
 numpy = "*"
+requests = "*"
+celery = "*"
+oauthlib = "*"
+requests-oauthlib = "*"
+panoptes-client = "*"
 
 [requires]
 python_version = "3.7"

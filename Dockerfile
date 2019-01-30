@@ -7,7 +7,8 @@ RUN apt-get update \
     postgresql-client \
     gdal-bin \
     libgdal-dev \
-  && rm -rf /var/lib/apt/lists/*
+    python3-gdal
+  # && rm -rf /var/lib/apt/lists/*
 
 RUN pip install \
   pipenv
@@ -18,6 +19,7 @@ COPY Pipfile ./
 COPY Pipfile.lock ./
 
 RUN pipenv install --system --deploy
+
 RUN export GDAL_VERSION=$(gdal-config --version) \
   && pip install --global-option=build_ext --global-option="-I/usr/include/gdal/" \
     gdal~=${GDAL_VERSION}

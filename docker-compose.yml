@@ -1,0 +1,11 @@
+version: '2'
+services:
+  postgres:
+    image: postgres:9.4
+    environment:
+      - "POSTGRES_USER=caesar"
+      - "POSTGRES_PASSWORD=caesar"
+
+  redis:
+    image: redis
+    command: redis-server --appendonly yes
