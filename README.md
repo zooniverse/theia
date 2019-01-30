@@ -20,6 +20,8 @@ The proposed tech stack for Theia is:
 
 ### Docker environment
 
+#### Build Image
+
 Ensure that you have a modern-ish version of docker installed. Simply run
 
 `docker build -t theia .` to build the image
@@ -27,6 +29,24 @@ Ensure that you have a modern-ish version of docker installed. Simply run
 If you have an image built, you can run it with:
 
 `docker run theia`
+
+#### Build Environment
+
+To create the environment, including the postgres and redis servers and a web app and worker node
+
+`docker-compose up &`
+
+To, for exampe, create a second worker node
+
+`docker-compose up --scale worker=2 &`
+
+To halt instances
+
+`docker-compose down`
+
+Note that you can also remove the volumes (they will need to be recreated next time)
+
+`docker-compose down -v`
 
 ### Local environment
 
