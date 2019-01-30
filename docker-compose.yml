@@ -9,3 +9,17 @@ services:
   redis:
     image: redis
     command: redis-server --appendonly yes
+
+  app:
+    build:
+      context: .
+    links:
+      redis:redis
+      postgres:postgres
+
+  worker:
+    build:
+      context: .
+    links:
+      redis:redis
+      postgres:postgres
