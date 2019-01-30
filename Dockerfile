@@ -6,8 +6,8 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     postgresql-client \
     gdal-bin \
+    libgdal-dev \
   && rm -rf /var/lib/apt/lists/*
-  # https://gist.github.com/cspanring/5680334 for gdal-bin
 
 RUN pip install \
   pipenv
@@ -18,8 +18,13 @@ COPY Pipfile ./
 COPY Pipfile.lock ./
 
 RUN pipenv install --system --deploy
+RUN export GDAL_VERSION=$(gdal-config --version) \
+  && pip install --global-option=build_ext --global-option="-I/usr/include/gdal/" \
+    gdal~=${GDAL_VERSION}
 
-COPY . .
+CMD ["sleep", "infinity"]
 
-EXPOSE 8000
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# COPY . .
+
+# EXPOSE 8000
+# CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
