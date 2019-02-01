@@ -7,8 +7,13 @@ RUN apt-get update \
     postgresql-client \
     gdal-bin \
     libgdal-dev \
-    python3-gdal
-  # && rm -rf /var/lib/apt/lists/*
+    python-gdal \
+    python3-gdal \
+    binutils \
+    libproj-dev \
+    libgeoip1 \
+    postgis \
+  && rm -rf /var/lib/apt/lists/*
 
 RUN pip install \
   pipenv
