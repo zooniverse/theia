@@ -1,0 +1,46 @@
+version: '2'
+services:
+  postgres:
+    image: postgres:9.4
+    environment:
+      - "POSTGRES_USER=theia"
+      - "POSTGRES_PASSWORD=theia"
+
+  redis:
+    image: redis:5.0.3-stretch
+    command: redis-server --appendonly yes
+
+  app:
+    build:
+      context: .
+      args:
+        APP_ENV: development
+    volumes:
+      - ./:/usr/src/app
+    ports:
+      - "8000:80"
+    environment:
+      - "APP_ENV=development"
+      - "REDIS_URL=redis://redis:6379"
+      - "DATABASE_URL=postgresql://theia:theia@postgres/theia_development"
+      - "DATABASE_URL_TEST=postgresql://theia:theia@postgres/theia_test"
+    links:
+      - redis:redis
+      - postgres:postgres
+
+  worker:
+    build:
+      context: .
+      args:
+        APP_ENV: development
+    command: sleep infinity
+    volumes:
+      - ./:/usr/src/app
+    environment:
+      - "APP_ENV=development"
+      - "REDIS_URL=redis://redis:6379"
+      - "DATABASE_URL=postgresql://theia:theia@postgres/theia_development"
+      - "DATABASE_URL_TEST=postgresql://theia:theia@postgres/theia_test"
+    links:
+      - redis:redis
+      - postgres:postgres
