@@ -13,8 +13,9 @@ numpy = "*"
 requests = "*"
 celery = "*"
 oauthlib = "*"
+panoptes-client = {editable = true,git = "https://github.com/zooniverse/panoptes-python-client.git"}
+pytest = "*"
 requests-oauthlib = "*"
-panoptes-client = "*"
 
 [requires]
 python_version = "3.7"
