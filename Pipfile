@@ -11,7 +11,10 @@ pylint = "*"
 
 [packages]
 django = "*"
+djangorestframework = "*"
+django-filter = "*"
 pillow = "*"
+markdown = "*"
 numpy = "*"
 requests = "*"
 celery = "*"

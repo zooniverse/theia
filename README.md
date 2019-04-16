@@ -9,12 +9,14 @@ Theia is the Greek goddess of sight and of the blue sky. She is the mother of th
 
 The proposed tech stack for Theia is:
 
-* Django/GeoDjango
+* Django / GeoDjango
+* Django REST Framework
+* Requests / Requests OAuth
 * Postgres
 * Celery
 * gdal
 * Pillow
-* Docker
+* Docker / Kubernetes
 
 ## Getting started
 
