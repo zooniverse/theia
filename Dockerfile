@@ -29,9 +29,6 @@ RUN export GDAL_VERSION=$(gdal-config --version) \
   && pip install --global-option=build_ext --global-option="-I/usr/include/gdal/" \
     gdal~=${GDAL_VERSION}
 
-CMD ["sleep", "infinity"]
+EXPOSE 8080
 
-# COPY . .
-
-EXPOSE 80
-# CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["bash", "start_server.sh"]

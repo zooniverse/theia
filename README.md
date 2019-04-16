@@ -64,7 +64,6 @@ Then use `pipenv` to install dependencies:
 
 `pipenv install --dev`
 
-
 Install GIS related dependencies:
 
 `brew install postgis gdal`

@@ -22,3 +22,6 @@ requests-oauthlib = "*"
 
 [requires]
 python_version = "3.7"
+
+[scripts]
+start_server = "bash -e ./start_server.sh"
