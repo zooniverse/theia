@@ -17,6 +17,7 @@ requests = "*"
 celery = "*"
 oauthlib = "*"
 panoptes-client = {editable = true,git = "https://github.com/zooniverse/panoptes-python-client.git"}
+psycopg2 = "*"
 pytest = "*"
 requests-oauthlib = "*"
 
