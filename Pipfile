@@ -5,6 +5,9 @@ verify_ssl = true
 
 [dev-packages]
 pytest = "*"
+pytest-pspec = "*"
+pytest-django = "*"
+pylint = "*"
 
 [packages]
 django = "*"
@@ -19,3 +22,6 @@ requests-oauthlib = "*"
 
 [requires]
 python_version = "3.7"
+
+[scripts]
+start_server = "bash -e ./start_server.sh"

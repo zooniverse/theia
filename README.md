@@ -64,7 +64,18 @@ Then use `pipenv` to install dependencies:
 
 `pipenv install --dev`
 
-
 Install GIS related dependencies:
 
 `brew install postgis gdal`
+
+Run Django app locally:
+
+`pipenv run start_server`
+
+### Accessing the app
+
+The Django app can be accessed at http://localhost:8080/
+
+### Running the tests
+
+`pipenv run pytest`
