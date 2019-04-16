@@ -75,3 +75,7 @@ Run Django app locally:
 ### Accessing the app
 
 The Django app can be accessed at http://localhost:8080/
+
+### Running the tests
+
+`pipenv run pytest`
