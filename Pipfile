@@ -12,6 +12,7 @@ pylint = "*"
 [packages]
 django = "*"
 djangorestframework = "*"
+djangorestframework-jsonapi = "*"
 django-filter = "*"
 pillow = "*"
 markdown = "*"
