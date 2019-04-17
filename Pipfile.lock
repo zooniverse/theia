@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "54315aaf882e486c2425fd8affe9e406772be2813e798c6e0f4c48be69b60bc1"
+            "sha256": "c076d6bb7669d7858aa5bd989ce1cfd15f5614168a4e9f90820b954cecfb003e"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -163,9 +163,11 @@
             "version": "==3.0.1"
         },
         "panoptes-client": {
-            "editable": true,
-            "git": "https://github.com/zooniverse/panoptes-python-client.git",
-            "ref": "138d93cb03378501a8d349428e381ad73f928680"
+            "hashes": [
+                "sha256:46167a58bb7d1fc88b56f89f788371967cc71f2b483cf03a4531c5c8067befa6"
+            ],
+            "index": "pypi",
+            "version": "==1.1.1"
         },
         "pillow": {
             "hashes": [
