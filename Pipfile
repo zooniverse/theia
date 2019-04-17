@@ -29,6 +29,6 @@ requests-oauthlib = "*"
 python_version = "3.7"
 
 [scripts]
-start_server = "bash -e ./start_server.sh"
+server = "bash -e ./start_server.sh"
 create_local_db = "createdb -U theia -O theia theia"
 drop_local_db = "dropdb -U theia theia"
