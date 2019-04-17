@@ -23,7 +23,7 @@ WORKDIR /usr/src/app
 COPY Pipfile ./
 COPY Pipfile.lock ./
 
-RUN pipenv install --system --deploy
+RUN pipenv install --system --dev
 
 RUN export GDAL_VERSION=$(gdal-config --version) \
   && pip install --global-option=build_ext --global-option="-I/usr/include/gdal/" \

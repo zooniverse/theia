@@ -19,7 +19,7 @@ numpy = "*"
 requests = "*"
 celery = "*"
 oauthlib = "*"
-panoptes-client = {editable = true,git = "https://github.com/zooniverse/panoptes-python-client.git"}
+panoptes-client = ">=1.1.1"
 psycopg2-binary = "*"
 pytest = "*"
 requests-oauthlib = "*"
