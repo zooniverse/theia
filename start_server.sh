@@ -1,5 +1,10 @@
 #!/bin/bash
 
+while ! nc -z postgres 5432; do
+  echo Waiting for Postgres
+  sleep 3
+done
+
 echo Applying migrations
 
 python app/manage.py migrate --noinput

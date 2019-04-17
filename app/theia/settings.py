@@ -76,7 +76,7 @@ WSGI_APPLICATION = 'theia.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
+        'NAME': 'theia',
         'USER': 'theia',
         'PASSWORD': 'theia',
         'HOST': 'postgres',

@@ -74,6 +74,12 @@ Add the user `theia` with password `theia`:
 
 `createuser theia -d -P`
 
+To drop or create the local DB that theia will be using:
+
+`pipenv run create_local_db`
+
+`pipenv run drop_local_db`
+
 Ensure that you have a modern python:
 
 `brew install python`
