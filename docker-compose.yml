@@ -2,6 +2,8 @@ version: '2'
 services:
   postgres:
     image: postgres:9.4
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
     environment:
       - "POSTGRES_USER=theia"
       - "POSTGRES_PASSWORD=theia"
