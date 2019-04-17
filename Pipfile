@@ -20,7 +20,7 @@ requests = "*"
 celery = "*"
 oauthlib = "*"
 panoptes-client = {editable = true,git = "https://github.com/zooniverse/panoptes-python-client.git"}
-psycopg2 = "*"
+psycopg2-binary = "*"
 pytest = "*"
 requests-oauthlib = "*"
 
@@ -29,3 +29,5 @@ python_version = "3.7"
 
 [scripts]
 start_server = "bash -e ./start_server.sh"
+create_local_db = "createdb -U theia -O theia theia"
+drop_local_db = "dropdb -U theia theia"
