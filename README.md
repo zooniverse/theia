@@ -100,7 +100,7 @@ Install GIS related dependencies:
 
 Run Django app locally (applying migrations if necessary):
 
-`pipenv run start_server`
+`pipenv run server`
 
 ### Accessing the app
 
