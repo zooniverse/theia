@@ -8,7 +8,6 @@ pytest = "*"
 pytest-pspec = "*"
 pytest-django = "*"
 pytest-pythonpath = "*"
-pylint = "*"
 
 [packages]
 django = "*"
