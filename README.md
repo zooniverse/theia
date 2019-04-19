@@ -110,7 +110,7 @@ Regardless of whether you're running it locally or inside the image, the Django 
 
 Locally:
 
-`pipenv run pytest`
+`pipenv run tests`
 
 In the container:
 
