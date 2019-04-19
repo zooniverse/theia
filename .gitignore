@@ -107,5 +107,7 @@ venv.bak/
 .vscode/
 
 # postgres
-
 postgres_data/
+
+# tmp files
+tmp/

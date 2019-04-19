@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models.signals import post_save
+import tasks
 
-# Create your models here.
 
 class ImageryRequest(models.Model):
     dataset_name = models.CharField(max_length=64)
@@ -29,9 +29,10 @@ class ImageryRequest(models.Model):
 
     @classmethod
     def post_create(cls, sender, instance, created, *args, **kwargs):
-        print("post create hook running")
         if not created:
             return
-        print("this is where we would create the celery job")
+
+        tasks.add.delay(1, instance.id)
+
 
 post_save.connect(ImageryRequest.post_create, sender=ImageryRequest)

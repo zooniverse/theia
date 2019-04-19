@@ -8,7 +8,6 @@ pytest = "*"
 pytest-pspec = "*"
 pytest-django = "*"
 pytest-pythonpath = "*"
-pylint = "*"
 
 [packages]
 django = "*"
@@ -24,6 +23,7 @@ oauthlib = "*"
 panoptes-client = ">=1.1.1"
 psycopg2-binary = "*"
 pytest = "*"
+redis = "*"
 requests-oauthlib = "*"
 
 [requires]

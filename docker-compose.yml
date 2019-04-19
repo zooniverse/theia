@@ -23,9 +23,6 @@ services:
       - "8080:8080"
     environment:
       - "APP_ENV=development"
-      - "REDIS_URL=redis://redis:6379"
-      - "DATABASE_URL=postgresql://theia:theia@postgres/theia_development"
-      - "DATABASE_URL_TEST=postgresql://theia:theia@postgres/theia_test"
     links:
       - redis:redis
       - postgres:postgres
@@ -35,14 +32,11 @@ services:
       context: .
       args:
         APP_ENV: development
-    command: sleep infinity
+    command: celery -A app.tasks worker --loglevel=info --concurrency=5 --pidfile=tmp/%n.pid --logfile=tmp/%n%I.log
     volumes:
       - ./:/usr/src/app
     environment:
       - "APP_ENV=development"
-      - "REDIS_URL=redis://redis:6379"
-      - "DATABASE_URL=postgresql://theia:theia@postgres/theia_development"
-      - "DATABASE_URL_TEST=postgresql://theia:theia@postgres/theia_test"
     links:
       - redis:redis
       - postgres:postgres
