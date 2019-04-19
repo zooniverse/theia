@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User, Group
+from api.models import ImageryRequest
 from rest_framework import serializers
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -12,3 +13,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         model = Group
         fields = ('url', 'name')
 
+class ImageryRequestSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ImageryRequest
+        fields = '__all__'

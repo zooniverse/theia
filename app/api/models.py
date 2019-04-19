@@ -12,7 +12,7 @@ class ImageryRequest(models.Model):
     wgs_row = models.IntegerField(null=True)
     wgs_path = models.IntegerField(null=True)
 
-    kml_polygon = models.TextField()
+    kml_polygon = models.TextField(null=True)
     bounding_left = models.FloatField(null=True)
     bounding_right = models.FloatField(null=True)
     bounding_top = models.FloatField(null=True)
