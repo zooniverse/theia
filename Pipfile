@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 pytest = "*"
+pytest-cov = "*"
 pytest-pspec = "*"
 pytest-django = "*"
 pytest-pythonpath = "*"
@@ -35,3 +36,4 @@ create_local_db = "createdb -U theia -O theia theia"
 drop_local_db = "dropdb -U theia theia"
 makemigrations = "python app/manage.py makemigrations"
 migrate = "python app/manage.py migrate"
+tests = "pytest --cov=app"
