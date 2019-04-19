@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.signals import post_save
 
 # Create your models here.
 
@@ -25,3 +26,12 @@ class ImageryRequest(models.Model):
 
     def __str__(self):
         return '[ImageryRequest project %d at %s]' % (self.project_id, self.created_at.strftime('%F'))
+
+    @classmethod
+    def post_create(cls, sender, instance, created, *args, **kwargs):
+        print("post create hook running")
+        if not created:
+            return
+        print("this is where we would create the celery job")
+
+post_save.connect(ImageryRequest.post_create, sender=ImageryRequest)
