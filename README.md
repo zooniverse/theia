@@ -102,6 +102,10 @@ Run Django app locally (applying migrations if necessary):
 
 `pipenv run server`
 
+Run the Celery worker locally (does not apply migrations):
+
+`pipenv run worker`
+
 ### Accessing the app
 
 Regardless of whether you're running it locally or inside the image, the Django app can be accessed at http://localhost:8080/
@@ -114,4 +118,4 @@ Locally:
 
 In the container:
 
-`docker-compose run app bash -c 'python -B -m pytest'`
+`docker-compose up postgres && docker-compose run app bash -c 'python -B -m pytest'`
