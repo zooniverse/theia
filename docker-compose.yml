@@ -1,0 +1,37 @@
+version: '2'
+services:
+  postgres:
+    image: postgres:9.4
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    environment:
+      - "POSTGRES_USER=theia"
+      - "POSTGRES_PASSWORD=theia"
+
+  redis:
+    image: redis:5.0.3-stretch
+    command: redis-server --appendonly yes
+
+  app:
+    build:
+      context: .
+    volumes:
+      - ./:/usr/src/app
+    ports:
+      - "8080:8080"
+    links:
+      - redis:redis
+      - postgres:postgres
+
+  worker:
+    build:
+      context: .
+    command: bash ./start_worker.sh
+    volumes:
+      - ./:/usr/src/app
+    environment:
+      - USGS_USERNAME
+      - USGS_PASSWORD
+    links:
+      - redis:redis
+      - postgres:postgres
