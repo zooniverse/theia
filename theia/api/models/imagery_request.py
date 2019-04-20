@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from theia.tasks import tasks
 
+
 class ImageryRequest(models.Model):
     dataset_name = models.CharField(max_length=64)
 
@@ -33,5 +34,6 @@ class ImageryRequest(models.Model):
 
         # queue up a worker to search for matching scenes
         tasks['locate_scenes'].delay(instance.id)
+
 
 post_save.connect(ImageryRequest.post_create, sender=ImageryRequest)

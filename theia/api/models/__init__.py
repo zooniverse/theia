@@ -1,3 +1,2 @@
-from .imagery_request import ImageryRequest
-from .imagery_search import ImagerySearch
-
+from .imagery_request import ImageryRequest  # noqa: F401
+from .imagery_search import ImagerySearch  # noqa: F401

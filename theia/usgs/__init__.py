@@ -1,1 +1,1 @@
-from .eros_wrapper import ErosWrapper
+from .eros_wrapper import ErosWrapper  # noqa: F401

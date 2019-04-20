@@ -5,9 +5,6 @@ class ImagerySearch:
         "WRS Row": 20516
     }
 
-    def __init__(imagery_request):
-        return self
-
     @classmethod
     def build_search(cls, imagery_request):
         search = {}
