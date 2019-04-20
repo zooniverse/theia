@@ -26,11 +26,15 @@ class ImageryRequest(models.Model):
     def __str__(self):
         return '[ImageryRequest project %d at %s]' % (self.project_id, self.created_at.strftime('%F'))
 
+    def build_search(self):
+        return ''
+
     @classmethod
     def post_create(cls, sender, instance, created, *args, **kwargs):
         if not created:
             return
 
+        # queue up a worker to search for matching scenes
         tasks['locate_scenes'].delay(instance.id)
 
 
