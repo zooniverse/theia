@@ -1,6 +1,7 @@
 class ImagerySearch:
     additional_field_ids = {
         "WRS Path": 20514,
+        "Scene Cloud Cover": 20515,
         "WRS Row": 20516
     }
 
@@ -9,7 +10,14 @@ class ImagerySearch:
 
     @classmethod
     def build_search(cls, imagery_request):
-        return {}
+        search = {}
+
+        cls.add_dataset_name(search, imagery_request.dataset_name)
+
+        if imagery_request.wgs_row and imagery_request.wgs_path:
+            cls.add_wgs_row_and_path(search, imagery_request.wgs_row, imagery_request.wgs_path)
+
+        return search
 
     @classmethod
     def add_dataset_name(cls, search, name):
