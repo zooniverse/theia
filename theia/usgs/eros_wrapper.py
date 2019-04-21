@@ -64,3 +64,7 @@ class ErosWrapper():
     def api_url(cls, path):
         # return urljoin('https://demo1580318.mockable.io/', path)
         return urljoin('https://earthexplorer.usgs.gov/inventory/json/v/stable/', path)
+
+    @classmethod
+    def parse_result_set(cls, result_set):
+        return [scene['displayId'] for scene in result_set]
