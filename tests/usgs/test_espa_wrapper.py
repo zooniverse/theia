@@ -45,3 +45,8 @@ class TestEspaWrapper:
             mockPost.reset_mock()
             EspaWrapper.espa_post('', {'foo': 'bar'}, headers={'X-Foo': 'bar'})
             mockPost.assert_called_once_with(EspaWrapper.api_url(''))
+
+            mockPrepare.return_value = {'foo': 'bar'}
+            mockPost.reset_mock()
+            EspaWrapper.espa_post('foo', None)
+            mockPost.assert_called_once_with(EspaWrapper.api_url('foo'), foo='bar')
