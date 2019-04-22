@@ -48,7 +48,7 @@ class EspaWrapper:
         new_args = cls.espa_prepare(request_data, **kwargs)
         new_url = cls.api_url(url)
         if request_data:
-            new_url = urljoin(new_url, cls.sanitize_payload(request_data))
+            new_url = urljoin(new_url, request_data)
         return requests.get(new_url, **new_args).json()
 
     @classmethod
@@ -76,10 +76,3 @@ class EspaWrapper:
     @classmethod
     def espa_credentials(cls, username=environ['USGS_USERNAME'], password=environ['USGS_PASSWORD']):
         return HTTPBasicAuth(username, password)
-
-    @classmethod
-    def sanitize_payload(cls, payload):
-        if isinstance(payload, str):
-            return payload
-        else:
-            return json.dumps(payload)
