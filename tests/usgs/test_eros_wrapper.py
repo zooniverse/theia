@@ -1,4 +1,5 @@
 from usgs import ErosWrapper
+from unittest.mock import MagicMock
 
 
 class TestErosWrapper:
