@@ -12,7 +12,7 @@ class EspaWrapper:
 
     @classmethod
     def list_orders(cls):
-        return cls.espa_get('list-orders')
+        return cls.espa_get('list-orders', None)
 
     @classmethod
     def espa_get(cls, url, request_data, **kwargs):
@@ -39,5 +39,5 @@ class EspaWrapper:
         return {**kwargs, **new_args}
 
     @classmethod
-    def espa_credentials(cls, username=environ['USGS_USERNAME'], password=['USGS_PASSWORD']):
+    def espa_credentials(cls, username=environ['USGS_USERNAME'], password=environ['USGS_PASSWORD']):
         return HTTPBasicAuth(username, password)

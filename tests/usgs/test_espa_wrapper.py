@@ -77,4 +77,4 @@ class TestEspaWrapper:
             mockGet.return_value = ['orderid_1', 'orderid_2']
 
             EspaWrapper.list_orders()
-            mockGet.assert_called_once_with('list-orders')
+            mockGet.assert_called_once_with('list-orders', None)
