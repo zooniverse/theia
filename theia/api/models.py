@@ -31,11 +31,9 @@ class ImageryRequest(models.Model):
 
     @classmethod
     def post_create(cls, sender, instance, created, *args, **kwargs):
-        if not created:
-            return
-
-        # queue up a worker to search for matching scenes
-        tasks['locate_scenes'].delay(instance.id)
+        if created:
+            # queue up a worker to search for matching scenes
+            tasks['locate_scenes'].delay(instance.id)
 
 
 post_save.connect(ImageryRequest.post_create, sender=ImageryRequest)
@@ -52,7 +50,8 @@ class RequestedScene(models.Model):
 
     @classmethod
     def post_create(cls, sender, instance, created, *args, **kwargs):
-        tasks['acquire_scene'].delay(instance.id)
+        if created:
+            tasks['wait_for_scene'].delay(instance.id)
 
     def __str__(self):
         return '[RequestedScene %s status %i]' % (self.scene_entity_id, self.status)
