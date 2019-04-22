@@ -23,33 +23,21 @@ class ErosWrapper():
 
     @classmethod
     def access_level(cls):
-        if not cls.auth_token:
-            cls.connect()
-
         response = cls.eros_post('', {})
         return response['access_level']
 
     @classmethod
     def search(cls, search):
-        if not cls.auth_token:
-            cls.connect()
-
         result = []
         data = {'lastRecord': 0, 'nextRecord': 0, 'totalHits': 1}
         while data['lastRecord'] < data['totalHits']:
-            data = {}
-            startingNumber = data['nextRecord']
-            search['startingNumber'] = startingNumber
+            search['startingNumber'] = data['nextRecord']
             data = cls.search_once(search)
             result = result + cls.parse_result_set(data['results'])
         return result
 
     @classmethod
     def search_once(cls, search):
-        print('search once')
-        if not cls.auth_token:
-            cls.connect()
-
         response = cls.eros_post('search', search)
         return response['data']
 
@@ -63,7 +51,23 @@ class ErosWrapper():
         return [scene['displayId'] for scene in result_set]
 
     @classmethod
+    def eros_get(cls, url, request_data, **kwargs):
+        if url != 'login' and (not cls.auth_token):
+            cls.connect()
+
+        new_args = cls.eros_prepare(request_data, **kwargs)
+        return requests.get(cls.api_url(url), **new_args).json()
+
+    @classmethod
     def eros_post(cls, url, request_data, **kwargs):
+        if url != 'login' and (not cls.auth_token):
+            cls.connect()
+
+        new_args = cls.eros_prepare(request_data, **kwargs)
+        return requests.post(cls.api_url(url), **new_args).json()
+
+    @classmethod
+    def eros_prepare(cls, request_data, **kwargs):
         headers = {'Content-Type': 'application/json'}
         if cls.auth_token:
             headers['X-Auth-Token'] = cls.auth_token
@@ -79,4 +83,4 @@ class ErosWrapper():
             'params': params,
         }
 
-        return requests.post(cls.api_url(url), **{**new_args, **kwargs}).json()
+        return {**new_args, **kwargs}
