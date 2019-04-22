@@ -39,12 +39,12 @@ class TestEspaWrapper:
             mockPost.assert_called_once_with(EspaWrapper.api_url(''))
 
             mockPost.reset_mock()
-            EspaWrapper.espa_post('', {'foo': 'bar'})
-            mockPost.assert_called_once_with(EspaWrapper.api_url(''))
+            EspaWrapper.espa_post('', 'payload')
+            mockPost.assert_called_once_with(EspaWrapper.api_url('')+'payload')
 
             mockPost.reset_mock()
-            EspaWrapper.espa_post('', {'foo': 'bar'}, headers={'X-Foo': 'bar'})
-            mockPost.assert_called_once_with(EspaWrapper.api_url(''))
+            EspaWrapper.espa_post('', 'payload', headers={'X-Foo': 'bar'})
+            mockPost.assert_called_once_with(EspaWrapper.api_url('')+'payload')
 
             mockPrepare.return_value = {'foo': 'bar'}
             mockPost.reset_mock()
@@ -60,12 +60,12 @@ class TestEspaWrapper:
             mockGet.assert_called_once_with(EspaWrapper.api_url(''))
 
             mockGet.reset_mock()
-            EspaWrapper.espa_get('', {'foo': 'bar'})
-            mockGet.assert_called_once_with(EspaWrapper.api_url(''))
+            EspaWrapper.espa_get('', 'payload')
+            mockGet.assert_called_once_with(EspaWrapper.api_url('')+'payload')
 
             mockGet.reset_mock()
-            EspaWrapper.espa_get('', {'foo': 'bar'}, headers={'X-Foo': 'bar'})
-            mockGet.assert_called_once_with(EspaWrapper.api_url(''))
+            EspaWrapper.espa_get('', 'payload', headers={'X-Foo': 'bar'})
+            mockGet.assert_called_once_with(EspaWrapper.api_url('')+'payload')
 
             mockPrepare.return_value = {'foo': 'bar'}
             mockGet.reset_mock()
