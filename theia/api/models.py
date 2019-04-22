@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models as models
 from django.db.models.signals import post_save
 from theia.tasks import tasks
 
@@ -22,6 +22,8 @@ class ImageryRequest(models.Model):
     user_id = models.IntegerField(null=True)
     project_id = models.IntegerField(db_index=True)
     multiple_subject_sets = models.BooleanField(default=False)
+    status = models.IntegerField(db_index=True, default=0)
+    pending_downloads = models.IntegerField(default=0)
     created_at = models.DateTimeField(null=False, auto_now_add=True, db_index=True)
 
     def __str__(self):
@@ -37,3 +39,14 @@ class ImageryRequest(models.Model):
 
 
 post_save.connect(ImageryRequest.post_create, sender=ImageryRequest)
+
+
+class RequestedScene(models.Model):
+    scene_url = models.CharField(max_length=512, null=False)
+    status = models.IntegerField(default=0, null=False)
+    created_at = models.DateTimeField(null=False, auto_now_add=True, db_index=True)
+    checked_at = models.DateTimeField(null=False, auto_now_add=True, db_index=True)
+    imagery_request = models.ForeignKey(ImageryRequest, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '[RequestedScene %s status %i]' % (scene_url, status)
