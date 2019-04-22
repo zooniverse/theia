@@ -78,3 +78,11 @@ class TestEspaWrapper:
 
             EspaWrapper.list_orders()
             mockGet.assert_called_once_with('list-orders', None)
+
+    def test_order_status(self):
+        with mock.patch('usgs.EspaWrapper.espa_get') as mockGet:
+            mockGet.return_value = {'foo': 'bar', 'status': 'purged'}
+
+            status = EspaWrapper.order_status('1234')
+            mockGet.assert_called_once_with('order-status', '1234')
+            assert status == 'purged'

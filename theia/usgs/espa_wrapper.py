@@ -16,6 +16,10 @@ class EspaWrapper:
         return cls.espa_get('list-orders', None)
 
     @classmethod
+    def order_status(cls, order_id):
+        return cls.espa_get('order-status', order_id)['status']
+
+    @classmethod
     def espa_get(cls, url, request_data, **kwargs):
         new_args = cls.espa_prepare(request_data, **kwargs)
         new_url = cls.api_url(url)
