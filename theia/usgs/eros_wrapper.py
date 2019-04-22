@@ -8,7 +8,14 @@ class ErosWrapper():
     auth_token = None
 
     @classmethod
+    def token(cls):
+        return cls.auth_token
+
+    @classmethod
     def connect(cls, username=environ['USGS_USERNAME'], password=environ['USGS_PASSWORD']):
+        if cls.token():
+            return cls.token()
+
         auth_data = {
             'username': username,
             'password': password
@@ -19,11 +26,11 @@ class ErosWrapper():
         if not response['errorCode']:
             cls.auth_token = response['data']
 
-        return cls.auth_token
+        return cls.token()
 
     @classmethod
     def access_level(cls):
-        response = cls.eros_post('', {})
+        response = cls.eros_post('', None)
         return response['access_level']
 
     @classmethod
@@ -48,11 +55,14 @@ class ErosWrapper():
 
     @classmethod
     def parse_result_set(cls, result_set):
-        return [scene['displayId'] for scene in result_set]
+        if not result_set:
+            return []
+
+        return [scene.get('displayId', None) for scene in result_set if 'displayId' in scene]
 
     @classmethod
     def eros_get(cls, url, request_data, **kwargs):
-        if url != 'login' and (not cls.auth_token):
+        if url != 'login' and (not cls.token()):
             cls.connect()
 
         new_args = cls.eros_prepare(request_data, **kwargs)
@@ -60,7 +70,7 @@ class ErosWrapper():
 
     @classmethod
     def eros_post(cls, url, request_data, **kwargs):
-        if url != 'login' and (not cls.auth_token):
+        if url != 'login' and (not cls.token()):
             cls.connect()
 
         new_args = cls.eros_prepare(request_data, **kwargs)
@@ -69,18 +79,22 @@ class ErosWrapper():
     @classmethod
     def eros_prepare(cls, request_data, **kwargs):
         headers = {'Content-Type': 'application/json'}
-        if cls.auth_token:
-            headers['X-Auth-Token'] = cls.auth_token
+        if cls.token():
+            headers['X-Auth-Token'] = cls.token()
         if 'headers' in kwargs:
-            headers = {**headers, **(kwargs[headers])}
+            headers = {**headers, **(kwargs['headers'])}
 
-        params = {'jsonRequest': json.dumps(request_data)}
+        params = {}
+
+        if request_data:
+            params = {'jsonRequest': json.dumps(request_data)}
+
         if 'params' in kwargs:
-            params = {**params, **(kwargs[params])}
+            params = {**params, **(kwargs['params'])}
 
         new_args = {
             'headers': headers,
             'params': params,
         }
 
-        return {**new_args, **kwargs}
+        return {**kwargs, **new_args}
