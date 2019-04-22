@@ -50,3 +50,31 @@ class TestEspaWrapper:
             mockPost.reset_mock()
             EspaWrapper.espa_post('foo', None)
             mockPost.assert_called_once_with(EspaWrapper.api_url('foo'), foo='bar')
+
+    def test_espa_get(self):
+        with mock.patch('requests.get') as mockGet, \
+                mock.patch('usgs.EspaWrapper.espa_prepare') as mockPrepare:
+            mockPrepare.return_value = {}
+
+            EspaWrapper.espa_get('', None)
+            mockGet.assert_called_once_with(EspaWrapper.api_url(''))
+
+            mockGet.reset_mock()
+            EspaWrapper.espa_get('', {'foo': 'bar'})
+            mockGet.assert_called_once_with(EspaWrapper.api_url(''))
+
+            mockGet.reset_mock()
+            EspaWrapper.espa_get('', {'foo': 'bar'}, headers={'X-Foo': 'bar'})
+            mockGet.assert_called_once_with(EspaWrapper.api_url(''))
+
+            mockPrepare.return_value = {'foo': 'bar'}
+            mockGet.reset_mock()
+            EspaWrapper.espa_get('foo', None)
+            mockGet.assert_called_once_with(EspaWrapper.api_url('foo'), foo='bar')
+
+    def test_list_orders(self):
+        with mock.patch('usgs.EspaWrapper.espa_get') as mockGet:
+            mockGet.return_value = ['orderid_1', 'orderid_2']
+
+            EspaWrapper.list_orders()
+            mockGet.assert_called_once_with('list-orders')

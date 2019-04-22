@@ -11,6 +11,20 @@ class EspaWrapper:
         return urljoin('https://espa.cr.usgs.gov/api/v1/', path)
 
     @classmethod
+    def list_orders(cls):
+        return cls.espa_get('list-orders')
+
+    @classmethod
+    def espa_get(cls, url, request_data, **kwargs):
+        new_args = cls.espa_prepare(request_data, **kwargs)
+        return requests.get(cls.api_url(url), **new_args).json()
+
+    @classmethod
+    def espa_post(cls, url, request_data, **kwargs):
+        new_args = cls.espa_prepare(request_data, **kwargs)
+        return requests.post(cls.api_url(url), **new_args).json()
+
+    @classmethod
     def espa_prepare(cls, request_data, **kwargs):
         headers = {'Content-Type': 'application/json'}
         if 'headers' in kwargs:
@@ -23,15 +37,6 @@ class EspaWrapper:
             'auth': auth
         }
         return {**kwargs, **new_args}
-
-    @classmethod
-    def espa_post(cls, url, request_data, **kwargs):
-        new_args = cls.espa_prepare(request_data, **kwargs)
-        return requests.post(cls.api_url(url), **new_args).json()
-
-    @classmethod
-    def list_orders(cls):
-        return
 
     @classmethod
     def espa_credentials(cls, username=environ['USGS_USERNAME'], password=['USGS_PASSWORD']):
