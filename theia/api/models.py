@@ -42,11 +42,19 @@ post_save.connect(ImageryRequest.post_create, sender=ImageryRequest)
 
 
 class RequestedScene(models.Model):
+    scene_entity_id = models.CharField(max_length=64, null=False, default='No Id')
     scene_url = models.CharField(max_length=512, null=False)
     status = models.IntegerField(default=0, null=False)
     created_at = models.DateTimeField(null=False, auto_now_add=True, db_index=True)
     checked_at = models.DateTimeField(null=False, auto_now_add=True, db_index=True)
     imagery_request = models.ForeignKey(ImageryRequest, on_delete=models.CASCADE)
 
+    @classmethod
+    def post_create(cls, sender, instance, created, *args, **kwargs):
+        tasks['acquire_scene'].delay(instance.id)
+
     def __str__(self):
-        return '[RequestedScene %s status %i]' % (scene_url, status)
+        return '[RequestedScene %s status %i]' % (self.scene_entity_id, self.status)
+
+
+post_save.connect(RequestedScene.post_create, sender=RequestedScene)
