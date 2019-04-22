@@ -20,6 +20,16 @@ class EspaWrapper:
         return cls.espa_get('order-status', order_id)['status']
 
     @classmethod
+    def order(cls, collection, scene_id, product_type):
+        return cls.espa_post('order', {
+            collection: {
+                'inputs': [scene_id],
+                'products': [product_type]
+            },
+            'format': 'gtiff'
+        })['orderid']
+
+    @classmethod
     def espa_get(cls, url, request_data, **kwargs):
         new_args = cls.espa_prepare(request_data, **kwargs)
         new_url = cls.api_url(url)
@@ -32,7 +42,7 @@ class EspaWrapper:
         new_args = cls.espa_prepare(request_data, **kwargs)
         new_url = cls.api_url(url)
         if request_data:
-            new_url = urljoin(new_url, cls.sanitize_payload(request_data))
+            new_args = {**new_args, **{'json': request_data}}
         return requests.post(new_url, **new_args).json()
 
     @classmethod

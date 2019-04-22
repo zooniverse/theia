@@ -39,12 +39,12 @@ class TestEspaWrapper:
             mockPost.assert_called_once_with(EspaWrapper.api_url(''))
 
             mockPost.reset_mock()
-            EspaWrapper.espa_post('', 'payload')
-            mockPost.assert_called_once_with(EspaWrapper.api_url('')+'payload')
+            EspaWrapper.espa_post('', {'foo': 'bar'})
+            mockPost.assert_called_once_with(EspaWrapper.api_url(''), json={'foo': 'bar'})
 
             mockPost.reset_mock()
-            EspaWrapper.espa_post('', 'payload', headers={'X-Foo': 'bar'})
-            mockPost.assert_called_once_with(EspaWrapper.api_url('')+'payload')
+            EspaWrapper.espa_post('', {'foo': 'bar'}, headers={'X-Foo': 'bar'})
+            mockPost.assert_called_once_with(EspaWrapper.api_url(''), json={'foo': 'bar'})
 
             mockPrepare.return_value = {'foo': 'bar'}
             mockPost.reset_mock()
@@ -86,3 +86,21 @@ class TestEspaWrapper:
             status = EspaWrapper.order_status('1234')
             mockGet.assert_called_once_with('order-status', '1234')
             assert status == 'purged'
+
+    def test_order(self):
+        with mock.patch('usgs.EspaWrapper.espa_post') as mockPost:
+            mockPost.return_value = {'orderid': 'aa1234', 'status': 'ordered'}
+
+            orderid = EspaWrapper.order('olitirs8_collection','LC08-1234', 'sr')
+            mockPost.assert_called_once_with(
+                'order',
+                {
+                    'olitirs8_collection': {
+                        'inputs': ['LC08-1234'],
+                        'products': ['sr']
+                    },
+                    'format': 'gtiff'
+                }
+            )
+
+            assert orderid == 'aa1234'
