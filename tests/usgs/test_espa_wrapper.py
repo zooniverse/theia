@@ -104,3 +104,24 @@ class TestEspaWrapper:
             )
 
             assert orderid == 'aa1234'
+
+    def test_available_products(self):
+        with mock.patch('usgs.EspaWrapper.espa_get') as mockGet:
+            mockGet.return_value = {
+                'olitirs8': {
+                    'products': ['ab', 'sr']
+                },
+                'blah': {
+                    'products': ['blah']
+                },
+                'foo': {
+                    'products': ['sr']
+                }
+            }
+
+            results = EspaWrapper.available_products('aaaaa', 'sr')
+            mockGet.assert_called_once_with('available-products', 'aaaaa')
+            assert results == [
+                ['olitirs8', 'aaaaa', 'sr'],
+                ['foo', 'aaaaa', 'sr']
+            ]
