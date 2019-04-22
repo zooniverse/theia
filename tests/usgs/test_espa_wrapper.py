@@ -125,3 +125,20 @@ class TestEspaWrapper:
                 ['olitirs8', 'aaaaa', 'sr'],
                 ['foo', 'aaaaa', 'sr']
             ]
+
+    def test_order_all(self):
+        with mock.patch('usgs.EspaWrapper.available_products') as mockFind, \
+                mock.patch('usgs.EspaWrapper.order') as mockOrder:
+
+            mockFind.return_value = [
+                ['foo', 'aaaaa', 'sr'],
+                ['olitirs8', 'aaaaa', 'sr'],
+            ]
+            mockOrder.side_effect = ['order1', 'order2']
+
+            order_ids = EspaWrapper.order_all('LC08', 'sr')
+            mockFind.assert_called_once_with('LC08', 'sr')
+
+            assert mockOrder.call_count == 2
+            mockOrder.assert_called_with('olitirs8', 'aaaaa', 'sr')
+            assert order_ids == ['order1', 'order2']

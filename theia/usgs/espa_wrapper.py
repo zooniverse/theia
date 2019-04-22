@@ -35,6 +35,10 @@ class EspaWrapper:
         })['orderid']
 
     @classmethod
+    def order_all(cls, scene_id, product_id):
+        return [cls.order(*item) for item in cls.available_products(scene_id, product_id)]
+
+    @classmethod
     def espa_get(cls, url, request_data, **kwargs):
         new_args = cls.espa_prepare(request_data, **kwargs)
         new_url = cls.api_url(url)
