@@ -42,11 +42,12 @@ post_save.connect(ImageryRequest.post_create, sender=ImageryRequest)
 
 
 class RequestedScene(models.Model):
-    scene_entity_id = models.CharField(max_length=64, null=False, default='No Id')
-    scene_url = models.CharField(max_length=512, null=False)
-    status = models.IntegerField(default=0, null=False)
-    created_at = models.DateTimeField(null=False, auto_now_add=True, db_index=True)
-    checked_at = models.DateTimeField(null=False, auto_now_add=True, db_index=True)
+    scene_entity_id = models.CharField(max_length=64, null=False)
+    scene_order_id = models.CharField(max_length=128, null=False)
+    scene_url = models.CharField(max_length=512)
+    status = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True, null=False)
+    checked_at = models.DateTimeField(db_index=True, null=True)
     imagery_request = models.ForeignKey(ImageryRequest, on_delete=models.CASCADE)
 
     @classmethod
