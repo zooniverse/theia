@@ -142,3 +142,16 @@ class TestEspaWrapper:
             assert mockOrder.call_count == 2
             mockOrder.assert_called_with('olitirs8', 'aaaaa', 'sr')
             assert order_ids == ['order1', 'order2']
+
+    def test_download_urls(self):
+        with mock.patch('usgs.EspaWrapper.espa_get') as mockGet:
+            mockGet.return_value = {
+                'order1234': [
+                    {'product_dload_url': 'url1'},
+                    {'product_dload_url': 'url2'}
+                ]
+            }
+
+            urls = EspaWrapper.download_urls('order1234')
+            mockGet.assert_called_once_with('item-status', 'order1234')
+            assert urls == ['url1', 'url2']

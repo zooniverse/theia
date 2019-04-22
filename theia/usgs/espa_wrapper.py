@@ -39,6 +39,11 @@ class EspaWrapper:
         return [cls.order(*item) for item in cls.available_products(scene_id, product_id)]
 
     @classmethod
+    def download_urls(cls, order_id):
+        result = cls.espa_get('item-status', order_id)
+        return [item['product_dload_url'] for item in result[order_id]]
+
+    @classmethod
     def espa_get(cls, url, request_data, **kwargs):
         new_args = cls.espa_prepare(request_data, **kwargs)
         new_url = cls.api_url(url)
