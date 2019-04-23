@@ -25,7 +25,7 @@ class EspaWrapper:
         return cls.espa_get('order-status', order_id)['status']
 
     @classmethod
-    def order(cls, collection, scene_id, product_type):
+    def order_one(cls, collection, scene_id, product_type):
         return cls.espa_post('order', {
             collection: {
                 'inputs': [scene_id],
@@ -36,7 +36,7 @@ class EspaWrapper:
 
     @classmethod
     def order_all(cls, scene_id, product_id):
-        return [cls.order(*item) for item in cls.available_products(scene_id, product_id)]
+        return [{'scene_entity_id': scene_id, 'scene_order_id': cls.order_one(*item)} for item in cls.available_products(scene_id, product_id)]
 
     @classmethod
     def download_urls(cls, order_id):

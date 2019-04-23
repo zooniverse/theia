@@ -87,11 +87,11 @@ class TestEspaWrapper:
             mockGet.assert_called_once_with('order-status', '1234')
             assert status == 'purged'
 
-    def test_order(self):
+    def test_order_one(self):
         with mock.patch('usgs.EspaWrapper.espa_post') as mockPost:
             mockPost.return_value = {'orderid': 'aa1234', 'status': 'ordered'}
 
-            orderid = EspaWrapper.order('olitirs8_collection','LC08-1234', 'sr')
+            orderid = EspaWrapper.order_one('olitirs8_collection','LC08-1234', 'sr')
             mockPost.assert_called_once_with(
                 'order',
                 {
@@ -128,7 +128,7 @@ class TestEspaWrapper:
 
     def test_order_all(self):
         with mock.patch('usgs.EspaWrapper.available_products') as mockFind, \
-                mock.patch('usgs.EspaWrapper.order') as mockOrder:
+                mock.patch('usgs.EspaWrapper.order_one') as mockOrder:
 
             mockFind.return_value = [
                 ['foo', 'aaaaa', 'sr'],
@@ -136,12 +136,15 @@ class TestEspaWrapper:
             ]
             mockOrder.side_effect = ['order1', 'order2']
 
-            order_ids = EspaWrapper.order_all('LC08', 'sr')
+            orders = EspaWrapper.order_all('LC08', 'sr')
             mockFind.assert_called_once_with('LC08', 'sr')
 
             assert mockOrder.call_count == 2
             mockOrder.assert_called_with('olitirs8', 'aaaaa', 'sr')
-            assert order_ids == ['order1', 'order2']
+            assert orders == [
+                {'scene_entity_id': 'LC08', 'scene_order_id': 'order1'},
+                {'scene_entity_id': 'LC08', 'scene_order_id': 'order2'},
+            ]
 
     def test_download_urls(self):
         with mock.patch('usgs.EspaWrapper.espa_get') as mockGet:
