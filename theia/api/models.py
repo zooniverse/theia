@@ -1,6 +1,27 @@
 from django.db import models as models
 from django.db.models.signals import post_save
 from theia.tasks import tasks
+from django.contrib.postgres.fields import JSONField
+
+
+class Project(models.Model):
+    id = models.IntegerField(primary_key=True, null=False)
+    name = models.CharField(max_length=128, null=False)
+
+
+class Pipeline(models.Model):
+    name = models.CharField(max_length=128, null=False)
+    associated_workflow_id = models.IntegerField(null=True)
+    associated_subject_set_id = models.IntegerField(null=True)
+    multiple_subject_sets = models.BooleanField(default=False)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+
+
+class PipelineStage(models.Model):
+    sort_order = models.IntegerField(null=False)
+    operation = models.CharField(max_length=64, null=False)
+    config = JSONField()
+    pipeline = models.ForeignKey(Pipeline, on_delete=models.CASCADE)
 
 
 class ImageryRequest(models.Model):
@@ -20,11 +41,12 @@ class ImageryRequest(models.Model):
     bounding_bottom = models.FloatField(null=True)
 
     user_id = models.IntegerField(null=True)
-    project_id = models.IntegerField(db_index=True)
-    multiple_subject_sets = models.BooleanField(default=False)
+
     status = models.IntegerField(db_index=True, default=0)
-    pending_downloads = models.IntegerField(default=0)
     created_at = models.DateTimeField(null=False, auto_now_add=True, db_index=True)
+
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    pipeline = models.ForeignKey(Pipeline, on_delete=models.CASCADE)
 
     def __str__(self):
         return '[ImageryRequest project %d at %s]' % (self.project_id, self.created_at.strftime('%F'))
