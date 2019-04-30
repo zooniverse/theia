@@ -9,9 +9,10 @@ class ImageryRequestSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ProjectSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.IntegerField()
     class Meta:
         model = Project
-        fields = ['id', 'name']
+        fields = '__all__'
 
 
 class PipelineSerializer(serializers.HyperlinkedModelSerializer):
