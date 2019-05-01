@@ -58,13 +58,10 @@ class ImageryRequest(models.Model):
         return '[ImageryRequest project %d at %s]' % (self.project_id, self.created_at.strftime('%F'))
 
     @classmethod
-    def post_create(cls, sender, instance, created, *args, **kwargs):
+    def post_save(cls, sender, instance, created, *args, **kwargs):
         if created:
             # queue up a worker to search for matching scenes
             tasks['locate_scenes'].delay(instance.id)
-
-
-post_save.connect(ImageryRequest.post_create, sender=ImageryRequest)
 
 
 class RequestedScene(models.Model):
@@ -77,7 +74,7 @@ class RequestedScene(models.Model):
     imagery_request = models.ForeignKey(ImageryRequest, on_delete=models.CASCADE)
 
     @classmethod
-    def post_create(cls, sender, instance, created, *args, **kwargs):
+    def post_save(cls, sender, instance, created, *args, **kwargs):
         if created:
             tasks['wait_for_scene'].delay(instance.id)
 
@@ -85,4 +82,31 @@ class RequestedScene(models.Model):
         return '[RequestedScene %s status %i]' % (self.scene_entity_id, self.status)
 
 
-post_save.connect(RequestedScene.post_create, sender=RequestedScene)
+class JobBundle(models.Model):
+    imagery_request = models.ForeignKey(ImageryRequest, on_delete=models.SET_NULL, null=True)
+    pipeline = models.ForeignKey(Pipeline, on_delete=models.CASCADE)
+    current_stage = models.ForeignKey(PipelineStage, on_delete=models.SET_NULL, null=True)
+    requested_scene = models.ForeignKey(RequestedScene, on_delete=models.SET_NULL, null=True)
+
+    scene_entity_id = models.CharField(max_length=64, null=False)
+    current_stage_index = models.IntegerField(default=0, null=False)
+    total_stages = models.IntegerField(null=False)
+
+    status = models.IntegerField(default=0, null=False)
+    hostname = models.CharField(max_length=128, null=False, default='')
+    local_path = models.CharField(max_length=512, null=False, default='')
+    dir_size = models.IntegerField(default=0, null=False)
+    hearbeat = models.DateTimeField(null=True)
+
+    @classmethod
+    def post_save(cls, sender, instance, created, *args, **kwargs):
+        if created:
+            tasks['process_scene'].delay(instance.id)
+
+    def __str__(self):
+        return '[JobBundle %s on %s]' % (self.scene_entity_id, self.hostname)
+
+
+post_save.connect(ImageryRequest.post_save, sender=ImageryRequest)
+post_save.connect(RequestedScene.post_save, sender=RequestedScene)
+post_save.connect(JobBundle.post_save, sender=JobBundle)
