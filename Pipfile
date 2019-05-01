@@ -27,6 +27,7 @@ psycopg2-binary = "*"
 pytest = "*"
 redis = "*"
 requests-oauthlib = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.7"
@@ -42,4 +43,3 @@ tests = "pytest --cov=theia"
 tree = "bash -c 'find . | grep -v git | grep -v cache'"
 #worker = "rm tmp/*.log && celery -A theia worker --loglevel=info --pidfile=tmp/%n.pid --logfile=tmp/%n%I.log"
 worker = "bash -c ./start_worker.sh"
-
