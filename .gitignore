@@ -111,3 +111,6 @@ postgres_data/
 
 # tmp files
 tmp/
+
+# restframework support files
+theia/static/
