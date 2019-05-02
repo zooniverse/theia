@@ -1,4 +1,4 @@
-from usgs import EspaWrapper
+from theia.adapters.usgs import EspaWrapper
 from unittest import mock
 from requests.auth import HTTPBasicAuth
 
@@ -12,7 +12,7 @@ class TestEspaWrapper:
         assert EspaWrapper.espa_credentials(username='u', password='p') == HTTPBasicAuth('u','p')
 
     def test_espa_prepare(self):
-        with mock.patch('usgs.EspaWrapper.espa_credentials') as mockCredentials:
+        with mock.patch('theia.adapters.usgs.EspaWrapper.espa_credentials') as mockCredentials:
             mockCredentials.return_value = {'username': 'password'}
             result = EspaWrapper.espa_prepare(None)
 
@@ -21,7 +21,7 @@ class TestEspaWrapper:
             assert result['headers'] == {'Content-Type': 'application/json'}
             assert result['auth'] == {'username': 'password'}
 
-        with mock.patch('usgs.EspaWrapper.espa_credentials') as mockCredentials:
+        with mock.patch('theia.adapters.usgs.EspaWrapper.espa_credentials') as mockCredentials:
             mockCredentials.return_value = {'username': 'password'}
             result = EspaWrapper.espa_prepare(None, headers={'X-Foo': 'bar'})
 
@@ -32,7 +32,7 @@ class TestEspaWrapper:
 
     def test_espa_post(self):
         with mock.patch('requests.post') as mockPost, \
-                mock.patch('usgs.EspaWrapper.espa_prepare') as mockPrepare:
+                mock.patch('theia.adapters.usgs.EspaWrapper.espa_prepare') as mockPrepare:
             mockPrepare.return_value = {}
 
             EspaWrapper.espa_post('', None)
@@ -53,7 +53,7 @@ class TestEspaWrapper:
 
     def test_espa_get(self):
         with mock.patch('requests.get') as mockGet, \
-                mock.patch('usgs.EspaWrapper.espa_prepare') as mockPrepare:
+                mock.patch('theia.adapters.usgs.EspaWrapper.espa_prepare') as mockPrepare:
             mockPrepare.return_value = {}
 
             EspaWrapper.espa_get('', None)
@@ -73,14 +73,14 @@ class TestEspaWrapper:
             mockGet.assert_called_once_with(EspaWrapper.api_url('foo'), foo='bar')
 
     def test_list_orders(self):
-        with mock.patch('usgs.EspaWrapper.espa_get') as mockGet:
+        with mock.patch('theia.adapters.usgs.EspaWrapper.espa_get') as mockGet:
             mockGet.return_value = ['orderid_1', 'orderid_2']
 
             EspaWrapper.list_orders()
             mockGet.assert_called_once_with('list-orders', None)
 
     def test_order_status(self):
-        with mock.patch('usgs.EspaWrapper.espa_get') as mockGet:
+        with mock.patch('theia.adapters.usgs.EspaWrapper.espa_get') as mockGet:
             mockGet.return_value = {'foo': 'bar', 'status': 'purged'}
 
             status = EspaWrapper.order_status('1234')
@@ -88,7 +88,7 @@ class TestEspaWrapper:
             assert status == 'purged'
 
     def test_order_one(self):
-        with mock.patch('usgs.EspaWrapper.espa_post') as mockPost:
+        with mock.patch('theia.adapters.usgs.EspaWrapper.espa_post') as mockPost:
             mockPost.return_value = {'orderid': 'aa1234', 'status': 'ordered'}
 
             orderid = EspaWrapper.order_one('olitirs8_collection','LC08-1234', 'sr')
@@ -106,7 +106,7 @@ class TestEspaWrapper:
             assert orderid == 'aa1234'
 
     def test_available_products(self):
-        with mock.patch('usgs.EspaWrapper.espa_get') as mockGet:
+        with mock.patch('theia.adapters.usgs.EspaWrapper.espa_get') as mockGet:
             mockGet.return_value = {
                 'olitirs8': {
                     'products': ['ab', 'sr']
@@ -127,8 +127,8 @@ class TestEspaWrapper:
             ]
 
     def test_order_all(self):
-        with mock.patch('usgs.EspaWrapper.available_products') as mockFind, \
-                mock.patch('usgs.EspaWrapper.order_one') as mockOrder:
+        with mock.patch('theia.adapters.usgs.EspaWrapper.available_products') as mockFind, \
+                mock.patch('theia.adapters.usgs.EspaWrapper.order_one') as mockOrder:
 
             mockFind.return_value = [
                 ['foo', 'aaaaa', 'sr'],
@@ -147,7 +147,7 @@ class TestEspaWrapper:
             ]
 
     def test_download_urls(self):
-        with mock.patch('usgs.EspaWrapper.espa_get') as mockGet:
+        with mock.patch('theia.adapters.usgs.EspaWrapper.espa_get') as mockGet:
             mockGet.return_value = {
                 'order1234': [
                     {'product_dload_url': 'url1'},

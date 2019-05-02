@@ -1,24 +1,24 @@
-from usgs import ErosWrapper
+from theia.adapters.usgs import ErosWrapper
 from unittest import mock
 
 
 class TestErosWrapper:
     def test_connect(self):
-        with mock.patch('usgs.ErosWrapper.token') as mockToken, \
-                mock.patch('usgs.ErosWrapper.eros_post') as mockPost:
+        with mock.patch('theia.adapters.usgs.ErosWrapper.token') as mockToken, \
+                mock.patch('theia.adapters.usgs.ErosWrapper.eros_post') as mockPost:
             mockToken.return_value='aaaaaa'
             result = ErosWrapper.connect({'username': 'u', 'password': 'p'})
 
             mockPost.assert_not_called
             assert mockToken.call_count == 2
 
-        with mock.patch('usgs.ErosWrapper.eros_post') as mocked:
+        with mock.patch('theia.adapters.usgs.ErosWrapper.eros_post') as mocked:
             ErosWrapper.connect(username='u', password='p')
             mocked.assert_called_once_with('login', {'username': 'u', 'password': 'p'})
 
     def test_access_level(self):
-        with mock.patch('usgs.ErosWrapper.connect'), \
-                mock.patch('usgs.ErosWrapper.eros_post') as mocked:
+        with mock.patch('theia.adapters.usgs.ErosWrapper.connect'), \
+                mock.patch('theia.adapters.usgs.ErosWrapper.eros_post') as mocked:
             ErosWrapper.access_level()
             mocked.assert_called_once_with('', None)
 
@@ -51,7 +51,7 @@ class TestErosWrapper:
         assert result == ['a']
 
     def test_eros_prepare(self):
-        with mock.patch('usgs.ErosWrapper.token') as mockToken:
+        with mock.patch('theia.adapters.usgs.ErosWrapper.token') as mockToken:
             mockToken.return_value='aaaaaa'
 
             result = ErosWrapper.eros_prepare(None)

@@ -3,7 +3,7 @@ from celery import shared_task
 from datetime import datetime, timedelta
 import theia.api.models as models
 import theia.api.utils as utils
-from theia.usgs import ErosWrapper, EspaWrapper
+from theia.adapters.usgs import ErosWrapper, EspaWrapper
 from django.utils.timezone import make_aware
 
 
