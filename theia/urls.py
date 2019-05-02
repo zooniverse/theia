@@ -24,7 +24,11 @@ from django.conf.urls.static import static
 
 router = routers.DefaultRouter()
 router.register(r'imagery_requests', views.ImageryRequestViewSet)
-
+router.register(r'job_bundles', views.JobBundleViewSet)
+router.register(r'pipelines', views.PipelineViewSet)
+router.register(r'pipeline_stages', views.PipelineStageViewSet)
+router.register(r'projects', views.ProjectViewSet)
+router.register(r'requested_scenes', views.RequestedSceneViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

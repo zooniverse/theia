@@ -26,22 +26,24 @@ def wait_for_scene(requested_scene_id):
         return
 
     status = EspaWrapper.order_status(request.scene_order_id)
+    request.checked_at = make_aware(datetime.utcnow())
 
     if status=='complete':
         request.status=1
         request.scene_url = EspaWrapper.download_urls(request.scene_order_id)[0]
-        process_scene.delay(requested_scene_id)
+        request.save()
+        JobBundle.from_requested_scene(request)
     else:
         soon = datetime.utcnow() + timedelta(minutes=15)
         wait_for_scene.apply_async((requested_scene_id,), eta=soon)
+        request.save()
 
-    request.checked_at = make_aware(datetime.utcnow())
-    request.save()
 
 
 @shared_task(name='theia.tasks.process_scene')
-def process_scene(requested_scene_id):
-    request = models.RequestedScene.objects.get(pk=requested_scene_id)
+def process_scene(job_bundle_id):
+    bundle = models.JobBundle.objects.get(pk=job_bundle_id)
+    print("processing")
     return
 
 tasks = {
