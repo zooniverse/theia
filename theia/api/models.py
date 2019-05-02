@@ -99,6 +99,16 @@ class JobBundle(models.Model):
     hearbeat = models.DateTimeField(null=True)
 
     @classmethod
+    def from_requested_scene(requested_scene):
+        return JobBundle.objects.create(
+            imagery_request=requested_scene.imagery_request,
+            pipeline=requested_scene.imagery_request.pipeline,
+            requested_scene=requested_scene,
+            scene_entity_id=requested_scene.scene_entity_id,
+            total_stages=requested_scene.imagery_request.pipeline.pipeline_stage_set.count()
+        )
+
+    @classmethod
     def post_save(cls, sender, instance, created, *args, **kwargs):
         if created:
             tasks['process_scene'].delay(instance.id)
