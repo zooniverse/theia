@@ -32,7 +32,7 @@ def wait_for_scene(requested_scene_id):
         request.status=1
         request.scene_url = EspaWrapper.download_urls(request.scene_order_id)[0]
         request.save()
-        JobBundle.from_requested_scene(request)
+        models.JobBundle.from_requested_scene(request)
     else:
         soon = datetime.utcnow() + timedelta(minutes=15)
         wait_for_scene.apply_async((requested_scene_id,), eta=soon)

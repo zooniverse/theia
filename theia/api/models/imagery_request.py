@@ -26,8 +26,8 @@ class ImageryRequest(models.Model):
     status = models.IntegerField(db_index=True, default=0)
     created_at = models.DateTimeField(null=False, auto_now_add=True, db_index=True)
 
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    pipeline = models.ForeignKey(Pipeline, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, related_name='imagery_requests', on_delete=models.CASCADE)
+    pipeline = models.ForeignKey(Pipeline, related_name='imagery_requests', on_delete=models.CASCADE)
 
     def __str__(self):
         return '[ImageryRequest project %d at %s]' % (self.project_id, self.created_at.strftime('%F'))

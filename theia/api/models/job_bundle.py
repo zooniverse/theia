@@ -8,10 +8,10 @@ from .pipeline_stage import PipelineStage
 from .requested_scene import RequestedScene
 
 class JobBundle(models.Model):
-    imagery_request = models.ForeignKey(ImageryRequest, on_delete=models.SET_NULL, null=True)
-    pipeline = models.ForeignKey(Pipeline, on_delete=models.CASCADE)
-    current_stage = models.ForeignKey(PipelineStage, on_delete=models.SET_NULL, null=True)
-    requested_scene = models.ForeignKey(RequestedScene, on_delete=models.SET_NULL, null=True)
+    imagery_request = models.ForeignKey(ImageryRequest, related_name='job_bundles', on_delete=models.SET_NULL, null=True)
+    pipeline = models.ForeignKey(Pipeline, related_name='job_bundles', on_delete=models.CASCADE)
+    current_stage = models.ForeignKey(PipelineStage, related_name='job_bundles', on_delete=models.SET_NULL, null=True)
+    requested_scene = models.ForeignKey(RequestedScene, related_name='job_bundles', on_delete=models.SET_NULL, null=True)
 
     scene_entity_id = models.CharField(max_length=64, null=False)
     current_stage_index = models.IntegerField(default=0, null=False)

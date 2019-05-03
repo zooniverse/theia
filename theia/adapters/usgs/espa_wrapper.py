@@ -18,7 +18,7 @@ class EspaWrapper:
     @classmethod
     def available_products(cls, scene_id, desired_product_id):
         results = cls.espa_get('available-products', scene_id)
-        return [[key, scene_id, desired_product_id] for key in results if desired_product_id in set(results[key]['products'])]
+        return [[key, scene_id, desired_product_id] for key in results if desired_product_id in set(results[key]['products'])][0:3]
 
     @classmethod
     def order_status(cls, order_id):

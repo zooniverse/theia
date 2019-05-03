@@ -7,4 +7,4 @@ class PipelineStage(models.Model):
     sort_order = models.IntegerField(null=False)
     operation = models.CharField(max_length=64, null=False)
     config = JSONField()
-    pipeline = models.ForeignKey(Pipeline, on_delete=models.CASCADE)
+    pipeline = models.ForeignKey(Pipeline, related_name='pipeline_stages', on_delete=models.CASCADE)
