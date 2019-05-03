@@ -4,5 +4,4 @@ echo Removing logs
 rm tmp/*.log
 
 echo Starting Celery
-celery -A theia worker -l info
-
+exec celery -A theia worker -l info
