@@ -1,6 +1,6 @@
 from django.db import models as models
 from django.db.models.signals import post_save
-from theia.tasks import tasks
+from theia.tasks import wait_for_scene
 from .imagery_request import ImageryRequest
 
 class RequestedScene(models.Model):
@@ -15,7 +15,7 @@ class RequestedScene(models.Model):
     @classmethod
     def post_save(cls, sender, instance, created, *args, **kwargs):
         if created:
-            tasks['wait_for_scene'].delay(instance.id)
+            wait_for_scene.delay(instance.id)
 
     def __str__(self):
         return '[RequestedScene %s status %i]' % (self.scene_entity_id, self.status)

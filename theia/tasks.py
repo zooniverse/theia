@@ -1,11 +1,12 @@
 from __future__ import absolute_import
-from celery import shared_task
-from datetime import datetime, timedelta
+
 import theia.api.models as models
 import theia.api.utils as utils
-from theia.adapters.usgs import ErosWrapper, EspaWrapper
-from django.utils.timezone import make_aware
 
+from celery import shared_task
+from datetime import datetime, timedelta
+from django.utils.timezone import make_aware
+from theia.adapters.usgs import ErosWrapper, EspaWrapper
 
 @shared_task(name='theia.tasks.locate_scenes')
 def locate_scenes(imagery_request_id):
@@ -32,22 +33,16 @@ def wait_for_scene(requested_scene_id):
         request.status=1
         request.scene_url = EspaWrapper.download_urls(request.scene_order_id)[0]
         request.save()
-        models.JobBundle.from_requested_scene(request)
+        return models.JobBundle.objects.from_requested_scene(request)
     else:
         soon = datetime.utcnow() + timedelta(minutes=15)
         wait_for_scene.apply_async((requested_scene_id,), eta=soon)
-        request.save()
+        return request.save()
 
 
 
 @shared_task(name='theia.tasks.process_scene')
 def process_scene(job_bundle_id):
     bundle = models.JobBundle.objects.get(pk=job_bundle_id)
-    print("processing")
+    bundle.retrieve()
     return
-
-tasks = {
-    'locate_scenes': locate_scenes,
-    'wait_for_scene': wait_for_scene,
-    'process_scene': process_scene
-}

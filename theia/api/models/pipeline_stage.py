@@ -8,3 +8,6 @@ class PipelineStage(models.Model):
     operation = models.CharField(max_length=64, null=False)
     config = JSONField()
     pipeline = models.ForeignKey(Pipeline, related_name='pipeline_stages', on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ['pipeline', 'sort_order']
