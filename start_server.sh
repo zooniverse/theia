@@ -14,8 +14,8 @@ if [ $DJANGO_ENV == "production" ]; then
     python manage.py collectstatic
   fi
   echo Starting production server
-  gunicorn theia.wsgi -b 0:8080
+  exec gunicorn theia.wsgi -b 0:8080
 else
   echo Starting development server
-  python manage.py runserver 0:8080
+  exec python manage.py runserver 0:8080
 fi
