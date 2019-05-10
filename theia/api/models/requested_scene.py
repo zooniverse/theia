@@ -3,6 +3,7 @@ from django.db.models.signals import post_save
 from theia.tasks import wait_for_scene
 from .imagery_request import ImageryRequest
 
+
 class RequestedScene(models.Model):
     scene_entity_id = models.CharField(max_length=64, null=False)
     scene_order_id = models.CharField(max_length=128, null=False)

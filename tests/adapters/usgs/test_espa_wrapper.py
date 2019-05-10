@@ -9,7 +9,7 @@ class TestEspaWrapper:
         assert EspaWrapper.api_url('') == 'https://espa.cr.usgs.gov/api/v1/'
 
     def test_espa_credentials(self):
-        assert EspaWrapper.espa_credentials(username='u', password='p') == HTTPBasicAuth('u','p')
+        assert EspaWrapper.espa_credentials(username='u', password='p') == HTTPBasicAuth('u', 'p')
 
     def test_espa_prepare(self):
         with mock.patch('theia.adapters.usgs.EspaWrapper.espa_credentials') as mockCredentials:
@@ -61,11 +61,11 @@ class TestEspaWrapper:
 
             mockGet.reset_mock()
             EspaWrapper.espa_get('', 'payload')
-            mockGet.assert_called_once_with(EspaWrapper.api_url('')+'payload')
+            mockGet.assert_called_once_with(EspaWrapper.api_url('') + 'payload')
 
             mockGet.reset_mock()
             EspaWrapper.espa_get('', 'payload', headers={'X-Foo': 'bar'})
-            mockGet.assert_called_once_with(EspaWrapper.api_url('')+'payload')
+            mockGet.assert_called_once_with(EspaWrapper.api_url('') + 'payload')
 
             mockPrepare.return_value = {'foo': 'bar'}
             mockGet.reset_mock()
@@ -91,7 +91,7 @@ class TestEspaWrapper:
         with mock.patch('theia.adapters.usgs.EspaWrapper.espa_post') as mockPost:
             mockPost.return_value = {'orderid': 'aa1234', 'status': 'ordered'}
 
-            orderid = EspaWrapper.order_one('olitirs8_collection','LC08-1234', 'sr')
+            orderid = EspaWrapper.order_one('olitirs8_collection', 'LC08-1234', 'sr')
             mockPost.assert_called_once_with(
                 'order',
                 {

@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from django.utils.timezone import make_aware
 from theia.adapters.usgs import ErosWrapper, EspaWrapper
 
+
 @shared_task(name='theia.tasks.locate_scenes')
 def locate_scenes(imagery_request_id):
     request = models.ImageryRequest.objects.get(pk=imagery_request_id)
@@ -29,8 +30,8 @@ def wait_for_scene(requested_scene_id):
     status = EspaWrapper.order_status(request.scene_order_id)
     request.checked_at = make_aware(datetime.utcnow())
 
-    if status=='complete':
-        request.status=1
+    if status == 'complete':
+        request.status = 1
         request.scene_url = EspaWrapper.download_urls(request.scene_order_id)[0]
         request.save()
         return models.JobBundle.objects.from_requested_scene(request)
@@ -38,7 +39,6 @@ def wait_for_scene(requested_scene_id):
         soon = datetime.utcnow() + timedelta(minutes=15)
         wait_for_scene.apply_async((requested_scene_id,), eta=soon)
         return request.save()
-
 
 
 @shared_task(name='theia.tasks.process_scene')

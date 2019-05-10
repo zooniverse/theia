@@ -4,6 +4,7 @@ from theia.tasks import process_scene
 from urllib.request import urlretrieve
 
 import os.path
+import platform
 import tarfile
 
 from .imagery_request import ImageryRequest
@@ -25,7 +26,6 @@ class JobBundleManager(models.Manager):
         return job_bundle
 
 
-
 class JobBundle(models.Model):
     imagery_request = models.ForeignKey(ImageryRequest, related_name='job_bundles', on_delete=models.SET_NULL, null=True)
     pipeline = models.ForeignKey(Pipeline, related_name='job_bundles', on_delete=models.CASCADE)
@@ -42,6 +42,8 @@ class JobBundle(models.Model):
     dir_size = models.IntegerField(default=0, null=False)
     hearbeat = models.DateTimeField(null=True)
 
+    objects = JobBundleManager()
+
     @classmethod
     def post_save(cls, sender, instance, created, *args, **kwargs):
         if created:
@@ -52,23 +54,23 @@ class JobBundle(models.Model):
 
     def retrieve(self):
         if not self.local_path or not os.path.isdir(self.local_path):
+            # configure bundle with information about who is processing it where
             self.local_path = 'tmp/%s' % (self.scene_entity_id,)
             zip_path = '%s.tar.gz' % (self.local_path,)
-
-            # get the compressed scene data if we don't have it
-            if not os.path.isfile(zip_path):
-                urlretrieve(self.requested_scene.scene_url, zip_path)
+            self.hostname = platform.uname().node
+            self.save()
 
             # make the temp directory if it doesn't already exist
             if not os.path.isdir(self.local_path):
                 os.mkdir(self.local_path)
 
+            # get the compressed scene data if we don't have it
+            if not os.path.isfile(zip_path):
+                urlretrieve(self.requested_scene.scene_url, zip_path)
+
+            # extract the file
             with tarfile.open(zip_path, 'r') as archive:
                 archive.extractall(self.local_path)
-
-            self.save()
-
-    objects = JobBundleManager()
 
 
 post_save.connect(JobBundle.post_save, sender=JobBundle)

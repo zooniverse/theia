@@ -48,7 +48,7 @@ class EspaWrapper:
         new_args = cls.espa_prepare(request_data, **kwargs)
         new_url = cls.api_url(url)
         if request_data:
-            new_url = urljoin(new_url+'/', request_data)
+            new_url = urljoin(new_url + '/', request_data)
         return requests.get(new_url, **new_args).json()
 
     @classmethod
