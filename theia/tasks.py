@@ -1,7 +1,6 @@
 from __future__ import absolute_import
 
 import theia.api.models as models
-import theia.api.utils as utils
 import theia.adapters as adapters
 
 from celery import shared_task

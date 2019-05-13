@@ -4,6 +4,10 @@ class Adapter:
         pass
 
     @classmethod
+    def process_request(cls, imagery_request):
+        pass
+
+    @classmethod
     def resolve_image(cls, scene_id, dataset_name, semantic_image_name):
         return '%s_sr_%s.tif' % (scene_id, semantic_image_name)
 

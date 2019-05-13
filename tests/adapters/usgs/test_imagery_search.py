@@ -1,7 +1,7 @@
 import json
 from django.test import TestCase
 from theia.api.models import ImageryRequest
-from theia.api.utils import ImagerySearch
+from theia.adapters.usgs.imagery_search import ImagerySearch
 
 
 class TestImagerySearch(TestCase):

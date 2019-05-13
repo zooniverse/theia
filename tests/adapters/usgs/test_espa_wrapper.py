@@ -1,4 +1,6 @@
-import theia.adapters
+from theia.adapters import adapters
+from theia.adapters.usgs import EspaWrapper
+
 from unittest import mock
 from requests.auth import HTTPBasicAuth
 
