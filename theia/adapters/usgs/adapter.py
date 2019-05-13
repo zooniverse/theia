@@ -1,3 +1,10 @@
+from theia.api import models
+from .imagery_search import ImagerySearch
+from .eros_wrapper import ErosWrapper
+from .espa_wrapper import EspaWrapper
+from .tasks import wait_for_scene
+
+
 class Adapter:
     @classmethod
     def enum_datasets(cls):
@@ -5,7 +12,13 @@ class Adapter:
 
     @classmethod
     def process_request(cls, imagery_request):
-        pass
+        search = ImagerySearch.build_search(imagery_request)
+        scenes = ErosWrapper.search(search)
+        for scene in scenes:
+            result = EspaWrapper.order_all(scene, 'sr')
+            for item in result:
+                req = models.RequestedScene.objects.create(**{**item, **{'imagery_request': imagery_request}})
+                wait_for_scene.delay(req.id)
 
     @classmethod
     def resolve_image(cls, scene_id, dataset_name, semantic_image_name):

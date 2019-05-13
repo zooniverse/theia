@@ -6,7 +6,8 @@ from .pipeline import Pipeline
 
 
 class ImageryRequest(models.Model):
-    dataset_name = models.CharField(max_length=64)
+    adapter_name = models.CharField(max_length=64, null=False)
+    dataset_name = models.CharField(max_length=64, null=False)
 
     max_cloud_cover = models.IntegerField(null=True)
     begin_date = models.DateTimeField(null=True)

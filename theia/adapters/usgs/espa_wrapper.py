@@ -18,6 +18,7 @@ class EspaWrapper:
     @classmethod
     def available_products(cls, scene_id, desired_product_id):
         results = cls.espa_get('available-products', scene_id)
+        # TODO: obviously we won't want to do this substring forever
         return [[key, scene_id, desired_product_id] for key in results if desired_product_id in set(results[key]['products'])][0:3]
 
     @classmethod
