@@ -1,6 +1,6 @@
 from django.db import models as models
 from django.db.models.signals import post_save
-from theia.tasks import process_scene
+from theia.tasks import process_bundle
 from urllib.request import urlretrieve
 
 import os.path
@@ -47,7 +47,7 @@ class JobBundle(models.Model):
     @classmethod
     def post_save(cls, sender, instance, created, *args, **kwargs):
         if created:
-            process_scene.delay(instance.id)
+            process_bundle.delay(instance.id)
 
     def __str__(self):
         return '[JobBundle %s on %s]' % (self.scene_entity_id, self.hostname)

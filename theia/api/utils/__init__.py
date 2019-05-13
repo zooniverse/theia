@@ -1,1 +1,1 @@
-from .imagery_search import ImagerySearch  # noqa: F401
+from .imagery_search import ImagerySearch
