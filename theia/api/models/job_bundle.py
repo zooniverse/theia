@@ -1,11 +1,6 @@
 from django.db import models as models
 from django.db.models.signals import post_save
 from theia.tasks import process_bundle
-from urllib.request import urlretrieve
-
-import os.path
-import platform
-import tarfile
 
 from .imagery_request import ImageryRequest
 from .pipeline import Pipeline
@@ -51,26 +46,6 @@ class JobBundle(models.Model):
 
     def __str__(self):
         return '[JobBundle %s on %s]' % (self.scene_entity_id, self.hostname)
-
-    def retrieve(self):
-        if not self.local_path or not os.path.isdir(self.local_path):
-            # configure bundle with information about who is processing it where
-            self.local_path = 'tmp/%s' % (self.scene_entity_id,)
-            zip_path = '%s.tar.gz' % (self.local_path,)
-            self.hostname = platform.uname().node
-            self.save()
-
-            # make the temp directory if it doesn't already exist
-            if not os.path.isdir(self.local_path):
-                os.mkdir(self.local_path)
-
-            # get the compressed scene data if we don't have it
-            if not os.path.isfile(zip_path):
-                urlretrieve(self.requested_scene.scene_url, zip_path)
-
-            # extract the file
-            with tarfile.open(zip_path, 'r') as archive:
-                archive.extractall(self.local_path)
 
 
 post_save.connect(JobBundle.post_save, sender=JobBundle)
