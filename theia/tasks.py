@@ -5,6 +5,7 @@ from theia.adapters import adapters
 from theia.operations import operations
 
 from celery import shared_task
+from os.path import abspath, join
 
 
 @shared_task(name='theia.tasks.locate_scenes')
@@ -26,4 +27,5 @@ def process_bundle(job_bundle_id):
     for stage in stages.all():
         for image_name in stage.select_images:
             filename = adapter.resolve_image(bundle, image_name)
-            operations[stage.operation].apply(filename, stage.config)
+            filename = join(abspath(bundle.local_path), filename)
+            operations[stage.operation].apply(filename, stage)
