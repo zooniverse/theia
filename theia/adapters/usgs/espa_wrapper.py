@@ -18,7 +18,8 @@ class EspaWrapper:
     @classmethod
     def available_products(cls, scene_id, desired_product_id):
         results = cls.espa_get('available-products', scene_id)
-        return [[key, scene_id, desired_product_id] for key in results if desired_product_id in set(results[key]['products'])]
+        # TODO: obviously we won't want to do this substring forever
+        return [[key, scene_id, desired_product_id] for key in results if desired_product_id in set(results[key]['products'])][0:3]
 
     @classmethod
     def order_status(cls, order_id):
@@ -48,7 +49,7 @@ class EspaWrapper:
         new_args = cls.espa_prepare(request_data, **kwargs)
         new_url = cls.api_url(url)
         if request_data:
-            new_url = urljoin(new_url+'/', request_data)
+            new_url = urljoin(new_url + '/', request_data)
         return requests.get(new_url, **new_args).json()
 
     @classmethod

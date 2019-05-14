@@ -1,24 +1,24 @@
-from usgs import ErosWrapper
+from theia.adapters.usgs import ErosWrapper
 from unittest import mock
 
 
 class TestErosWrapper:
     def test_connect(self):
-        with mock.patch('usgs.ErosWrapper.token') as mockToken, \
-                mock.patch('usgs.ErosWrapper.eros_post') as mockPost:
-            mockToken.return_value='aaaaaa'
-            result = ErosWrapper.connect({'username': 'u', 'password': 'p'})
+        with mock.patch('theia.adapters.usgs.ErosWrapper.token') as mockToken, \
+                mock.patch('theia.adapters.usgs.ErosWrapper.eros_post') as mockPost:
+            mockToken.return_value = 'aaaaaa'
+            ErosWrapper.connect({'username': 'u', 'password': 'p'})
 
             mockPost.assert_not_called
             assert mockToken.call_count == 2
 
-        with mock.patch('usgs.ErosWrapper.eros_post') as mocked:
+        with mock.patch('theia.adapters.usgs.ErosWrapper.eros_post') as mocked:
             ErosWrapper.connect(username='u', password='p')
             mocked.assert_called_once_with('login', {'username': 'u', 'password': 'p'})
 
     def test_access_level(self):
-        with mock.patch('usgs.ErosWrapper.connect'), \
-                mock.patch('usgs.ErosWrapper.eros_post') as mocked:
+        with mock.patch('theia.adapters.usgs.ErosWrapper.connect'), \
+                mock.patch('theia.adapters.usgs.ErosWrapper.eros_post') as mocked:
             ErosWrapper.access_level()
             mocked.assert_called_once_with('', None)
 
@@ -51,29 +51,29 @@ class TestErosWrapper:
         assert result == ['a']
 
     def test_eros_prepare(self):
-        with mock.patch('usgs.ErosWrapper.token') as mockToken:
-            mockToken.return_value='aaaaaa'
+        with mock.patch('theia.adapters.usgs.ErosWrapper.token') as mockToken:
+            mockToken.return_value = 'aaaaaa'
 
             result = ErosWrapper.eros_prepare(None)
-            assert result ==  {
+            assert result == {
                 'headers': {'Content-Type': 'application/json', 'X-Auth-Token': 'aaaaaa'},
                 'params': {}
             }
 
             result = ErosWrapper.eros_prepare({'key': 'value'})
-            assert result ==  {
+            assert result == {
                 'headers': {'Content-Type': 'application/json', 'X-Auth-Token': 'aaaaaa'},
-                'params': { 'jsonRequest': '{"key": "value"}' }
+                'params': {'jsonRequest': '{"key": "value"}'}
             }
 
             result = ErosWrapper.eros_prepare({'key': 'value'}, params={'foo': 'bar'})
-            assert result ==  {
+            assert result == {
                 'headers': {'Content-Type': 'application/json', 'X-Auth-Token': 'aaaaaa'},
-                'params': { 'foo': 'bar', 'jsonRequest': '{"key": "value"}'}
+                'params': {'foo': 'bar', 'jsonRequest': '{"key": "value"}'}
             }
 
             result = ErosWrapper.eros_prepare({'key': 'value'}, headers={'X-Foo': 'bar'})
-            assert result ==  {
+            assert result == {
                 'headers': {'Content-Type': 'application/json', 'X-Auth-Token': 'aaaaaa', 'X-Foo': 'bar'},
                 'params': {'jsonRequest': '{"key": "value"}'}
             }
