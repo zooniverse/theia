@@ -11,5 +11,8 @@ class Pipeline(models.Model):
 
     project = models.ForeignKey(Project, related_name='pipelines', on_delete=models.CASCADE)
 
+    def name_subject_set(self):
+        return '%s Pipeline' % (self.name,)
+
     def __str__(self):
         return '%s | %s' % (self.project.name, self.name)

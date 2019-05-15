@@ -46,6 +46,9 @@ class JobBundle(models.Model):
         if created:
             process_bundle.delay(instance.id)
 
+    def name_subject_set(self):
+        return self.scene_entity_id
+
     def __str__(self):
         return '[JobBundle %s on %s]' % (self.scene_entity_id, self.hostname)
 

@@ -3,9 +3,13 @@ from os import getenv
 
 class PanoptesUtils:
     @classmethod
-    def panoptes_client_id():
+    def client_id(cls):
         return getenv('PANOPTES_CLIENT_ID')
 
     @classmethod
-    def panoptes_client_secret():
+    def client_secret(cls):
         return getenv('PANOPTES_CLIENT_SECRET')
+
+    @classmethod
+    def url(cls):
+        return getenv('PANOPTES_URL', 'https://panoptes.zooniverse.org/')

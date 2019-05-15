@@ -17,12 +17,12 @@ class UploadSubject:
             scope = pipeline
 
         Panoptes.connect(
-            endpoint=getenv('PANOPTES_URL', 'https://panoptes.zooniverse.org/'),
-            client_id=getenv('PANOPTES_CLIENT_ID'),
-            client_secret=getenv('PANOPTES_CLIENT_SECRET')
+            endpoint=PanoptesUtils.url(),
+            client_id=PanoptesUtils.client_id(),
+            client_secret=PanoptesUtils.client_secret()
         )
 
-        target_set = cls._get_subject_set(scope, project.id, bundle.scene_entity_id)
+        target_set = cls._get_subject_set(scope, project.id, scope.name_subject_set())
         new_subject = cls._create_subject(project, filename)
         target_set.add(new_subject)
 
@@ -42,7 +42,7 @@ class UploadSubject:
     def _create_subject(cls, project, filename, metadata=None):
         subject = Subject()
 
-        subject.links.project = project
+        subject.links.project = Project.find(project.id)
         subject.add_location(filename)
 
         if metadata:
