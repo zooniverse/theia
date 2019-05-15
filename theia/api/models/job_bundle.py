@@ -37,6 +37,8 @@ class JobBundle(models.Model):
     dir_size = models.IntegerField(default=0, null=False)
     hearbeat = models.DateTimeField(null=True)
 
+    subject_set_id = models.IntegerField(null=True)
+
     objects = JobBundleManager()
 
     @classmethod

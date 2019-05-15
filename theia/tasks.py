@@ -19,8 +19,8 @@ def locate_scenes(imagery_request_id):
 @shared_task(name='theia.tasks.process_bundle')
 def process_bundle(job_bundle_id):
     bundle = models.JobBundle.objects.get(pk=job_bundle_id)
-    request = bundle.requested_scene.imagery_request
-    stages = request.pipeline.pipeline_stages
+    request = bundle.imagery_request
+    stages = bundle.pipeline.pipeline_stages
 
     adapter = adapters[request.adapter_name]
     adapter.retrieve(bundle)

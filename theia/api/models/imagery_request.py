@@ -25,9 +25,6 @@ class ImageryRequest(models.Model):
     user_id = models.IntegerField(null=True)
     status = models.IntegerField(db_index=True, default=0)
 
-    create_subject_set = models.BooleanField(default=False, null=False)
-    subject_set_id = models.IntegerField(null=True)
-
     created_at = models.DateTimeField(null=False, auto_now_add=True, db_index=True)
 
     project = models.ForeignKey(Project, related_name='imagery_requests', on_delete=models.CASCADE)
