@@ -1,6 +1,7 @@
 from os.path import isfile, splitext
 from re import sub
 
+
 class FileUtils:
     @classmethod
     def version_filename(cls, filename, version_number):
