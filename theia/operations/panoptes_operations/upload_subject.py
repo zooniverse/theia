@@ -23,8 +23,6 @@ class UploadSubject:
         )
 
         target_set = cls._get_subject_set(scope, project.id, bundle.scene_entity_id)
-        target_set = SubjectSet.find(target_set_id)
-
         new_subject = cls._create_subject(project, filename)
         target_set.add(new_subject)
 
