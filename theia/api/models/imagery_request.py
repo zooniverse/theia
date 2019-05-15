@@ -23,8 +23,8 @@ class ImageryRequest(models.Model):
     bounding_bottom = models.FloatField(null=True)
 
     user_id = models.IntegerField(null=True)
-
     status = models.IntegerField(db_index=True, default=0)
+
     created_at = models.DateTimeField(null=False, auto_now_add=True, db_index=True)
 
     project = models.ForeignKey(Project, related_name='imagery_requests', on_delete=models.CASCADE)

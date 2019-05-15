@@ -1,17 +1,17 @@
 from os.path import isfile, splitext
 from re import sub
 
+
 class FileUtils:
     @classmethod
     def version_filename(cls, filename, version_number):
         return cls._update_version(filename, version_number)
 
     @classmethod
-    def locate_version(cls, filename, current_stage):
+    def locate_latest_version(cls, filename, current_stage):
         while current_stage > 0:
             current_stage = current_stage - 1
             candidate = cls.version_filename(filename, current_stage)
-            print(candidate)
             if isfile(candidate):
                 return candidate
 

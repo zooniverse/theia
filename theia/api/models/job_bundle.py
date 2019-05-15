@@ -37,12 +37,17 @@ class JobBundle(models.Model):
     dir_size = models.IntegerField(default=0, null=False)
     hearbeat = models.DateTimeField(null=True)
 
+    subject_set_id = models.IntegerField(null=True)
+
     objects = JobBundleManager()
 
     @classmethod
     def post_save(cls, sender, instance, created, *args, **kwargs):
         if created:
             process_bundle.delay(instance.id)
+
+    def name_subject_set(self):
+        return self.scene_entity_id
 
     def __str__(self):
         return '[JobBundle %s on %s]' % (self.scene_entity_id, self.hostname)

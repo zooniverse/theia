@@ -3,6 +3,7 @@ from __future__ import absolute_import
 import theia.api.models as models
 from theia.adapters import adapters
 from theia.operations import operations
+from theia.utils import FileUtils
 
 from celery import shared_task
 from os.path import abspath, join
@@ -18,14 +19,19 @@ def locate_scenes(imagery_request_id):
 @shared_task(name='theia.tasks.process_bundle')
 def process_bundle(job_bundle_id):
     bundle = models.JobBundle.objects.get(pk=job_bundle_id)
-    request = bundle.requested_scene.imagery_request
-    stages = request.pipeline.pipeline_stages
+    request = bundle.imagery_request
+    stages = bundle.pipeline.pipeline_stages
 
     adapter = adapters[request.adapter_name]
     adapter.retrieve(bundle)
 
     for stage in stages.all():
-        for image_name in stage.select_images:
-            filename = adapter.resolve_image(bundle, image_name)
-            filename = join(abspath(bundle.local_path), filename)
-            operations[stage.operation].apply(filename, stage)
+        bundle.current_stage = stage
+        bundle.save()
+
+        for semantic_name in stage.select_images:
+            literal_name = adapter.resolve_image(bundle, semantic_name)
+            absolute_filename = join(abspath(bundle.local_path), literal_name)
+            versioned_filename = FileUtils.locate_latest_version(absolute_filename, stage.sort_order)
+
+            operations[stage.operation].apply(versioned_filename, bundle)
