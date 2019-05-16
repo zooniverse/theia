@@ -20,7 +20,7 @@ class Adapter:
     def process_request(cls, imagery_request):
         search = ImagerySearch.build_search(imagery_request)
         scenes = ErosWrapper.search(search)
-        for scene in scenes:
+        for scene in scenes[0:3]:
             result = EspaWrapper.order_all(scene, 'sr')
             for item in result:
                 req = models.RequestedScene.objects.create(**{**item, **{'imagery_request': imagery_request}})

@@ -4,7 +4,6 @@ import json
 import requests
 from os import environ
 
-
 class EspaWrapper:
     @classmethod
     def api_url(cls, path):
@@ -16,10 +15,18 @@ class EspaWrapper:
         return cls.espa_get('list-orders', None)
 
     @classmethod
-    def available_products(cls, scene_id, desired_product_id):
+    def locate_collections(cls, scene_id, desired_product_id):
         results = cls.espa_get('available-products', scene_id)
-        # TODO: obviously we won't want to do this substring forever
-        return [[key, scene_id, desired_product_id] for key in results if desired_product_id in set(results[key]['products'])][0:3]
+        return [collection for collection
+            in results
+            if cls._product_is_available(desired_product_id, results[collection])]
+
+    @classmethod
+    def _product_is_available(cls, product_id, result_dict):
+        return \
+            isinstance(result_dict, dict) and \
+            result_dict['products'] and \
+            product_id in result_dict['products']
 
     @classmethod
     def order_status(cls, order_id):
@@ -36,8 +43,19 @@ class EspaWrapper:
         })['orderid']
 
     @classmethod
-    def order_all(cls, scene_id, product_id):
-        return [{'scene_entity_id': scene_id, 'scene_order_id': cls.order_one(*item)} for item in cls.available_products(scene_id, product_id)]
+    def order_all(cls, scene_id, product_type):
+        return [
+            {
+                'scene_entity_id': scene_id,
+                'scene_order_id': cls.order_one(
+                    collection,
+                    scene_id,
+                    product_type
+                )
+            }
+            for collection
+            in cls.locate_collections(scene_id, product_type)
+        ]
 
     @classmethod
     def download_urls(cls, order_id):

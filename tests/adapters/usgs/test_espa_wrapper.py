@@ -109,46 +109,40 @@ class TestEspaWrapper:
 
             assert orderid == 'aa1234'
 
-    def test_available_products(self):
+    def test_locate_collections(self):
         with mock.patch('theia.adapters.usgs.EspaWrapper.espa_get') as mockGet:
             mockGet.return_value = {
-                'olitirs8': {
-                    'products': ['ab', 'sr']
-                },
-                'blah': {
-                    'products': ['blah']
-                },
-                'foo': {
-                    'products': ['sr']
-                }
+                'olitirs8': { 'products': ['ab', 'sr'] },
+                'blah': { 'products': ['blah'] },
+                'foo': { 'products': ['sr'] }
             }
 
-            results = EspaWrapper.available_products('aaaaa', 'sr')
+            results = EspaWrapper.locate_collections('aaaaa', 'sr')
             mockGet.assert_called_once_with('available-products', 'aaaaa')
-            assert results == [
-                ['olitirs8', 'aaaaa', 'sr'],
-                ['foo', 'aaaaa', 'sr']
-            ]
+            assert results == ['olitirs8', 'foo']
+
+        with mock.patch('theia.adapters.usgs.EspaWrapper.espa_get') as mockGet:
+            mockGet.return_value = {
+                'not_implemented': [ 'LLLLLL' ]
+            }
+
+            results = EspaWrapper.locate_collections('aaaaa', 'sr')
+            mockGet.assert_called_once_with('available-products', 'aaaaa')
+            assert results == []
 
     def test_order_all(self):
-        with mock.patch('theia.adapters.usgs.EspaWrapper.available_products') as mockFind, \
+        with mock.patch('theia.adapters.usgs.EspaWrapper.locate_collections') as mockFind, \
                 mock.patch('theia.adapters.usgs.EspaWrapper.order_one') as mockOrder:
 
-            mockFind.return_value = [
-                ['foo', 'aaaaa', 'sr'],
-                ['olitirs8', 'aaaaa', 'sr'],
-            ]
-            mockOrder.side_effect = ['order1', 'order2']
+            mockFind.return_value = ['olitirs8']
+            mockOrder.side_effect = ['order1']
 
             orders = EspaWrapper.order_all('LC08', 'sr')
             mockFind.assert_called_once_with('LC08', 'sr')
 
-            assert mockOrder.call_count == 2
-            mockOrder.assert_called_with('olitirs8', 'aaaaa', 'sr')
-            assert orders == [
-                {'scene_entity_id': 'LC08', 'scene_order_id': 'order1'},
-                {'scene_entity_id': 'LC08', 'scene_order_id': 'order2'},
-            ]
+            assert mockOrder.call_count == 1
+            mockOrder.assert_called_once_with('olitirs8', 'LC08', 'sr')
+            assert orders == [ {'scene_entity_id': 'LC08', 'scene_order_id': 'order1'}, ]
 
     def test_download_urls(self):
         with mock.patch('theia.adapters.usgs.EspaWrapper.espa_get') as mockGet:

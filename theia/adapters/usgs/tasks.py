@@ -23,5 +23,5 @@ def wait_for_scene(requested_scene_id):
         request.save()
         models.JobBundle.objects.from_requested_scene(request)
     else:
-        soon = now + timedelta(minutes=15)
+        soon = now + timedelta(minutes=5)
         wait_for_scene.apply_async((requested_scene_id,), eta=soon)
