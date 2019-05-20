@@ -7,7 +7,6 @@ from theia.api.models import JobBundle, PipelineStage
 from PIL import Image
 
 class TestResizeImage:
-    @pytest.mark.focus
     @patch('theia.utils.FileUtils.version_filename', return_value='versioned filename')
     @patch('PIL.Image.open', autospec=True)
     def test_apply(self, mockOpen, mockVersion):
