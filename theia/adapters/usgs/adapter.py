@@ -8,8 +8,8 @@ import os.path
 import platform
 import tarfile
 
-from urllib.request import urlretrieve
-
+import urllib.request
+import pdb
 
 class Adapter:
     @classmethod
@@ -39,18 +39,21 @@ class Adapter:
             job_bundle.hostname = platform.uname().node
             job_bundle.save()
 
-            # make the temp directory if it doesn't already exist
-            if not os.path.isdir(job_bundle.local_path):
-                os.mkdir(job_bundle.local_path)
-
             # get the compressed scene data if we don't have it
             if not os.path.isfile(zip_path):
-                urlretrieve(job_bundle.requested_scene.scene_url, zip_path)
+                result = urllib.request.urlretrieve(job_bundle.requested_scene.scene_url, zip_path)
 
-            # extract the file
-            with tarfile.open(zip_path, 'r') as archive:
-                archive.extractall(job_bundle.local_path)
+            cls._extract_bundle(job_bundle, zip_path)
 
     @classmethod
     def acquire_image(cls, imagery_request):
         pass
+
+    @classmethod
+    def _extract_bundle(cls, job_bundle, zip_path):
+        # extract the file
+        with tarfile.open(zip_path, 'r') as archive:
+            # make the temp directory if it doesn't already exist
+            if not os.path.isdir(job_bundle.local_path):
+                os.mkdir(job_bundle.local_path)
+            archive.extractall(job_bundle.local_path)
