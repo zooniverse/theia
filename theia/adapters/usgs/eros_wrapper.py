@@ -1,21 +1,8 @@
+from .utils import Utils
 from urllib.parse import urljoin
 from os import environ
 import json
 import requests
-
-# LC08_L1TP_028046_20130409_20170310_01_T1.xml
-# LC08_L1TP_028046_20130409_20170310_01_T1_ANG.txt
-# LC08_L1TP_028046_20130409_20170310_01_T1_MTL.txt
-# LC08_L1TP_028046_20130409_20170310_01_T1_pixel_qa.tif
-# LC08_L1TP_028046_20130409_20170310_01_T1_radsat_qa.tif
-# LC08_L1TP_028046_20130409_20170310_01_T1_sr_aerosol.tif
-# LC08_L1TP_028046_20130409_20170310_01_T1_sr_band1.tif
-# LC08_L1TP_028046_20130409_20170310_01_T1_sr_band2.tif
-# LC08_L1TP_028046_20130409_20170310_01_T1_sr_band3.tif
-# LC08_L1TP_028046_20130409_20170310_01_T1_sr_band4.tif
-# LC08_L1TP_028046_20130409_20170310_01_T1_sr_band5.tif
-# LC08_L1TP_028046_20130409_20170310_01_T1_sr_band6.tif
-# LC08_L1TP_028046_20130409_20170310_01_T1_sr_band7.tif
 
 
 class ErosWrapper():
@@ -26,19 +13,19 @@ class ErosWrapper():
         return cls.auth_token
 
     @classmethod
-    def connect(cls, username=environ['USGS_USERNAME'], password=environ['USGS_PASSWORD']):
+    def connect(cls):
         if cls.token():
             return cls.token()
 
-        auth_data = {
-            'username': username,
-            'password': password
-        }
+        response = cls.eros_post('login', {
+            'username': Utils.get_username(),
+            'password': Utils.get_password()
+        })
 
-        response = cls.eros_post('login', auth_data)
-
-        if not response['errorCode']:
-            cls.auth_token = response['data']
+        if not response.get('errorCode'):
+            cls.auth_token = response.get('data')
+        else:
+            raise Exception()
 
         return cls.token()
 
