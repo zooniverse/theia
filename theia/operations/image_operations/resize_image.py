@@ -1,7 +1,6 @@
 from PIL import Image
 from theia.utils import FileUtils
 
-
 class ResizeImage():
     @classmethod
     def apply(self, filename, bundle):
