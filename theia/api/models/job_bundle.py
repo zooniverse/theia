@@ -7,7 +7,6 @@ from .pipeline import Pipeline
 from .pipeline_stage import PipelineStage
 from .requested_scene import RequestedScene
 
-
 class JobBundleManager(models.Manager):
     def from_requested_scene(self, requested_scene):
         job_bundle = self.create(
@@ -50,7 +49,7 @@ class JobBundle(models.Model):
         return self.scene_entity_id
 
     def __str__(self):
-        return '[JobBundle %s on %s]' % (self.scene_entity_id, self.hostname)
+        return '[JobBundle %s on %s]' % (self.scene_entity_id, (self.hostname or 'no host'))
 
 
 post_save.connect(JobBundle.post_save, sender=JobBundle)
