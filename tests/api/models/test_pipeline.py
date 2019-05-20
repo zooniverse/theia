@@ -10,7 +10,6 @@ class TestPipeline(TestCase):
         pipeline = Pipeline(name='my pipeline')
         assert(pipeline.name_subject_set()=='my pipeline Pipeline')
 
-    @pytest.mark.focus
     def test___str__(self):
         project = Project(name='proj')
         pipeline = Pipeline(name='pipe', project=project)
