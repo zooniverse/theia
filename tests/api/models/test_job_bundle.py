@@ -34,7 +34,6 @@ class TestJobBundle(TestCase):
         bundle = JobBundle(scene_entity_id='entity')
         assert(bundle.__str__()=='[JobBundle entity on no host]')
 
-    @pytest.mark.focus
     def test_post_create(self):
         '''it enqueues a job after being created'''
         bundle = JobBundle(id=7)
