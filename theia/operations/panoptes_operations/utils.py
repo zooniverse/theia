@@ -1,15 +1,15 @@
-from os import getenv
+import os
 
 
 class PanoptesUtils:
     @classmethod
     def client_id(cls):
-        return getenv('PANOPTES_CLIENT_ID')
+        return os.getenv('PANOPTES_CLIENT_ID')
 
     @classmethod
     def client_secret(cls):
-        return getenv('PANOPTES_CLIENT_SECRET')
+        return os.getenv('PANOPTES_CLIENT_SECRET')
 
     @classmethod
     def url(cls):
-        return getenv('PANOPTES_URL', 'https://panoptes.zooniverse.org/')
+        return os.getenv('PANOPTES_URL', 'https://panoptes.zooniverse.org/')
