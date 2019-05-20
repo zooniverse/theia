@@ -1,9 +1,11 @@
 from django.db import models as models
 from django.db.models.signals import post_save
-from theia.tasks import locate_scenes
+# from theia.tasks import locate_scenes
+import theia.tasks
 from .project import Project
 from .pipeline import Pipeline
 
+import pdb
 
 class ImageryRequest(models.Model):
     adapter_name = models.CharField(max_length=64, null=False)
@@ -37,7 +39,7 @@ class ImageryRequest(models.Model):
     def post_save(cls, sender, instance, created, *args, **kwargs):
         if created:
             # queue up a worker to search for matching scenes
-            locate_scenes.delay(instance.id)
+            theia.tasks.locate_scenes.delay(instance.id)
 
 
 post_save.connect(ImageryRequest.post_save, sender=ImageryRequest)
