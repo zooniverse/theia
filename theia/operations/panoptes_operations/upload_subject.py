@@ -2,13 +2,12 @@ from os import getenv
 from panoptes_client import Panoptes, Project, Subject, SubjectSet
 from .utils import PanoptesUtils
 
+
 class UploadSubject:
     @classmethod
     def apply(cls, filename, bundle):
         pipeline = bundle.pipeline
         project = pipeline.project
-
-        target_set_id = None
 
         if pipeline.multiple_subject_sets:
             scope = bundle
@@ -28,7 +27,6 @@ class UploadSubject:
             client_id=PanoptesUtils.client_id(),
             client_secret=PanoptesUtils.client_secret()
         )
-
 
     @classmethod
     def _get_subject_set(cls, scope, project_id, set_name):

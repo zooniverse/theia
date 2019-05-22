@@ -4,6 +4,7 @@ import json
 import requests
 from os import environ
 
+
 class EspaWrapper:
     @classmethod
     def api_url(cls, path):
@@ -18,8 +19,8 @@ class EspaWrapper:
     def locate_collections(cls, scene_id, desired_product_id):
         results = cls.espa_get('available-products', scene_id)
         return [collection for collection
-            in results
-            if cls._product_is_available(desired_product_id, results[collection])]
+                in results
+                if cls._product_is_available(desired_product_id, results[collection])]
 
     @classmethod
     def _product_is_available(cls, product_id, result_dict):

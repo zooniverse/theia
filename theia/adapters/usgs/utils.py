@@ -1,5 +1,6 @@
 from os import getenv
 
+
 class Utils:
     @classmethod
     def get_username(cls):

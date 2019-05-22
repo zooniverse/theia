@@ -7,9 +7,8 @@ from .tasks import wait_for_scene
 import os.path
 import platform
 import tarfile
-
 import urllib.request
-import pdb
+
 
 class Adapter:
     @classmethod
@@ -41,7 +40,7 @@ class Adapter:
 
             # get the compressed scene data if we don't have it
             if not os.path.isfile(zip_path):
-                result = urllib.request.urlretrieve(job_bundle.requested_scene.scene_url, zip_path)
+                urllib.request.urlretrieve(job_bundle.requested_scene.scene_url, zip_path)
 
             cls._extract_bundle(job_bundle, zip_path)
 

@@ -7,6 +7,7 @@ from .pipeline import Pipeline
 from .pipeline_stage import PipelineStage
 from .requested_scene import RequestedScene
 
+
 class JobBundleManager(models.Manager):
     def from_requested_scene(self, requested_scene):
         job_bundle = self.create(

@@ -6,7 +6,6 @@ import theia.tasks
 from .project import Project
 from .pipeline import Pipeline
 
-import pdb
 
 class ImageryRequest(models.Model):
     adapter_name = models.CharField(max_length=64, null=False)

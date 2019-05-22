@@ -1,6 +1,7 @@
 import os.path
 from re import sub
 
+
 class FileUtils:
     @classmethod
     def version_filename(cls, filename, version_number):

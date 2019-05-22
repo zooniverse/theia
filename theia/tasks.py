@@ -8,7 +8,6 @@ from theia.utils import FileUtils
 from celery import shared_task
 from os.path import abspath, join
 
-import pdb
 
 @shared_task(name='theia.tasks.locate_scenes')
 def locate_scenes(imagery_request_id):
@@ -28,6 +27,7 @@ def process_bundle(job_bundle_id):
 
     for stage in pipeline.get_stages():
         _process_stage(stage, bundle, adapter)
+
 
 def _process_stage(stage, bundle, adapter):
     bundle.current_stage = stage
