@@ -1,5 +1,7 @@
 import theia.adapters.usgs as usgs
+import theia.adapters.dummy as dummy
 
 adapters = {
-    'usgs': usgs.Adapter
+    'dummy': dummy.Adapter,
+    'usgs': usgs.Adapter,
 }

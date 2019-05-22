@@ -14,5 +14,8 @@ class Pipeline(models.Model):
     def name_subject_set(self):
         return '%s Pipeline' % (self.name,)
 
+    def get_stages(self):
+        return self.pipeline_stages.all()  # pragma: nocover
+
     def __str__(self):
         return '%s | %s' % (self.project.name, self.name)

@@ -43,7 +43,6 @@ class TestUploadSubject:
         mockCreate.assert_called_once_with(8, 'some_file')
         mockAdd.assert_called_once_with(mockCreate.return_value)
 
-    @pytest.mark.focus
     @patch('panoptes_client.Panoptes.connect')
     @patch('theia.operations.panoptes_operations.PanoptesUtils.url', return_value='sample url')
     @patch('theia.operations.panoptes_operations.PanoptesUtils.client_id', return_value='sample id')
