@@ -12,7 +12,6 @@ def test_locate_scenes(mockProcess, mockGet):
     mockGet.assert_called_once_with(pk=7)
     mockProcess.assert_called_once_with(mockGet.return_value)
 
-@pytest.mark.focus
 @patch('theia.adapters.dummy.Adapter.retrieve')
 @patch('theia.tasks._process_stage')
 @patch('theia.api.models.JobBundle.objects.get', return_value=JobBundle(id=3))
