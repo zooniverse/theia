@@ -1,13 +1,21 @@
+import pytest
+from unittest import mock
+from unittest.mock import patch, PropertyMock
+
 import json
-from django.test import TestCase
 from theia.api.models import ImageryRequest
 from theia.adapters.usgs import ImagerySearch
 
 
-class TestImagerySearch(TestCase):
-    def test_builds_entire_search(self):
-        # TODO: write this test
-        ir = ImageryRequest()  # noqa
+class TestImagerySearch:
+    @patch('theia.adapters.usgs.ImagerySearch.add_dataset_name')
+    @patch('theia.adapters.usgs.ImagerySearch.add_wgs_row_and_path')
+    def test_builds_path_row_search(self, mockAddPath, mockAddName):
+        ir = ImageryRequest(wgs_row=1, wgs_path=2, dataset_name='ds9')
+        search_obj = ImagerySearch.build_search(ir)
+        mockAddName.assert_called_once_with({}, 'ds9')
+        mockAddPath.assert_called_once_with({}, 1, 2)
+        assert search_obj == {}
 
     def test_builds_value_filter(self):
         filter = ImagerySearch.value_filter('WRS Path', 5)

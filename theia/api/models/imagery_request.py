@@ -1,6 +1,8 @@
 from django.db import models as models
 from django.db.models.signals import post_save
-from theia.tasks import locate_scenes
+from datetime import datetime
+
+import theia.tasks
 from .project import Project
 from .pipeline import Pipeline
 
@@ -31,13 +33,14 @@ class ImageryRequest(models.Model):
     pipeline = models.ForeignKey(Pipeline, related_name='imagery_requests', on_delete=models.CASCADE)
 
     def __str__(self):
-        return '[ImageryRequest project %d at %s]' % (self.project_id, self.created_at.strftime('%F'))
+        when = self.created_at or datetime.utcnow()
+        return '[ImageryRequest project %d at %s]' % (self.project_id, when.strftime('%F'))
 
     @classmethod
     def post_save(cls, sender, instance, created, *args, **kwargs):
         if created:
             # queue up a worker to search for matching scenes
-            locate_scenes.delay(instance.id)
+            theia.tasks.locate_scenes.delay(instance.id)
 
 
 post_save.connect(ImageryRequest.post_save, sender=ImageryRequest)

@@ -7,8 +7,7 @@ from .tasks import wait_for_scene
 import os.path
 import platform
 import tarfile
-
-from urllib.request import urlretrieve
+import urllib.request
 
 
 class Adapter:
@@ -20,7 +19,7 @@ class Adapter:
     def process_request(cls, imagery_request):
         search = ImagerySearch.build_search(imagery_request)
         scenes = ErosWrapper.search(search)
-        for scene in scenes:
+        for scene in scenes[0:3]:
             result = EspaWrapper.order_all(scene, 'sr')
             for item in result:
                 req = models.RequestedScene.objects.create(**{**item, **{'imagery_request': imagery_request}})
@@ -39,18 +38,21 @@ class Adapter:
             job_bundle.hostname = platform.uname().node
             job_bundle.save()
 
-            # make the temp directory if it doesn't already exist
-            if not os.path.isdir(job_bundle.local_path):
-                os.mkdir(job_bundle.local_path)
-
             # get the compressed scene data if we don't have it
             if not os.path.isfile(zip_path):
-                urlretrieve(job_bundle.requested_scene.scene_url, zip_path)
+                urllib.request.urlretrieve(job_bundle.requested_scene.scene_url, zip_path)
 
-            # extract the file
-            with tarfile.open(zip_path, 'r') as archive:
-                archive.extractall(job_bundle.local_path)
+            cls._extract_bundle(job_bundle, zip_path)
 
     @classmethod
     def acquire_image(cls, imagery_request):
         pass
+
+    @classmethod
+    def _extract_bundle(cls, job_bundle, zip_path):
+        # extract the file
+        with tarfile.open(zip_path, 'r') as archive:
+            # make the temp directory if it doesn't already exist
+            if not os.path.isdir(job_bundle.local_path):
+                os.mkdir(job_bundle.local_path)
+            archive.extractall(job_bundle.local_path)

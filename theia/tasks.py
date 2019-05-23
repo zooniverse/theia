@@ -20,18 +20,22 @@ def locate_scenes(imagery_request_id):
 def process_bundle(job_bundle_id):
     bundle = models.JobBundle.objects.get(pk=job_bundle_id)
     request = bundle.imagery_request
-    stages = bundle.pipeline.pipeline_stages
+    pipeline = bundle.pipeline
 
     adapter = adapters[request.adapter_name]
     adapter.retrieve(bundle)
 
-    for stage in stages.all():
-        bundle.current_stage = stage
-        bundle.save()
+    for stage in pipeline.get_stages():
+        _process_stage(stage, bundle, adapter)
 
-        for semantic_name in stage.select_images:
-            literal_name = adapter.resolve_image(bundle, semantic_name)
-            absolute_filename = join(abspath(bundle.local_path), literal_name)
-            versioned_filename = FileUtils.locate_latest_version(absolute_filename, stage.sort_order)
 
-            operations[stage.operation].apply(versioned_filename, bundle)
+def _process_stage(stage, bundle, adapter):
+    bundle.current_stage = stage
+    bundle.save()
+
+    for semantic_name in stage.select_images:
+        literal_name = adapter.resolve_image(bundle, semantic_name)
+        absolute_filename = join(abspath(bundle.local_path), literal_name)
+        versioned_filename = FileUtils.locate_latest_version(absolute_filename, stage.sort_order)
+
+        operations[stage.operation].apply(versioned_filename, bundle)
