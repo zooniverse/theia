@@ -34,4 +34,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
     url(r'^api-auth/', include('rest_framework.urls')),
+    url('', include('social_django.urls', namespace='social')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
