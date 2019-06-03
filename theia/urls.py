@@ -21,6 +21,7 @@ from theia.api import views
 
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth import views as auth_views
 
 router = routers.DefaultRouter()
 router.register(r'imagery_requests', views.ImageryRequestViewSet)
@@ -31,8 +32,16 @@ router.register(r'projects', views.ProjectViewSet)
 router.register(r'requested_scenes', views.RequestedSceneViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('api/', include(router.urls)),
     path('admin/', admin.site.urls),
+
+    url(r'^$', views.HomeView.as_view(), name='home'),
     url(r'^api-auth/', include('rest_framework.urls')),
-    url('', include('social_django.urls', namespace='social')),
+    url(r'oauth/', include('social_django.urls', namespace='social')),
+    url(r'^login/$', auth_views.LoginView, name='login'),
+    url(r'^logout/$', auth_views.LogoutView, name='logout'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+LOGIN_URL = 'login/'
+LOGOUT_URL = 'logout/'
+LOGIN_REDIRECT_URL = 'home'
