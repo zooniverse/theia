@@ -11,6 +11,7 @@ class TestPanoptesOauth2:
     @patch('panoptes_client.Panoptes.get', return_value=[{'users': [{
         'login': 'some login',
         'email': 'some email',
+        'admin': 'False'
     }]}])
     def test_get_user_details(self, mockGet):
         auth = PanoptesOAuth2()

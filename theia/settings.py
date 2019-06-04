@@ -170,7 +170,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 if not DEBUG:
-    SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
+    SOCIAL_AUTH_REDIRECT_IS_HTTPS = True  # pragma: nocover
 
 LOGIN_URL = '/login'
 LOGOUT_URL = '/logout'
