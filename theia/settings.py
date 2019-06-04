@@ -165,9 +165,12 @@ REST_FRAMEWORK = {
 CELERY_ENABLE_UTC = True
 
 AUTHENTICATION_BACKENDS = (
-    'theia.utils.PanoptesOAuth2',
+    'theia.utils.panoptes_oauth2.PanoptesOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
+
+if not DEBUG:
+    SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
 
 LOGIN_URL = '/login'
 LOGOUT_URL = '/logout'
