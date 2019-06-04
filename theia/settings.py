@@ -33,7 +33,6 @@ SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['username', 'first_name', 'email']
 # Application definition
 
 INSTALLED_APPS = [
-    'rest_framework',
     'theia.api',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'social_django',
 ]
 
@@ -168,3 +168,10 @@ AUTHENTICATION_BACKENDS = (
     'theia.utils.PanoptesOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
+
+LOGIN_URL = '/login'
+LOGOUT_URL = '/logout'
+LOGIN_REDIRECT_URL = 'home'
+
+SOCIAL_AUTH_PANOPTES_KEY = os.getenv('PANOPTES_CLIENT_ID')
+SOCIAL_AUTH_PANOPTES_SECRET = os.getenv('PANOPTES_CLIENT_SECRET')

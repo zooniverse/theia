@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from social_core.backends.oauth import BaseOAuth2
 from panoptes_client import Panoptes
 
+import pdb
 
 class PanoptesOAuth2(BaseOAuth2):
     name = 'panoptes'
@@ -31,6 +32,7 @@ class PanoptesOAuth2(BaseOAuth2):
             return {
                 'username': user['login'],
                 'email': user['email'],
+                'is_superuser': user['admin'],
             }
 
     def get_user_id(self, details, response):
