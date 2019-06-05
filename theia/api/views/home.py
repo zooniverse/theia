@@ -5,4 +5,8 @@ import pdb
 
 @login_required
 def home(request):
-    return render(request, "home.html")
+    social_user = request.user.social_auth.get(provider="panoptes")
+    context = {
+        "projects": social_user.extra_data['projects']
+    }
+    return render(request, "home.html", context)

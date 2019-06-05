@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from social_core.backends.oauth import BaseOAuth2
-from panoptes_client import Panoptes
+from panoptes_client import Panoptes, Project
 
 import pdb
 
@@ -16,6 +16,7 @@ class PanoptesOAuth2(BaseOAuth2):
     EXTRA_DATA = [
         ('expires_in', 'expires_in'),
         ('refresh_token', 'refresh_token'),
+        ('projects', 'projects')
     ]
 
     def get_user_details(self, response):
@@ -29,10 +30,16 @@ class PanoptesOAuth2(BaseOAuth2):
                 )
 
             user = p.get('/me')[0]['users'][0]
+
+            ids = ['admin user']
+            if not user['admin']:
+                ids = [project.id for project in Project.where()]
+
             return {
                 'username': user['login'],
                 'email': user['email'],
                 'is_superuser': user['admin'],
+                'projects': ids,
             }
 
     def get_user_id(self, details, response):

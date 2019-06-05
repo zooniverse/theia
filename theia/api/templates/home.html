@@ -3,5 +3,7 @@
 {% block content %}
   <h2>Homepage</h2>
   <p>Hello {{ user.username }}!</p>
+  <h3>Projects</h3>
+  <p>{{ projects }}</p>
   <a href="{% url 'logout' %}">log out</a>
 {% endblock %}
