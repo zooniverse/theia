@@ -27,11 +27,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+SOCIAL_AUTH_POSTGRES_JSONFIELD = True
+SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['username', 'first_name', 'email']
 
 # Application definition
 
 INSTALLED_APPS = [
-    'rest_framework',
     'theia.api',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -39,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -49,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'theia.urls'
@@ -56,7 +60,9 @@ ROOT_URLCONF = 'theia.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'theia', 'api', 'templates')
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -64,6 +70,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -155,3 +163,19 @@ REST_FRAMEWORK = {
 }
 
 CELERY_ENABLE_UTC = True
+
+AUTHENTICATION_BACKENDS = (
+    'theia.utils.panoptes_oauth2.PanoptesOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+if not DEBUG:
+    SOCIAL_AUTH_REDIRECT_IS_HTTPS = True  # pragma: nocover
+
+LOGIN_URL = '/login'
+LOGOUT_URL = '/logout'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
+
+SOCIAL_AUTH_PANOPTES_KEY = os.getenv('PANOPTES_CLIENT_ID')
+SOCIAL_AUTH_PANOPTES_SECRET = os.getenv('PANOPTES_CLIENT_SECRET')
