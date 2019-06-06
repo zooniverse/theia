@@ -1,7 +1,11 @@
 import pytest
 from unittest.mock import patch, Mock
+from typing import NamedTuple
 
 from theia.utils import PanoptesOAuth2
+
+class FakeProject(NamedTuple):
+    id: str
 
 class TestPanoptesOauth2:
     def test_get_user_id(self):
@@ -13,7 +17,11 @@ class TestPanoptesOauth2:
         'email': 'some email',
         'admin': 'False'
     }]}])
-    def test_get_user_details(self, mockGet):
+    @patch('panoptes_client.Project.where', return_value=[
+        FakeProject(id='1'),
+        FakeProject(id='2'),
+    ])
+    def test_get_user_details(self, mockProject, mockGet):
         auth = PanoptesOAuth2()
         result = auth.get_user_details({
             'access_token': 'at',
