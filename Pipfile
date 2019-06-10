@@ -10,6 +10,7 @@ pytest-pspec = "*"
 pytest-django = "*"
 pytest-mock = "*"
 pytest-pythonpath = "*"
+django-extensions = "*"
 
 [packages]
 django = "*"
