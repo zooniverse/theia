@@ -32,7 +32,7 @@ class PanoptesOAuth2(BaseOAuth2):
             user = p.get('/me')[0]['users'][0]
 
             ids = ['admin user']
-            if not user['admin'] or user['admin'].lower()=='false':
+            if not user['admin']:
                 ids = [project.id for project in Project.where()]
 
             return {

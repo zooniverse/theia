@@ -35,7 +35,6 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('admin/', admin.site.urls),
 
-    # url(r'^$', views.HomeView.as_view(), name='home'),
     url(r'^$', views.home, name='home'),
     url(r'^api-auth/', include('rest_framework.urls')),
     url(r'oauth/', include('social_django.urls', namespace='social')),
