@@ -1,5 +1,6 @@
 import os.path
 from re import sub
+import tarfile
 
 
 class FileUtils:
@@ -16,6 +17,15 @@ class FileUtils:
                 return candidate
 
         return cls._unversion(filename)
+
+    @classmethod
+    def untar(cls, source, target):
+        # extract the file
+        with tarfile.open(source, 'r') as archive:
+            # make the temp directory if it doesn't already exist
+            if not os.path.isdir(target):
+                os.mkdir(target)
+            archive.extractall(target)
 
     @classmethod
     def _version(cls, filename, version_number):

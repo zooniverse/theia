@@ -3,10 +3,10 @@ from .imagery_search import ImagerySearch
 from .eros_wrapper import ErosWrapper
 from .espa_wrapper import EspaWrapper
 from .tasks import wait_for_scene
+from theia.utils import FileUtils
 
 import os.path
 import platform
-import tarfile
 import urllib.request
 
 
@@ -42,17 +42,8 @@ class Adapter:
             if not os.path.isfile(zip_path):
                 urllib.request.urlretrieve(job_bundle.requested_scene.scene_url, zip_path)
 
-            cls._extract_bundle(job_bundle, zip_path)
+            FileUtils.untar(zip_path, job_bundle.local_path)
 
     @classmethod
     def acquire_image(cls, imagery_request):
         pass
-
-    @classmethod
-    def _extract_bundle(cls, job_bundle, zip_path):
-        # extract the file
-        with tarfile.open(zip_path, 'r') as archive:
-            # make the temp directory if it doesn't already exist
-            if not os.path.isdir(job_bundle.local_path):
-                os.mkdir(job_bundle.local_path)
-            archive.extractall(job_bundle.local_path)

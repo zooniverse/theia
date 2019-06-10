@@ -44,7 +44,7 @@ class TestUsgsAdapter:
     @patch('platform.uname_result.node', new_callable=PropertyMock, return_value='testhostname')
     @patch('theia.api.models.JobBundle.save')
     @patch('urllib.request.urlretrieve')
-    @patch('theia.adapters.usgs.Adapter._extract_bundle')
+    @patch('theia.utils.FileUtils.untar')
     def test_retrieve(self, mockExtract, mockRetrieve, mockSave, mockUnameNode, mockIsFile):
         scene = RequestedScene(scene_url='https://example.org')
         bundle = JobBundle(scene_entity_id='test_id', requested_scene=scene)
@@ -56,18 +56,4 @@ class TestUsgsAdapter:
         mockSave.assert_called_once()
         mockIsFile.assert_called_once_with('tmp/test_id.tar.gz')
         mockRetrieve.assert_called_once_with('https://example.org', 'tmp/test_id.tar.gz')
-        mockExtract.assert_called_once_with(bundle, 'tmp/test_id.tar.gz')
-
-    @patch('os.path.isdir', return_value=False)
-    @patch('os.mkdir')
-    def test__extract_bundle(self, mockMkDir, mockIsDir):
-        with patch.object(tarfile, 'open', autospec=True) as mockOpen:
-            with patch.object(mockOpen.return_value, 'extractall', autospec=True) as mockExtract:
-                bundle = JobBundle(local_path='some/dir/path')
-
-                Adapter._extract_bundle(bundle, 'some/zip/path')
-
-                mockOpen.assert_called_once_with('some/zip/path', 'r')
-                mockIsDir.assert_called_once_with('some/dir/path')
-                mockMkDir.assert_called_once_with('some/dir/path')
-                mockExtract.assert_called_once_with('some/dir/path')
+        mockExtract.assert_called_once_with('tmp/test_id.tar.gz', bundle.local_path)

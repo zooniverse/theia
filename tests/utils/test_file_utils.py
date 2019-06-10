@@ -1,5 +1,6 @@
 import pytest
 from unittest.mock import patch
+import tarfile
 
 from theia.utils import FileUtils
 
@@ -24,3 +25,14 @@ class TestFileUtils:
         with patch('os.path.isfile') as mockIsFile:
             mockIsFile.side_effect = [False, True]
             assert(FileUtils.locate_latest_version('foo.bar', 3)=='foo_stage_01.bar')
+
+    @patch('os.path.isdir', return_value=False)
+    @patch('os.mkdir')
+    def test_untar(self, mockMkDir, mockIsDir):
+        with patch.object(tarfile, 'open', autospec=True) as mockOpen:
+            with patch.object(mockOpen.return_value, 'extractall', autospec=True) as mockExtract:
+                FileUtils.untar('some/zip/path', 'some/dir/path')
+                mockOpen.assert_called_once_with('some/zip/path', 'r')
+                mockIsDir.assert_called_once_with('some/dir/path')
+                mockMkDir.assert_called_once_with('some/dir/path')
+                mockExtract.assert_called_once_with('some/dir/path')
