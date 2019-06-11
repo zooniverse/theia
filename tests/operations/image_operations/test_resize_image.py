@@ -1,24 +1,21 @@
 import pytest
-from unittest.mock import patch
+from unittest.mock import patch, Mock
+from PIL import Image
+
 from theia.operations.image_operations import ResizeImage
 from theia.api.models import JobBundle, PipelineStage
 
 class TestResizeImage:
+    @pytest.mark.focus
     @patch('theia.utils.FileUtils.version_filename', return_value='versioned filename')
-    @patch('PIL.Image.open', autospec=True)
+    @patch('PIL.Image.open', return_value=Mock())
     def test_apply(self, mockOpen, mockVersion):
-        with patch.object(mockOpen.return_value, 'thumbnail') as mockResize:
-            with patch.object(mockOpen.return_value, 'save') as mockSave:
-                stage = PipelineStage(config={'width': 10, 'height': 20}, sort_order=3)
-                bundle = JobBundle(current_stage=stage)
-                ResizeImage.apply('literal filename', bundle)
+        stage = PipelineStage(config={'width': 10, 'height': 20}, sort_order=3)
+        bundle = JobBundle(current_stage=stage)
+        ResizeImage.apply('literal filename', bundle)
 
-                mockVersion.assert_called_once_with('literal filename', 3)
-                mockOpen.assert_called_once_with('literal filename')
+        mockVersion.assert_called_once_with('literal filename', 3)
+        mockOpen.assert_called_once_with('literal filename')
 
-                # TODO: figure out why these asserts don't work
-                # i've verified from the debugger that it calls
-                # the mocks correctly so ???
-
-                # mockResize.assert_called_once_with((10, 20), Image.ANTIALIAS)
-                # mockSave.assert_called_once_with('versioned filename')
+        mockOpen.return_value.thumbnail.assert_called_once_with((10, 20), Image.ANTIALIAS)
+        mockOpen.return_value.save.assert_called_once_with('versioned filename')
