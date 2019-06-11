@@ -13,36 +13,39 @@ def test_locate_scenes(mockProcess, mockGet):
     mockProcess.assert_called_once_with(mockGet.return_value)
 
 @patch('theia.adapters.dummy.Adapter.retrieve')
-@patch('theia.tasks._process_stage')
 @patch('theia.api.models.JobBundle.objects.get', return_value=JobBundle(id=3))
-def test_process_bundle(mockGet, mockProcess, mockRetrieve):
+@patch('theia.api.models.JobBundle.save')
+@patch('theia.operations.noop.NoOp.apply')
+@patch('theia.tasks._resolve_name', return_value='blue_resolved')
+def test_process_bundle(mockResolve, mockApply, mockSave, mockGet, mockRetrieve):
     project = Project()
     pipeline = Pipeline(project=project)
     stage_1 = PipelineStage(operation='noop')
-    stage_2 = PipelineStage(operation='noop')
+    stage_2 = PipelineStage(operation='noop', select_images=['blue'])
     request = ImageryRequest(adapter_name='dummy', pipeline=pipeline)
 
     with patch('theia.api.models.Pipeline.get_stages', return_value=[stage_1, stage_2]) as mockStages:
-      bundle = mockGet.return_value
-      bundle.imagery_request = request
-      bundle.pipeline = pipeline
+        bundle = mockGet.return_value
+        bundle.imagery_request = request
+        bundle.pipeline = pipeline
 
-      tasks.process_bundle(3)
+        tasks.process_bundle(3)
 
-      assert(mockProcess.call_count==2)
-      mockProcess.assert_called_with(stage_2, bundle, Adapter)
-      mockRetrieve.assert_called_once()
+        assert(mockSave.call_count==2)
+
+        assert(mockApply.call_count==2)
+        mockApply.assert_called_with(['blue_resolved'], bundle)
+
+        mockResolve.assert_called_with(Adapter, stage_2, bundle, 'blue')
+        mockRetrieve.assert_called_once()
 
 @patch('theia.utils.FileUtils.locate_latest_version', return_value='versioned name')
 @patch('theia.adapters.dummy.Adapter.resolve_image', return_value='literal name')
-@patch('theia.operations.NoOp.apply')
-@patch('theia.api.models.JobBundle.save')
-def test__process_stage(mockSave, mockApply, mockResolve, mockLocate):
+def test__resolve_name(mockResolve, mockLocate):
     stage = PipelineStage(select_images=['infrared'], operation='noop', sort_order=5)
     bundle = JobBundle(local_path='/tmp')
     adapter = Adapter
 
-    tasks._process_stage(stage, bundle, adapter)
+    tasks._resolve_name(adapter, stage, bundle, 'infrared')
     mockResolve.assert_called_once_with(bundle, 'infrared')
     mockLocate.assert_called_once_with('/tmp/literal name', 5)
-    mockApply.assert_called_once_with('versioned name', bundle)
