@@ -30,12 +30,13 @@ redis = "*"
 requests-oauthlib = "*"
 gunicorn = "*"
 social-auth-app-django = "*"
+libtiff = "*"
 
 [requires]
 python_version = "3.7"
 
 [scripts]
-console = "python manage.py shell"
+console = "python manage.py shell_plus"
 create_local_db = "createdb -U theia -O theia theia"
 drop_local_db = "dropdb -U theia theia"
 makemigrations = "python manage.py makemigrations"

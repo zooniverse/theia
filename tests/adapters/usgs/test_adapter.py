@@ -1,6 +1,7 @@
 import pytest
 from unittest import mock
 from unittest.mock import patch, PropertyMock
+import numpy as np
 
 from theia.adapters.usgs import Adapter, ErosWrapper, EspaWrapper, ImagerySearch
 from theia.api.models import ImageryRequest, JobBundle, RequestedScene
@@ -57,3 +58,9 @@ class TestUsgsAdapter:
         mockIsFile.assert_called_once_with('tmp/test_id.tar.gz')
         mockRetrieve.assert_called_once_with('https://example.org', 'tmp/test_id.tar.gz')
         mockExtract.assert_called_once_with('tmp/test_id.tar.gz', bundle.local_path)
+
+    def test_remap_pixel(self):
+        assert(Adapter.remap_pixel(0)==2)
+        remap = Adapter.remap_pixel(np.array([-9999, 0, 10000, 20000]))
+        assert(remap.tolist()==[0, 2, 252, 255])
+        assert(remap.dtype==np.uint8)

@@ -1,13 +1,15 @@
+import os.path
+import platform
+import urllib.request
+import numpy as np
+
 from theia.api import models
+from theia.utils import FileUtils
+
 from .imagery_search import ImagerySearch
 from .eros_wrapper import ErosWrapper
 from .espa_wrapper import EspaWrapper
 from .tasks import wait_for_scene
-from theia.utils import FileUtils
-
-import os.path
-import platform
-import urllib.request
 
 
 class Adapter:
@@ -47,3 +49,20 @@ class Adapter:
     @classmethod
     def acquire_image(cls, imagery_request):
         pass
+
+    @classmethod
+    def remap_pixel(cls, x):
+        # https://www.usgs.gov/media/files/landsat-8-surface-reflectance-code-lasrc-product-guide
+        # remap all valid pixels to 2-252
+        # remap out-of-range low pixels to 0
+        # remap saturated pixels to 255
+        # use np.where and ufuncs to autovectorize
+        # return ndarray of dtype uint8
+        return np.where((x >= 0) & (x <= 10000),                # noqa: E126, E128
+                    np.add(2, np.floor_divide(x * 250, 10000),  # noqa: E126, E128
+                        casting='unsafe',                       # noqa: E126, E128
+                        dtype=np.uint8),                        # noqa: E126, E128
+                np.where((x < 0),                               # noqa: E126, E128
+                    np.uint8(0),                                # noqa: E126, E128
+                    np.uint8(255)                               # noqa: E126, E128
+            ))
