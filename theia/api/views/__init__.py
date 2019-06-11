@@ -4,5 +4,4 @@ from .project_view_set import ProjectViewSet
 from .pipeline_view_set import PipelineViewSet
 from .pipeline_stage_view_set import PipelineStageViewSet
 from .requested_scene_view_set import RequestedSceneViewSet
-# from .home import HomeView
 from .home import home
