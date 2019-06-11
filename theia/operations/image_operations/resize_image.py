@@ -4,7 +4,7 @@ from theia.utils import FileUtils
 
 class ResizeImage():
     @classmethod
-    def apply(self, filename, bundle):
+    def apply(cls, filename, bundle):
         stage = bundle.current_stage
         new_filename = FileUtils.version_filename(filename, stage.sort_order)
         with Image.open(filename) as im:

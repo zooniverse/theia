@@ -18,3 +18,7 @@ class Adapter:
     @classmethod
     def acquire_image(cls, imagery_request):
         pass  # pragma: nocover
+
+    @classmethod
+    def remap_pixel(cls, pixel_value):
+        pass  # pragma: nocover
