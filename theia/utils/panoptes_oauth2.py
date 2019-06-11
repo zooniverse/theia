@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 from social_core.backends.oauth import BaseOAuth2
 from panoptes_client import Panoptes, Project
 
-import pdb
 
 class PanoptesOAuth2(BaseOAuth2):
     name = 'panoptes'
@@ -24,10 +23,7 @@ class PanoptesOAuth2(BaseOAuth2):
             p.bearer_token = response['access_token']
             p.logged_in = True
             p.refresh_token = response['refresh_token']
-            p.bearer_expires = (
-                    datetime.now()
-                    + timedelta(seconds=response['expires_in'])
-                )
+            p.bearer_expires = (datetime.now() + timedelta(seconds=response['expires_in']))
 
             user = p.get('/me')[0]['users'][0]
 

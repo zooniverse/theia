@@ -15,7 +15,7 @@ class TestPanoptesOauth2:
     @patch('panoptes_client.Panoptes.get', return_value=[{'users': [{
         'login': 'some login',
         'email': 'some email',
-        'admin': 'False'
+        'admin': False
     }]}])
     @patch('panoptes_client.Project.where', return_value=[
         FakeProject(id='1'),
