@@ -61,6 +61,6 @@ class TestUsgsAdapter:
 
     def test_remap_pixel(self):
         assert(Adapter.remap_pixel(0)==2)
-        remap = Adapter.remap_pixel(np.array([-9999, 0, 10000, 20000]))
-        assert(remap.tolist()==[0, 2, 252, 255])
+        remap = Adapter.remap_pixel(np.array([-9999, 0, 5000, 10000, 20000]))
+        assert(remap.tolist()==[0, 2, 127, 252, 255])
         assert(remap.dtype==np.uint8)
