@@ -1,2 +1,2 @@
 from .resize_image import ResizeImage
-from .shallow_image import ShallowImage
+from .remap_image import RemapImage

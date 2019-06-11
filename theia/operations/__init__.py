@@ -4,7 +4,7 @@ from theia.operations.noop import NoOp
 
 operations = {
     'image_operations.resize_image': image_operations.ResizeImage,
-    'image_operations.shallow_image': image_operations.ShallowImage,
+    'image_operations.remap_image': image_operations.RemapImage,
     'panoptes_operations.upload_subject': panoptes_operations.UploadSubject,
     'noop': NoOp
 }

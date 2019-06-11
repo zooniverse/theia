@@ -3,8 +3,6 @@ from unittest.mock import patch
 from theia.operations.image_operations import ResizeImage
 from theia.api.models import JobBundle, PipelineStage
 
-from PIL import Image
-
 class TestResizeImage:
     @patch('theia.utils.FileUtils.version_filename', return_value='versioned filename')
     @patch('PIL.Image.open', autospec=True)
