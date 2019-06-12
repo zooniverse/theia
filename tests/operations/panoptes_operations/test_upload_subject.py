@@ -44,9 +44,9 @@ class TestUploadSubject:
         mockAdd.assert_called_once_with(mockCreate.return_value)
 
     @patch('panoptes_client.Panoptes.connect')
-    @patch('theia.operations.panoptes_operations.PanoptesUtils.url', return_value='sample url')
-    @patch('theia.operations.panoptes_operations.PanoptesUtils.client_id', return_value='sample id')
-    @patch('theia.operations.panoptes_operations.PanoptesUtils.client_secret', return_value='sample secret')
+    @patch('theia.utils.PanoptesUtils.base_url', return_value='sample url')
+    @patch('theia.utils.PanoptesUtils.client_id', return_value='sample id')
+    @patch('theia.utils.PanoptesUtils.client_secret', return_value='sample secret')
     def test__connect(self, mockSecret, mockId, mockUrl, mockConnect):
         UploadSubject._connect()
         mockUrl.assert_called_once()

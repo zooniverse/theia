@@ -1,4 +1,5 @@
 import os
+from urllib.parse import urljoin
 
 
 class PanoptesUtils:
@@ -11,5 +12,9 @@ class PanoptesUtils:
         return os.getenv('PANOPTES_CLIENT_SECRET')
 
     @classmethod
-    def url(cls):
+    def url(cls, path):
+        return urljoin(cls.base_url(), path)
+
+    @classmethod
+    def base_url(cls):
         return os.getenv('PANOPTES_URL', 'https://panoptes.zooniverse.org/')

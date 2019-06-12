@@ -1,15 +1,18 @@
 from datetime import datetime, timedelta
+from urllib.parse import urljoin
 
 from social_core.backends.oauth import BaseOAuth2
 from panoptes_client import Panoptes, Project
 
+from theia.utils.panoptes_utils import PanoptesUtils
+
 
 class PanoptesOAuth2(BaseOAuth2):
     name = 'panoptes'
-    AUTHORIZATION_URL = 'https://panoptes.zooniverse.org/oauth/authorize'
-    ACCESS_TOKEN_URL = 'https://panoptes.zooniverse.org/oauth/token'
+    AUTHORIZATION_URL = PanoptesUtils.url('oauth/authorize')
+    ACCESS_TOKEN_URL =  PanoptesUtils.url('oauth/token')
+    REVOKE_TOKEN_URL = PanoptesUtils.url('oauth/revoke')
     ACCESS_TOKEN_METHOD = 'POST'
-    REVOKE_TOKEN_URL = 'https://panoptes.zooniverse.org/oauth/revoke'
     REVOKE_TOKEN_METHOD = 'GET'
 
     EXTRA_DATA = [
