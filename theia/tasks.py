@@ -26,16 +26,16 @@ def process_bundle(job_bundle_id):
     adapter.retrieve(bundle)
 
     for stage in pipeline.get_stages():
-        _process_stage(stage, bundle, adapter)
+        bundle.current_stage = stage
+        bundle.save()
+
+        images = stage.select_images or []
+        resolved_names = [_resolve_name(adapter, stage, bundle, name) for name in images]
+        operations[stage.operation].apply(resolved_names, bundle)
 
 
-def _process_stage(stage, bundle, adapter):
-    bundle.current_stage = stage
-    bundle.save()
-
-    for semantic_name in stage.select_images:
-        literal_name = adapter.resolve_image(bundle, semantic_name)
-        absolute_filename = join(abspath(bundle.local_path), literal_name)
-        versioned_filename = FileUtils.locate_latest_version(absolute_filename, stage.sort_order)
-
-        operations[stage.operation].apply(versioned_filename, bundle)
+def _resolve_name(adapter, stage, bundle, semantic_name):
+    literal_name = adapter.resolve_image(bundle, semantic_name)
+    absolute_filename = join(abspath(bundle.local_path), literal_name)
+    versioned_filename = FileUtils.locate_latest_version(absolute_filename, stage.sort_order)
+    return versioned_filename

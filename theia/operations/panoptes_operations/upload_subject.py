@@ -5,7 +5,7 @@ from .utils import PanoptesUtils
 
 class UploadSubject:
     @classmethod
-    def apply(cls, filename, bundle):
+    def apply(cls, filenames, bundle):
         pipeline = bundle.pipeline
         project = pipeline.project
 
@@ -17,8 +17,9 @@ class UploadSubject:
         cls._connect()
 
         target_set = cls._get_subject_set(scope, project.id, scope.name_subject_set())
-        new_subject = cls._create_subject(project.id, filename)
-        target_set.add(new_subject)
+        for filename in filenames:
+            new_subject = cls._create_subject(project.id, filename)
+            target_set.add(new_subject)
 
     @classmethod
     def _connect(cls):

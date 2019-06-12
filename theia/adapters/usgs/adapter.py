@@ -13,6 +13,37 @@ from .tasks import wait_for_scene
 
 
 class Adapter:
+    DATASET_LOOKUP = {
+        'LANDSAT_TM_C1': {
+            # LANDSAT 4, LANDSAT 5
+            'blue': 'band1',
+            'green': 'band2',
+            'red': 'band3',
+            'nir': 'band4',
+            'swir-1': 'band5',
+            'swir-2': 'band7',
+        },
+        'LANDSAT_ETM_C1': {
+            # https://www.usgs.gov/media/files/landsat-7-data-users-handbook
+            'blue': 'band1',
+            'green': 'band2',
+            'red': 'band3',
+            'nir': 'band4',
+            'swir-1': 'band5',
+            'swir-2': 'band7',
+        },
+        'LANDSAT_8_C1': {
+            # https://www.usgs.gov/media/files/landsat-8-data-users-handbook
+            'coastal_aerosol': 'band1',
+            'blue': 'band2',
+            'green': 'band3',
+            'red': 'band4',
+            'nir': 'band5',
+            'swir-1': 'band6',
+            'swir-2': 'band7',
+        },
+    }
+
     @classmethod
     def enum_datasets(cls):
         pass
@@ -29,7 +60,14 @@ class Adapter:
 
     @classmethod
     def resolve_image(cls, bundle, semantic_image_name):
-        return '%s_sr_%s.tif' % (bundle.scene_entity_id, semantic_image_name)
+        request = bundle.imagery_request
+        dataset_name = request.dataset_name
+
+        lookup = cls.DATASET_LOOKUP.get(dataset_name, {})
+        suffix = lookup.get(semantic_image_name, semantic_image_name)
+        product = 'sr'
+
+        return '%s_%s_%s.tif' % (bundle.scene_entity_id, product, suffix)
 
     @classmethod
     def retrieve(cls, job_bundle):

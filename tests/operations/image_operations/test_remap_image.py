@@ -15,7 +15,7 @@ class TestRemapImage:
         request = ImageryRequest(adapter_name='usgs')
         stage = PipelineStage(config={}, sort_order=3)
         bundle = JobBundle(current_stage=stage, imagery_request=request)
-        RemapImage.apply('literal filename', bundle)
+        RemapImage.apply(['literal filename'], bundle)
         mockApply.assert_called_once_with('usgs', 'literal filename', 3)
 
     @patch('theia.adapters.dummy.Adapter.remap_pixel')

@@ -11,7 +11,7 @@ class TestResizeImage:
     def test_apply(self, mockOpen, mockVersion):
         stage = PipelineStage(config={'width': 10, 'height': 20}, sort_order=3)
         bundle = JobBundle(current_stage=stage)
-        ResizeImage.apply('literal filename', bundle)
+        ResizeImage.apply(['literal filename'], bundle)
 
         mockVersion.assert_called_once_with('literal filename', 3)
         mockOpen.assert_called_once_with('literal filename')

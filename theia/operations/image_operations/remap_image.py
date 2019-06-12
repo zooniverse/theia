@@ -7,10 +7,11 @@ from theia.utils import FileUtils
 
 class RemapImage():
     @classmethod
-    def apply(cls, filename, bundle):
+    def apply(cls, filenames, bundle):
         request = bundle.imagery_request
         stage = bundle.current_stage
-        return cls.do_apply(request.adapter_name, filename, stage.sort_order)
+        for filename in filenames:
+            return cls.do_apply(request.adapter_name, filename, stage.sort_order)
 
     @classmethod
     def do_apply(cls, adapter_name, filename, version_number):

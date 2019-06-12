@@ -16,7 +16,8 @@ class TestUsgsAdapter:
         assert(not Adapter.acquire_image({}))
 
     def test_resolve_image(self):
-        bundle = JobBundle(scene_entity_id='LC08')
+        request = ImageryRequest(adapter_name='usgs', dataset_name='LANDSAT_8_C1')
+        bundle = JobBundle(scene_entity_id='LC08', imagery_request=request)
         assert(Adapter.resolve_image(bundle, 'aerosol') == 'LC08_sr_aerosol.tif')
 
     def test_process_request(self):
