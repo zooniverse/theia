@@ -63,7 +63,7 @@ class Adapter:
         request = bundle.imagery_request
         dataset_name = request.dataset_name
 
-        lookup = cls.DATASET_LOOKUP.get('dataset_name', {})
+        lookup = cls.DATASET_LOOKUP.get(dataset_name, {})
         suffix = lookup.get(semantic_image_name, semantic_image_name)
         product = 'sr'
 

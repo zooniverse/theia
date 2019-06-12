@@ -10,7 +10,6 @@ from theia.api.models import ImageryRequest, JobBundle, PipelineStage
 class TestRemapImage:
     dummy_array = np.array([[1, 1, 1], [1, 1, 1]], dtype=np.int64)
 
-    @pytest.mark.focus
     @patch('theia.operations.image_operations.RemapImage.do_apply')
     def test_apply(self, mockApply):
         request = ImageryRequest(adapter_name='usgs')

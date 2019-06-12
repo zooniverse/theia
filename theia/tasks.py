@@ -33,6 +33,7 @@ def process_bundle(job_bundle_id):
         resolved_names = [_resolve_name(adapter, stage, bundle, name) for name in images]
         operations[stage.operation].apply(resolved_names, bundle)
 
+
 def _resolve_name(adapter, stage, bundle, semantic_name):
     literal_name = adapter.resolve_image(bundle, semantic_name)
     absolute_filename = join(abspath(bundle.local_path), literal_name)
