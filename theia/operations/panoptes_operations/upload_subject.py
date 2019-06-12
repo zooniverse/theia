@@ -1,6 +1,6 @@
 from os import getenv
 from panoptes_client import Panoptes, Project, Subject, SubjectSet
-from .utils import PanoptesUtils
+from theia.utils import PanoptesUtils
 
 
 class UploadSubject:
@@ -24,7 +24,7 @@ class UploadSubject:
     @classmethod
     def _connect(cls):
         Panoptes.connect(
-            endpoint=PanoptesUtils.url(),
+            endpoint=PanoptesUtils.base_url(),
             client_id=PanoptesUtils.client_id(),
             client_secret=PanoptesUtils.client_secret()
         )
