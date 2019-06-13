@@ -95,21 +95,13 @@ class Adapter:
 
     @classmethod
     def remap_pixel(cls, x):
-        return np.where(x==-9999, 0,
-               np.where(x<0, 0,
-               np.where(x>10000, 255,
-                        np.floor_divide(x, 40)))).astype(np.uint8)
         # https://www.usgs.gov/media/files/landsat-8-surface-reflectance-code-lasrc-product-guide
-        # remap all valid pixels to 2-252
+        # remap all valid pixels to 2-255
         # remap out-of-range low pixels to 0
         # remap saturated pixels to 255
         # use np.where and ufuncs to autovectorize
         # return ndarray of dtype uint8
-        # return  np.where((x >= 0) & (x <= 10000),               # noqa: E126, E128
-        #             np.add(2, np.floor_divide(x, 10000),           # noqa: E126, E128
-        #                 casting='unsafe',                       # noqa: E126, E128
-        #                 dtype=np.uint8),                        # noqa: E126, E128
-        #         np.where((x < 0),                               # noqa: E126, E128
-        #             np.uint8(0),                                # noqa: E126, E128
-        #             np.uint8(255)                               # noqa: E126, E128
-        #     ))
+        return np.where(x == -9999, 0,                                  # noqa: E126, E128
+               np.where(x < 0, 0,                                       # noqa: E126, E128
+               np.where(x > 10000, 255,                                 # noqa: E126, E128
+                        np.floor_divide(x, 40)))).astype(np.uint8)      # noqa: E126, E128

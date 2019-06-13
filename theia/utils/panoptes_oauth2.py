@@ -10,7 +10,7 @@ from theia.utils.panoptes_utils import PanoptesUtils
 class PanoptesOAuth2(BaseOAuth2):
     name = 'panoptes'
     AUTHORIZATION_URL = PanoptesUtils.url('oauth/authorize')
-    ACCESS_TOKEN_URL =  PanoptesUtils.url('oauth/token')
+    ACCESS_TOKEN_URL = PanoptesUtils.url('oauth/token')
     REVOKE_TOKEN_URL = PanoptesUtils.url('oauth/revoke')
     ACCESS_TOKEN_METHOD = 'POST'
     REVOKE_TOKEN_METHOD = 'GET'
