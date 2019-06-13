@@ -15,10 +15,12 @@ class TestUsgsAdapter:
     def test_acquire_image(self):
         assert(not Adapter.acquire_image({}))
 
-    def test_resolve_image(self):
+    @patch('os.path.abspath', return_value='/some_path')
+    def test_resolve_image(self, mockAbs):
         request = ImageryRequest(adapter_name='usgs', dataset_name='LANDSAT_8_C1')
-        bundle = JobBundle(scene_entity_id='LC08', imagery_request=request)
+        bundle = JobBundle(scene_entity_id='LC08', imagery_request=request, local_path='tmp/')
         assert(Adapter.resolve_image(bundle, 'aerosol') == 'LC08_sr_aerosol.tif')
+        assert(Adapter.resolve_image(bundle, 'aerosol', absolute_resolve=True)=='/some_path/tmp/LC08_sr_aerosol.tif')
 
     def test_process_request(self):
         dummyRequest = RequestedScene(id=3)
@@ -61,7 +63,7 @@ class TestUsgsAdapter:
         mockExtract.assert_called_once_with('tmp/test_id.tar.gz', bundle.local_path)
 
     def test_remap_pixel(self):
-        assert(Adapter.remap_pixel(0)==2)
+        assert(Adapter.remap_pixel(0)==0)
         remap = Adapter.remap_pixel(np.array([-9999, 0, 5000, 10000, 20000]))
-        assert(remap.tolist()==[0, 2, 127, 252, 255])
+        assert(remap.tolist()==[0, 0, 125, 250, 255])
         assert(remap.dtype==np.uint8)

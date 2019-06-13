@@ -33,5 +33,4 @@ class TestRemapImage:
         mockOpen.return_value.read_image.assert_called_once_with()
         mockRemap.assert_called_once_with(self.dummy_array)
         mockFromArray.assert_called_once_with(self.dummy_array)
-        mockFromArray.return_value.convert.assert_called_once_with('L')
         mockFromArray.return_value.save.assert_called_once_with('versioned filename')
