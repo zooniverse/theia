@@ -8,11 +8,16 @@ class ComposeImages:
         stage = bundle.current_stage
         config = stage.config
         request = bundle.imagery_request
-        output_filename = adapters[request.adapter_name].resolve_image(config['filename'])
+        output_filename = adapters[request.adapter_name].resolve_image(bundle, config['filename'], absolute_resolve=True)
 
-        channel_r = Image.open(filenames[stage.select_images.index(config['red'])])
-        channel_g = Image.open(filenames[stage.select_images.index(config['green'])])
-        channel_b = Image.open(filenames[stage.select_images.index(config['blue'])])
+        redname = filenames[stage.select_images.index(config['red'])]
+        channel_r = Image.open(redname).convert('L')
+
+        greenname = filenames[stage.select_images.index(config['green'])]
+        channel_g = Image.open(greenname).convert('L')
+
+        bluename = filenames[stage.select_images.index(config['blue'])]
+        channel_b = Image.open(bluename).convert('L')
 
         merged = Image.merge('RGB', (channel_r, channel_g, channel_b))
         merged.save(output_filename)

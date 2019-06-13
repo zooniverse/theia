@@ -1,5 +1,5 @@
 from PIL import Image
-from libtiff import TIFF
+from libtiff import TIFF, libtiff_ctypes
 
 from theia.adapters import adapters
 from theia.utils import FileUtils
@@ -8,10 +8,11 @@ from theia.utils import FileUtils
 class RemapImage():
     @classmethod
     def apply(cls, filenames, bundle):
+        libtiff_ctypes.suppress_warnings()
         request = bundle.imagery_request
         stage = bundle.current_stage
         for filename in filenames:
-            return cls.do_apply(request.adapter_name, filename, stage.sort_order)
+            cls.do_apply(request.adapter_name, filename, stage.sort_order)
 
     @classmethod
     def do_apply(cls, adapter_name, filename, version_number):
@@ -21,7 +22,10 @@ class RemapImage():
         new_filename = FileUtils.version_filename(filename, version_number)
 
         input = TIFF.open(filename).read_image()
+        print('min %s max %s' % (input.min(), input.max()))
         remapped = adapter.remap_pixel(input)
+        print('min %s max %s' % (remapped.min(), remapped.max()))
+        print(remapped.dtype)
         im = Image.fromarray(remapped)
-        im.convert('L')
+        # im.convert('L')
         im.save(new_filename)

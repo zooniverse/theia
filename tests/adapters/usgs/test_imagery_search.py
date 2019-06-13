@@ -8,9 +8,11 @@ from theia.adapters.usgs import ImagerySearch
 
 
 class TestImagerySearch:
+    @patch('theia.adapters.usgs.ImagerySearch.add_day_or_night')
+    @patch('theia.adapters.usgs.ImagerySearch.add_scene_cloud_cover')
     @patch('theia.adapters.usgs.ImagerySearch.add_dataset_name')
     @patch('theia.adapters.usgs.ImagerySearch.add_wgs_row_and_path')
-    def test_builds_path_row_search(self, mockAddPath, mockAddName):
+    def test_builds_path_row_search(self, mockAddPath, mockAddName, *args):
         ir = ImageryRequest(wgs_row=1, wgs_path=2, dataset_name='ds9')
         search_obj = ImagerySearch.build_search(ir)
         mockAddName.assert_called_once_with({}, 'ds9')
@@ -31,6 +33,10 @@ class TestImagerySearch:
         search = ImagerySearch.add_dataset_name({'foo': 'bar'}, "L8")
         assert json.dumps(search) == '{"foo": "bar", "datasetName": "L8"}'
 
+    def test_builds_search_from_day_or_night(self):
+        search = ImagerySearch.add_day_or_night({}, 'DAY')
+        assert json.dumps(search) == '{"additionalCriteria": {"filterType": "and", "childFilters": [{"filterType": "value", "fieldId": 20513, "value": "DAY"}]}}'
+
     def test_builds_search_from_row_and_path(self):
         search = ImagerySearch.add_wgs_row_and_path({}, 1, 10)
         assert json.dumps(search) == '{"additionalCriteria": {"filterType": "and", "childFilters": [{"filterType": "value", "fieldId": 20514, "value": 10}, {"filterType": "value", "fieldId": 20516, "value": 1}]}}'  # noqa: E501
@@ -46,3 +52,7 @@ class TestImagerySearch:
 
         search = ImagerySearch.add_wgs_row_and_path({'additionalCriteria': {'filterType': 'and', 'childFilters': ['blah']}}, 1, 10)  # noqa: E501
         assert json.dumps(search) == '{"additionalCriteria": {"filterType": "and", "childFilters": ["blah", {"filterType": "value", "fieldId": 20514, "value": 10}, {"filterType": "value", "fieldId": 20516, "value": 1}]}}'  # noqa: E501
+
+    def test_builds_search_from_scene_cloud_cover(self):
+        search = ImagerySearch.add_scene_cloud_cover({}, 20)
+        assert json.dumps(search) == '{"additionalCriteria": {"filterType": "and", "childFilters": [{"filterType": "between", "fieldId": 20515, "firstValue": "0", "secondValue": "20"}]}}'
