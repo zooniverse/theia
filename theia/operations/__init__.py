@@ -1,5 +1,5 @@
 from theia.operations import image_operations, panoptes_operations
-from theia.operations.noop import NoOp
+from theia.operations.noop import NoOp, AbstractOperation
 
 
 operations = {

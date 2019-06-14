@@ -1,12 +1,12 @@
 from PIL import Image
 
+from ..abstract_operation import AbstractOperation
 from theia.adapters import adapters
 from theia.utils import FileUtils
 
 
-class ComposeImages:
-    @classmethod
-    def apply(cls, filenames, bundle):
+class ComposeImages(AbstractOperation):
+    def apply(self, filenames):
         stage = bundle.current_stage
         config = stage.config
         request = bundle.imagery_request
