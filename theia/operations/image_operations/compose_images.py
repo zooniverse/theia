@@ -7,20 +7,14 @@ from theia.utils import FileUtils
 
 class ComposeImages(AbstractOperation):
     def apply(self, filenames):
-        stage = bundle.current_stage
-        config = stage.config
-        request = bundle.imagery_request
-        adapter = adapters[request.adapter_name]
-        relative_name = adapter.resolve_relative_image(bundle, config['filename'])
-        output_filename = FileUtils.absolutize(bundle=bundle, filename=relative_name)
+        output_filename = self.get_new_filename(self.config['filename'])
 
-        redname = filenames[stage.select_images.index(config['red'])]
+        redname = filenames[self.select_images.index(self.config['red'])]
+        greenname = filenames[self.select_images.index(self.config['green'])]
+        bluename = filenames[self.select_images.index(self.config['blue'])]
+
         channel_r = Image.open(redname).convert('L')
-
-        greenname = filenames[stage.select_images.index(config['green'])]
         channel_g = Image.open(greenname).convert('L')
-
-        bluename = filenames[stage.select_images.index(config['blue'])]
         channel_b = Image.open(bluename).convert('L')
 
         merged = Image.merge('RGB', (channel_r, channel_g, channel_b))

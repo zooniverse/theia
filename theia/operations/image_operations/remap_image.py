@@ -16,5 +16,5 @@ class RemapImage(AbstractOperation):
             im = Image.fromarray(remapped)
             im.convert('L')
 
-            new_filename = self.get_new_filename(filename)
+            new_filename = self.get_new_version(filename)
             im.save(new_filename)

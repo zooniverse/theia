@@ -7,11 +7,11 @@ from theia.api.models import ImageryRequest, JobBundle, PipelineStage
 
 
 class TestComposeImages:
-    @patch('theia.utils.FileUtils.absolutize', return_value='absoluted')
-    @patch('theia.adapters.dummy.Adapter.resolve_relative_image', return_value='totally new name')
+    @pytest.mark.focus
+    @patch('theia.operations.AbstractOperation.get_new_filename', return_value='totally new name')
     @patch('PIL.Image.open', side_effect=[Mock(), Mock(), Mock()])
     @patch('PIL.Image.merge', return_value=Mock())
-    def test_apply(self, mock_merge, mock_open, mock_resolve, mock_absolute):
+    def test_apply(self, mock_merge, mock_open, mock_get_new):
         request = ImageryRequest(adapter_name='dummy')
         stage = PipelineStage(
             select_images=['ggggg', 'rrr', 'bbbb'],
@@ -20,10 +20,10 @@ class TestComposeImages:
         )
         bundle = JobBundle(current_stage=stage, imagery_request=request)
 
-        ComposeImages.apply(['neerg', 'erd', 'eulb'], bundle)
+        operation = ComposeImages(bundle)
+        operation.apply(['neerg', 'erd', 'eulb'])
 
-        mock_resolve.assert_called_once_with(bundle, 'newish name')
-        mock_absolute.assert_called_once_with(bundle=bundle, filename='totally new name')
+        mock_get_new.assert_called_once_with('newish name')
         mock_open.assert_has_calls([call('erd'), call('neerg'), call('eulb')])
         mock_merge.assert_called_once_with('RGB', (ANY, ANY, ANY))
-        mock_merge.return_value.save.assert_called_once_with('absoluted')
+        mock_merge.return_value.save.assert_called_once_with('totally new name')

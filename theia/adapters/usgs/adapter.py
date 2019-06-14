@@ -59,9 +59,9 @@ class Adapter:
                 wait_for_scene.delay(req.id)
 
     @classmethod
-    def prefix_new_image(cls, bundle, filename):
+    def construct_filename(cls, bundle, suffix):
         product = "sr"
-        return '%s_%s_%s.tif' % (bundle.scene_entity_id, product, filename)
+        return '%s_%s_%s.tif' % (bundle.scene_entity_id, product, suffix)
 
     @classmethod
     def resolve_relative_image(cls, bundle, semantic_image_name):

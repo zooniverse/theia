@@ -37,6 +37,10 @@ class AbstractOperation(ABC):
         return self.imagery_request.dataset_name
 
     @property
+    def select_images(self):
+        return self.pipeline_stage.select_images
+
+    @property
     def config(self):
         return self.pipeline_stage.config
 
@@ -48,8 +52,17 @@ class AbstractOperation(ABC):
     def apply(self, filenames):
         pass
 
-    def get_new_filename(self, filename):
+    def get_new_version(self, filename):
         if not self.output_extension:
             return FileUtils.version_filename(filename, self.sort_order)
         else:
+            # TODO: this should change the extension obviously
             return FileUtils.version_filename(filename, self.sort_order)
+
+    def get_new_filename(self, filename):
+        return self.get_new_version(
+            FileUtils.absolutize(
+                bundle=self.bundle,
+                filename=self.adapter.construct_filename(self.bundle, filename)
+            )
+        )

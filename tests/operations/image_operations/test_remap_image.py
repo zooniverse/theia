@@ -11,7 +11,7 @@ class TestRemapImage:
     dummy_array = np.array([[1, 1, 1], [1, 1, 1]], dtype=np.int64)
 
     @patch('theia.adapters.dummy.Adapter.remap_pixel')
-    @patch('theia.operations.AbstractOperation.get_new_filename', return_value='versioned filename')
+    @patch('theia.operations.AbstractOperation.get_new_version', return_value='versioned filename')
     @patch('libtiff.TIFF.open', return_value=Mock())
     @patch('PIL.Image.fromarray', return_value=Mock())
     def test_do_apply(self, mockFromArray, mockOpen, mockRename, mockRemap):

@@ -6,7 +6,7 @@ from theia.operations.image_operations import ResizeImage
 from theia.api.models import JobBundle, PipelineStage
 
 class TestResizeImage:
-    @patch('theia.operations.AbstractOperation.get_new_filename', return_value='new filename')
+    @patch('theia.operations.AbstractOperation.get_new_version', return_value='new filename')
     @patch('PIL.Image.open', return_value=Mock())
     def test_apply(self, mock_open, mock_get_name):
         stage = PipelineStage(config={'width': 10, 'height': 20}, sort_order=3)
