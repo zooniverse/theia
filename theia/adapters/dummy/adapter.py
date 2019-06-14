@@ -8,7 +8,7 @@ class Adapter:
         pass  # pragma: nocover
 
     @classmethod
-    def resolve_image(cls, bundle, semantic_image_name):
+    def resolve_relative_image(cls, bundle, semantic_image_name):
         pass  # pragma: nocover
 
     @classmethod

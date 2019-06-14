@@ -16,7 +16,7 @@ def test_locate_scenes(mockProcess, mockGet):
 @patch('theia.api.models.JobBundle.objects.get', return_value=JobBundle(id=3))
 @patch('theia.api.models.JobBundle.save')
 @patch('theia.operations.noop.NoOp.apply')
-@patch('theia.tasks._resolve_name', return_value='blue_resolved')
+@patch('theia.tasks._prepare_name', return_value='blue_resolved')
 def test_process_bundle(mockResolve, mockApply, mockSave, mockGet, mockRetrieve):
     project = Project()
     pipeline = Pipeline(project=project)
@@ -40,12 +40,12 @@ def test_process_bundle(mockResolve, mockApply, mockSave, mockGet, mockRetrieve)
         mockRetrieve.assert_called_once()
 
 @patch('theia.utils.FileUtils.locate_latest_version', return_value='versioned name')
-@patch('theia.adapters.dummy.Adapter.resolve_image', return_value='literal name')
-def test__resolve_name(mockResolve, mockLocate):
+@patch('theia.adapters.dummy.Adapter.resolve_relative_image', return_value='literal name')
+def test__prepare_name(mockResolve, mockLocate):
     stage = PipelineStage(select_images=['infrared'], operation='noop', sort_order=5)
     bundle = JobBundle(local_path='/tmp')
     adapter = Adapter
 
-    tasks._resolve_name(adapter, stage, bundle, 'infrared')
+    tasks._prepare_name(adapter, stage, bundle, 'infrared')
     mockResolve.assert_called_once_with(bundle, 'infrared')
     mockLocate.assert_called_once_with('/tmp/literal name', 5)

@@ -19,13 +19,11 @@ class RemapImage():
         # https://stackoverflow.com/questions/50761021/how-to-open-a-tif-cmyk-16-bit-image-file
         # 'Using libtiff instead of GDAL'
         adapter = adapters[adapter_name]
-        new_filename = FileUtils.version_filename(filename, version_number)
 
         input = TIFF.open(filename).read_image()
-        print('min %s max %s' % (input.min(), input.max()))
         remapped = adapter.remap_pixel(input)
-        print('min %s max %s' % (remapped.min(), remapped.max()))
-        print(remapped.dtype)
         im = Image.fromarray(remapped)
-        # im.convert('L')
+        im.convert('L')
+
+        new_filename = FileUtils.version_filename(filename, version_number)
         im.save(new_filename)

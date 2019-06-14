@@ -30,12 +30,12 @@ def process_bundle(job_bundle_id):
         bundle.save()
 
         images = stage.select_images or []
-        resolved_names = [_resolve_name(adapter, stage, bundle, name) for name in images]
+        resolved_names = [_prepare_name(adapter, stage, bundle, name) for name in images]
         operations[stage.operation].apply(resolved_names, bundle)
 
 
-def _resolve_name(adapter, stage, bundle, semantic_name):
-    literal_name = adapter.resolve_image(bundle, semantic_name)
-    absolute_filename = join(abspath(bundle.local_path), literal_name)
+def _prepare_name(adapter, stage, bundle, semantic_name):
+    literal_name = adapter.resolve_relative_image(bundle, semantic_name)
+    absolute_filename = FileUtils.absolutize(bundle=bundle, filename=literal_name)
     versioned_filename = FileUtils.locate_latest_version(absolute_filename, stage.sort_order)
     return versioned_filename

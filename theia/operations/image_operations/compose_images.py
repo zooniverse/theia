@@ -1,5 +1,7 @@
-from theia.adapters import adapters
 from PIL import Image
+
+from theia.adapters import adapters
+from theia.utils import FileUtils
 
 
 class ComposeImages:
@@ -8,7 +10,9 @@ class ComposeImages:
         stage = bundle.current_stage
         config = stage.config
         request = bundle.imagery_request
-        output_filename = adapters[request.adapter_name].resolve_image(bundle, config['filename'], absolute_resolve=True)
+        adapter = adapters[request.adapter_name]
+        relative_name = adapter.resolve_relative_image(bundle, config['filename'])
+        output_filename = FileUtils.absolutize(bundle=bundle, filename=relative_name)
 
         redname = filenames[stage.select_images.index(config['red'])]
         channel_r = Image.open(redname).convert('L')

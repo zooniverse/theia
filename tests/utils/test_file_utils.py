@@ -16,7 +16,7 @@ class TestFileUtils:
     @patch('theia.utils.FileUtils._unversion', return_value='unversioned')
     def test_version_filename(self, mockUn, mockRe):
         assert(FileUtils.version_filename('foo_stage_8.bar', 2)=='reversioned')
-        mockUn.assert_called_once_with('foo_stage_8.bar')
+        mockUn.assert_called_once_with('foo_stage_8.bar', new_extension=None)
         mockRe.assert_called_once_with('unversioned', 2)
 
     def test_locate_latest_version(self):
