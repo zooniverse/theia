@@ -59,7 +59,12 @@ class Adapter:
                 wait_for_scene.delay(req.id)
 
     @classmethod
-    def resolve_image(cls, bundle, semantic_image_name, absolute_resolve=False):
+    def construct_filename(cls, bundle, suffix):
+        product = "sr"
+        return '%s_%s_%s.%s' % (bundle.scene_entity_id, product, suffix, cls.default_extension())
+
+    @classmethod
+    def resolve_relative_image(cls, bundle, semantic_image_name):
         request = bundle.imagery_request
         dataset_name = request.dataset_name
 
@@ -67,12 +72,7 @@ class Adapter:
         suffix = lookup.get(semantic_image_name, semantic_image_name)
         product = 'sr'
 
-        filename = '%s_%s_%s.tif' % (bundle.scene_entity_id, product, suffix)
-
-        if absolute_resolve:
-            return os.path.join(os.path.abspath('.'), bundle.local_path, filename)
-        else:
-            return filename
+        return '%s_%s_%s.%s' % (bundle.scene_entity_id, product, suffix, cls.default_extension())
 
     @classmethod
     def retrieve(cls, job_bundle):
@@ -92,6 +92,10 @@ class Adapter:
     @classmethod
     def acquire_image(cls, imagery_request):
         pass
+
+    @classmethod
+    def default_extension(cls):
+        return 'tif'
 
     @classmethod
     def remap_pixel(cls, x):

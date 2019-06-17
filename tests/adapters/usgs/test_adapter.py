@@ -15,12 +15,14 @@ class TestUsgsAdapter:
     def test_acquire_image(self):
         assert(not Adapter.acquire_image({}))
 
-    @patch('os.path.abspath', return_value='/some_path')
-    def test_resolve_image(self, mockAbs):
+    def test_resolve_relative_image(self):
         request = ImageryRequest(adapter_name='usgs', dataset_name='LANDSAT_8_C1')
         bundle = JobBundle(scene_entity_id='LC08', imagery_request=request, local_path='tmp/')
-        assert(Adapter.resolve_image(bundle, 'aerosol') == 'LC08_sr_aerosol.tif')
-        assert(Adapter.resolve_image(bundle, 'aerosol', absolute_resolve=True)=='/some_path/tmp/LC08_sr_aerosol.tif')
+        assert(Adapter.resolve_relative_image(bundle, 'red') == 'LC08_sr_band4.tif')
+
+    def test_construct_filename(self):
+        bundle = JobBundle(scene_entity_id='LC08', local_path='tmp/')
+        assert(Adapter.construct_filename(bundle, 'aerosol')=='LC08_sr_aerosol.tif')
 
     def test_process_request(self):
         dummyRequest = RequestedScene(id=3)

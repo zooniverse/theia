@@ -18,7 +18,9 @@ class TestUploadSubject:
         project = Project(id=8)
         pipeline = Pipeline(project=project)
         bundle = JobBundle(pipeline=pipeline)
-        UploadSubject.apply(['some_file'], bundle)
+
+        operation = UploadSubject(bundle)
+        operation.apply(['some_file'])
 
         mockConnect.assert_called_once()
         mockGetName.assert_called_once()
@@ -35,7 +37,9 @@ class TestUploadSubject:
         project = Project(id=8)
         pipeline = Pipeline(project=project, multiple_subject_sets=True)
         bundle = JobBundle(pipeline=pipeline)
-        UploadSubject.apply(['some_file'], bundle)
+
+        operation = UploadSubject(bundle)
+        operation.apply(['some_file'])
 
         mockConnect.assert_called_once()
         mockGetName.assert_called_once()
@@ -48,7 +52,8 @@ class TestUploadSubject:
     @patch('theia.utils.PanoptesUtils.client_id', return_value='sample id')
     @patch('theia.utils.PanoptesUtils.client_secret', return_value='sample secret')
     def test__connect(self, mockSecret, mockId, mockUrl, mockConnect):
-        UploadSubject._connect()
+        operation = UploadSubject(JobBundle())
+        operation._connect()
         mockUrl.assert_called_once()
         mockId.assert_called_once()
         mockSecret.assert_called_once()
@@ -67,28 +72,32 @@ class TestUploadSubject:
         emptyPipeline = Pipeline()
         linkedPipeline = Pipeline(subject_set_id=3)
 
-        result = UploadSubject._get_subject_set(emptyJobBundle, 8, 'some name')
+        operation = UploadSubject(emptyJobBundle)
+        result = operation._get_subject_set(emptyJobBundle, 8, 'some name')
         mockFind.assert_not_called()
         mockCreateSet.assert_called_once_with(8, 'some name')
 
         mockFind.reset_mock()
         mockCreateSet.reset_mock()
 
-        result = UploadSubject._get_subject_set(linkedJobBundle, 8, 'some name')
+        operation = UploadSubject(linkedJobBundle)
+        result = operation._get_subject_set(linkedJobBundle, 8, 'some name')
         mockFind.assert_called_once_with(3)
         mockCreateSet.assert_not_called()
 
         mockFind.reset_mock()
         mockCreateSet.reset_mock()
 
-        result = UploadSubject._get_subject_set(emptyPipeline, 8, 'some name')
+        operation = UploadSubject(emptyPipeline)
+        result = operation._get_subject_set(emptyPipeline, 8, 'some name')
         mockFind.assert_not_called()
         mockCreateSet.assert_called_once_with(8, 'some name')
 
         mockFind.reset_mock()
         mockCreateSet.reset_mock()
 
-        result = UploadSubject._get_subject_set(linkedPipeline, 8, 'some name')
+        operation = UploadSubject(linkedPipeline)
+        result = operation._get_subject_set(linkedPipeline, 8, 'some name')
         mockFind.assert_called_once_with(3)
         mockCreateSet.assert_not_called()
 
@@ -96,7 +105,8 @@ class TestUploadSubject:
     @patch('panoptes_client.Subject.save', autospec=True)
     @patch('panoptes_client.Subject.add_location', autospec=True)
     def test__create_subject_no_metadata(self, mockAdd, mockSave, mockFind):
-        created_subject = UploadSubject._create_subject(1, 'some_file')
+        operation = UploadSubject(None)
+        created_subject = operation._create_subject(1, 'some_file')
         mockFind.assert_called_once_with(1)
         mockAdd.assert_called_once_with(created_subject, 'some_file')  # weird
         mockSave.assert_called_once()
@@ -106,7 +116,8 @@ class TestUploadSubject:
     @patch('panoptes_client.Subject.save', autospec=True)
     @patch('panoptes_client.Subject.add_location', autospec=True)
     def test__create_subject_with_metadata(self, mockAdd, mockSave, mockFind):
-        created_subject = UploadSubject._create_subject(1, 'some_file', {'foo': 'bar'})
+        operation = UploadSubject(None)
+        created_subject = operation._create_subject(1, 'some_file', {'foo': 'bar'})
         mockFind.assert_called_once_with(1)
         mockAdd.assert_called_once_with(created_subject, 'some_file')  # weird
         mockSave.assert_called_once()
@@ -116,7 +127,8 @@ class TestUploadSubject:
     @patch('panoptes_client.Project.find', return_value=Mock())
     @patch('panoptes_client.SubjectSet.save', autospec=True)
     def test__create_subject_set(self, mockSave, mockFind):
-        created_set = UploadSubject._create_subject_set(1, 'some name')
+        operation = UploadSubject(None)
+        created_set = operation._create_subject_set(1, 'some name')
 
         mockFind.assert_called_once_with(1)
         mockSave.assert_called_once()

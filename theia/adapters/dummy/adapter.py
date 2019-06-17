@@ -8,7 +8,7 @@ class Adapter:
         pass  # pragma: nocover
 
     @classmethod
-    def resolve_image(cls, bundle, semantic_image_name):
+    def resolve_relative_image(cls, bundle, semantic_image_name):
         pass  # pragma: nocover
 
     @classmethod
@@ -21,4 +21,8 @@ class Adapter:
 
     @classmethod
     def remap_pixel(cls, pixel_value):
+        pass  # pragma: nocover
+
+    @classmethod
+    def construct_filename(cls, bundle, suffix):
         pass  # pragma: nocover

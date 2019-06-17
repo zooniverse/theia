@@ -1,22 +1,20 @@
-from theia.adapters import adapters
 from PIL import Image
 
+from ..abstract_operation import AbstractOperation
+from theia.adapters import adapters
+from theia.utils import FileUtils
 
-class ComposeImages:
-    @classmethod
-    def apply(cls, filenames, bundle):
-        stage = bundle.current_stage
-        config = stage.config
-        request = bundle.imagery_request
-        output_filename = adapters[request.adapter_name].resolve_image(bundle, config['filename'], absolute_resolve=True)
 
-        redname = filenames[stage.select_images.index(config['red'])]
+class ComposeImages(AbstractOperation):
+    def apply(self, filenames):
+        output_filename = self.get_new_version(self.get_new_filename(self.config['filename']))
+
+        redname = filenames[self.select_images.index(self.config['red'])]
+        greenname = filenames[self.select_images.index(self.config['green'])]
+        bluename = filenames[self.select_images.index(self.config['blue'])]
+
         channel_r = Image.open(redname).convert('L')
-
-        greenname = filenames[stage.select_images.index(config['green'])]
         channel_g = Image.open(greenname).convert('L')
-
-        bluename = filenames[stage.select_images.index(config['blue'])]
         channel_b = Image.open(bluename).convert('L')
 
         merged = Image.merge('RGB', (channel_r, channel_g, channel_b))

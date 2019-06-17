@@ -1,3 +1,4 @@
+import glob
 import os.path
 from re import sub
 import tarfile
@@ -5,16 +6,18 @@ import tarfile
 
 class FileUtils:
     @classmethod
-    def version_filename(cls, filename, version_number):
-        return cls._version(cls._unversion(filename), version_number)
+    def version_filename(cls, filename, version_number, new_extension=None):
+        return cls._version(cls._unversion(filename, new_extension=new_extension), version_number)
 
     @classmethod
     def locate_latest_version(cls, filename, current_stage):
         while current_stage > 0:
             current_stage = current_stage - 1
             candidate = cls.version_filename(filename, current_stage)
-            if os.path.isfile(candidate):
-                return candidate
+            matches = [filename for filename in glob.glob(os.path.splitext(candidate)[0] + '.*') if os.path.isfile(filename)]
+            print(matches)
+            if matches and matches[0]:
+                return matches[0]
 
         return cls._unversion(filename)
 
@@ -28,11 +31,15 @@ class FileUtils:
             archive.extractall(target)
 
     @classmethod
-    def _version(cls, filename, version_number):
+    def absolutize(cls, *, bundle=None, work_dir=None, filename, new_extension=None):
+        return os.path.join(os.path.abspath(work_dir or bundle.local_path), filename)
+
+    @classmethod
+    def _version(cls, filename, version_number, new_extension=None):
         return "{0}_stage_{2:0>2}{1}".format(*os.path.splitext(filename), version_number)
 
     @classmethod
-    def _unversion(cls, filename):
+    def _unversion(cls, filename, new_extension=None):
         (basename, ext) = os.path.splitext(filename)
         strip = sub(r'_stage_\d{2}$', '', basename)
         return "{0}{1}".format(strip, ext)
