@@ -34,7 +34,7 @@ def test_process_bundle(mockResolve, mockApply, mockSave, mockGet, mockRetrieve)
         assert(mockSave.call_count==2)
 
         assert(mockApply.call_count==2)
-        mockApply.assert_called_with(['blue_resolved'], bundle)
+        mockApply.assert_called_with(['blue_resolved'])
 
         mockResolve.assert_called_with(Adapter, stage_2, bundle, 'blue')
         mockRetrieve.assert_called_once()

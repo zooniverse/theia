@@ -31,7 +31,8 @@ def process_bundle(job_bundle_id):
 
         images = stage.select_images or []
         resolved_names = [_prepare_name(adapter, stage, bundle, name) for name in images]
-        operations[stage.operation].apply(resolved_names, bundle)
+        operation = operations[stage.operation](bundle)
+        operation.apply(resolved_names)
 
 
 def _prepare_name(adapter, stage, bundle, semantic_name):
