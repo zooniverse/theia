@@ -3,7 +3,6 @@ from libtiff import TIFF
 
 from ..abstract_operation import AbstractOperation
 from theia.adapters import adapters
-from theia.utils import FileUtils
 
 
 class RemapImage(AbstractOperation):

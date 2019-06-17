@@ -1,11 +1,12 @@
 from os import getenv
+
+from ..abstract_operation import AbstractOperation
 from panoptes_client import Panoptes, Project, Subject, SubjectSet
 from theia.utils import PanoptesUtils
 
 
-class UploadSubject:
-    @classmethod
-    def apply(cls, filenames, bundle):
+class UploadSubject(AbstractOperation):
+    def apply(self, filenames, bundle):
         pipeline = bundle.pipeline
         project = pipeline.project
 
@@ -14,26 +15,24 @@ class UploadSubject:
         else:
             scope = pipeline
 
-        cls._connect()
+        self._connect()
 
-        target_set = cls._get_subject_set(scope, project.id, scope.name_subject_set())
+        target_set = self._get_subject_set(scope, project.id, scope.name_subject_set())
         for filename in filenames:
-            new_subject = cls._create_subject(project.id, filename)
+            new_subject = self._create_subject(project.id, filename)
             target_set.add(new_subject)
 
-    @classmethod
-    def _connect(cls):
+    def _connect(self):
         Panoptes.connect(
             endpoint=PanoptesUtils.base_url(),
             client_id=PanoptesUtils.client_id(),
             client_secret=PanoptesUtils.client_secret()
         )
 
-    @classmethod
-    def _get_subject_set(cls, scope, project_id, set_name):
+    def _get_subject_set(self, scope, project_id, set_name):
         subject_set = None
         if not scope.subject_set_id:
-            subject_set = cls._create_subject_set(project_id, set_name)
+            subject_set = self._create_subject_set(project_id, set_name)
             scope.subject_set_id = subject_set.id
             scope.save()
         else:
@@ -41,8 +40,7 @@ class UploadSubject:
 
         return subject_set
 
-    @classmethod
-    def _create_subject(cls, project_id, filename, metadata=None):
+    def _create_subject(self, project_id, filename, metadata=None):
         subject = Subject()
 
         subject.links.project = Project.find(project_id)
@@ -55,8 +53,7 @@ class UploadSubject:
 
         return subject
 
-    @classmethod
-    def _create_subject_set(cls, project_id, subject_set_name):
+    def _create_subject_set(self, project_id, subject_set_name):
         project = Project.find(project_id)
 
         subject_set = SubjectSet()
