@@ -4,6 +4,7 @@ from os.path import splitext
 from theia.adapters import adapters
 from theia.utils import FileUtils
 
+
 class AbstractOperation(ABC):
     def __init__(self, bundle):
         self._bundle = bundle
@@ -38,6 +39,10 @@ class AbstractOperation(ABC):
         return adapters[self.imagery_request.adapter_name]
 
     @property
+    def adapter_name(self):
+        return self.imagery_request.adapter_name
+
+    @property
     def dataset_name(self):
         return self.imagery_request.dataset_name
 
@@ -55,7 +60,7 @@ class AbstractOperation(ABC):
 
     @abstractmethod
     def apply(self, filenames):
-        pass
+        pass  # pragma: nocover
 
     def get_new_version(self, filename):
         filename = FileUtils.version_filename(filename, self.sort_order)

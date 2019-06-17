@@ -61,7 +61,7 @@ class Adapter:
     @classmethod
     def construct_filename(cls, bundle, suffix):
         product = "sr"
-        return '%s_%s_%s.tif' % (bundle.scene_entity_id, product, suffix)
+        return '%s_%s_%s.%s' % (bundle.scene_entity_id, product, suffix, cls.default_extension())
 
     @classmethod
     def resolve_relative_image(cls, bundle, semantic_image_name):
@@ -72,7 +72,7 @@ class Adapter:
         suffix = lookup.get(semantic_image_name, semantic_image_name)
         product = 'sr'
 
-        return '%s_%s_%s.tif' % (bundle.scene_entity_id, product, suffix)
+        return '%s_%s_%s.%s' % (bundle.scene_entity_id, product, suffix, cls.default_extension())
 
     @classmethod
     def retrieve(cls, job_bundle):

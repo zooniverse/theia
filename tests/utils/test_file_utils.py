@@ -19,12 +19,14 @@ class TestFileUtils:
         mockUn.assert_called_once_with('foo_stage_8.bar', new_extension=None)
         mockRe.assert_called_once_with('unversioned', 2)
 
-    def test_locate_latest_version(self):
+    @patch('glob.glob', side_effect=[[], [], [], []])
+    def test_locate_latest_version_new(self, *args):
         assert(FileUtils.locate_latest_version('foo.bar', 3)=='foo.bar')
 
-        with patch('os.path.isfile') as mockIsFile:
-            mockIsFile.side_effect = [False, True]
-            assert(FileUtils.locate_latest_version('foo.bar', 3)=='foo_stage_01.bar')
+    @patch('glob.glob', side_effect=[[], ['foo_stage_01.bar']])
+    @patch('os.path.isfile', return_value=True)
+    def test_locate_latest_version_exists(self, *args):
+        assert(FileUtils.locate_latest_version('foo.bar', 3)=='foo_stage_01.bar')
 
     @patch('os.path.isdir', return_value=False)
     @patch('os.mkdir')

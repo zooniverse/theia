@@ -22,3 +22,7 @@ class Adapter:
     @classmethod
     def remap_pixel(cls, pixel_value):
         pass  # pragma: nocover
+
+    @classmethod
+    def construct_filename(cls, bundle, suffix):
+        pass  # pragma: nocover
