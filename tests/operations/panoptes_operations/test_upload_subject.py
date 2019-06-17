@@ -20,7 +20,7 @@ class TestUploadSubject:
         bundle = JobBundle(pipeline=pipeline)
 
         operation = UploadSubject(bundle)
-        operation.apply(['some_file'], bundle)
+        operation.apply(['some_file'])
 
         mockConnect.assert_called_once()
         mockGetName.assert_called_once()
@@ -39,7 +39,7 @@ class TestUploadSubject:
         bundle = JobBundle(pipeline=pipeline)
 
         operation = UploadSubject(bundle)
-        operation.apply(['some_file'], bundle)
+        operation.apply(['some_file'])
 
         mockConnect.assert_called_once()
         mockGetName.assert_called_once()

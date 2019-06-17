@@ -20,9 +20,9 @@ class TestUsgsAdapter:
         bundle = JobBundle(scene_entity_id='LC08', imagery_request=request, local_path='tmp/')
         assert(Adapter.resolve_relative_image(bundle, 'red') == 'LC08_sr_band4.tif')
 
-    def test_prefix_new_image(self):
+    def test_construct_filename(self):
         bundle = JobBundle(scene_entity_id='LC08', local_path='tmp/')
-        assert(Adapter.prefix_new_image(bundle, 'aerosol')=='LC08_sr_aerosol.tif')
+        assert(Adapter.construct_filename(bundle, 'aerosol')=='LC08_sr_aerosol.tif')
 
     def test_process_request(self):
         dummyRequest = RequestedScene(id=3)

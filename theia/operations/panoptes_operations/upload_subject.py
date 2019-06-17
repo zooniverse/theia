@@ -6,20 +6,17 @@ from theia.utils import PanoptesUtils
 
 
 class UploadSubject(AbstractOperation):
-    def apply(self, filenames, bundle):
-        pipeline = bundle.pipeline
-        project = pipeline.project
-
-        if pipeline.multiple_subject_sets:
-            scope = bundle
+    def apply(self, filenames):
+        if self.pipeline.multiple_subject_sets:
+            scope = self.bundle
         else:
-            scope = pipeline
+            scope = self.pipeline
 
         self._connect()
 
-        target_set = self._get_subject_set(scope, project.id, scope.name_subject_set())
+        target_set = self._get_subject_set(scope, self.project.id, scope.name_subject_set())
         for filename in filenames:
-            new_subject = self._create_subject(project.id, filename)
+            new_subject = self._create_subject(self.project.id, filename)
             target_set.add(new_subject)
 
     def _connect(self):

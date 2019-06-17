@@ -26,7 +26,11 @@ class AbstractOperation(ABC):
 
     @property
     def pipeline(self):
-        return self.imagery_request.pipeline
+        return self.bundle.pipeline
+
+    @property
+    def project(self):
+        return self.pipeline.project
 
     @property
     def adapter(self):
