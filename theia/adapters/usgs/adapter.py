@@ -94,6 +94,10 @@ class Adapter:
         pass
 
     @classmethod
+    def default_extension(cls):
+        return 'tif'
+
+    @classmethod
     def remap_pixel(cls, x):
         # https://www.usgs.gov/media/files/landsat-8-surface-reflectance-code-lasrc-product-guide
         # remap all valid pixels to 2-255

@@ -1,3 +1,4 @@
+import glob
 import os.path
 from re import sub
 import tarfile
@@ -13,8 +14,9 @@ class FileUtils:
         while current_stage > 0:
             current_stage = current_stage - 1
             candidate = cls.version_filename(filename, current_stage)
-            if os.path.isfile(candidate):
-                return candidate
+            matches = [filename for filename in glob.glob(os.path.splitext(candidate)[0]+'.*') if os.path.isfile(filename)]
+            if matches and matches[0]:
+                return matches[0]
 
         return cls._unversion(filename)
 

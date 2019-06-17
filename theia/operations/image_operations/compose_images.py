@@ -7,7 +7,7 @@ from theia.utils import FileUtils
 
 class ComposeImages(AbstractOperation):
     def apply(self, filenames):
-        output_filename = self.get_new_filename(self.config['filename'])
+        output_filename = self.get_new_version(self.get_new_filename(self.config['filename']))
 
         redname = filenames[self.select_images.index(self.config['red'])]
         greenname = filenames[self.select_images.index(self.config['green'])]

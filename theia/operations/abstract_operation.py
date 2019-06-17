@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from os.path import splitext
 
 from theia.adapters import adapters
 from theia.utils import FileUtils
@@ -57,11 +58,11 @@ class AbstractOperation(ABC):
         pass
 
     def get_new_version(self, filename):
-        if not self.output_extension:
-            return FileUtils.version_filename(filename, self.sort_order)
-        else:
-            # TODO: this should change the extension obviously
-            return FileUtils.version_filename(filename, self.sort_order)
+        filename = FileUtils.version_filename(filename, self.sort_order)
+        if self.output_extension:
+            filename = splitext(filename)[0] + '.' + self.output_extension
+
+        return filename
 
     def get_new_filename(self, filename):
         return self.get_new_version(
