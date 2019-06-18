@@ -1,12 +1,13 @@
 from __future__ import absolute_import
 
+from celery import shared_task
+from os.path import abspath, join
+import glob
+
 import theia.api.models as models
 from theia.adapters import adapters
 from theia.operations import operations
 from theia.utils import FileUtils
-
-from celery import shared_task
-from os.path import abspath, join
 
 
 @shared_task(name='theia.tasks.locate_scenes')
@@ -30,13 +31,20 @@ def process_bundle(job_bundle_id):
         bundle.save()
 
         images = stage.select_images or []
-        resolved_names = [_prepare_name(adapter, stage, bundle, name) for name in images]
+        resolved_names = [_resolve_name(adapter, stage, bundle, name) for name in images]
+        flattened_names = [item for sublist in resolved_names for item in sublist]
         operation = operations[stage.operation](bundle)
-        operation.apply(resolved_names)
+        operation.apply(flattened_names)
 
 
-def _prepare_name(adapter, stage, bundle, semantic_name):
-    literal_name = adapter.resolve_relative_image(bundle, semantic_name)
-    absolute_filename = FileUtils.absolutize(bundle=bundle, filename=literal_name)
-    versioned_filename = FileUtils.locate_latest_version(absolute_filename, stage.sort_order)
-    return versioned_filename
+def _resolve_name(adapter, stage, bundle, semantic_name):
+    try:
+        semantic_name.index('*')
+        literal_name = semantic_name
+        absolute_filenames = glob.glob(FileUtils.absolutize(bundle=bundle, filename=literal_name))
+    except ValueError:
+        literal_name = adapter.resolve_relative_image(bundle, semantic_name)
+        absolute_filenames = [FileUtils.absolutize(bundle=bundle, filename=literal_name)]
+
+    versioned_filenames = [FileUtils.locate_latest_version(filename, stage.sort_order) for filename in absolute_filenames]
+    return versioned_filenames

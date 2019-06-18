@@ -6,13 +6,29 @@ from theia.api import models
 from theia.operations.image_operations import TileImage
 
 class TestTileImage:
+    @patch('os.mkdir')
+    @patch('os.path.isdir', return_value=False)
     @patch('theia.operations.image_operations.TileImage.tile_one')
-    def test_apply(self, mock_one):
-        bundle = models.JobBundle()
+    def test_apply_absent(self, mock_one, mock_is, mock_mkdir):
+        stage = models.PipelineStage(config={'output_directory': 'foo'})
+        bundle = models.JobBundle(current_stage=stage)
         operation = TileImage(bundle)
         operation.apply(['a', 'b'])
 
         assert(mock_one.call_count==2)
+        mock_mkdir.assert_called_once()
+
+    @patch('os.mkdir')
+    @patch('os.path.isdir', return_value=True)
+    @patch('theia.operations.image_operations.TileImage.tile_one')
+    def test_apply_present(self, mock_one, mock_is, mock_mkdir):
+        stage = models.PipelineStage(config={'output_directory': 'foo'})
+        bundle = models.JobBundle(current_stage=stage)
+        operation = TileImage(bundle)
+        operation.apply(['a', 'b'])
+
+        assert(mock_one.call_count==2)
+        mock_mkdir.assert_not_called()
 
     @patch('os.path.split', return_value=('split', None))
     @patch('os.path.splitext', return_value=('stripped', None))
@@ -54,7 +70,7 @@ class TestTileImage:
 
         bundle = models.JobBundle(current_stage=stage)
         operation = TileImage(bundle)
-        assert(operation.construct_tile_name('f', 3, 4)=='foo/f_tile_004_003.jpg')
+        assert(operation.construct_tile_name('f', 3, 4).endswith('foo/f_tile_004_003.jpg'))
 
     @patch('theia.operations.image_operations.TileImage.construct_tile_name', return_value='a tile name')
     @patch('theia.operations.image_operations.TileImage.build_tile')
