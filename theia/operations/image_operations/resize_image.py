@@ -1,7 +1,5 @@
 from PIL import Image
-
 from ..abstract_operation import AbstractOperation
-from theia.utils import FileUtils
 
 
 class ResizeImage(AbstractOperation):

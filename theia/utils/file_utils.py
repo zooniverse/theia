@@ -15,7 +15,6 @@ class FileUtils:
             current_stage = current_stage - 1
             candidate = cls.version_filename(filename, current_stage)
             matches = [filename for filename in glob.glob(os.path.splitext(candidate)[0] + '.*') if os.path.isfile(filename)]
-            print(matches)
             if matches and matches[0]:
                 return matches[0]
 
