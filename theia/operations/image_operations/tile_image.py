@@ -1,11 +1,15 @@
 from PIL import Image
 import numpy as np
+import os
 import os.path
 from ..abstract_operation import AbstractOperation
+from theia.utils import FileUtils
 
 
 class TileImage(AbstractOperation):
     def apply(self, filenames):
+        if not os.path.isdir(self.output_directory):
+            os.mkdir(self.output_directory)
         for filename in filenames:
             self.tile_one(filename)
 
@@ -65,4 +69,4 @@ class TileImage(AbstractOperation):
 
     @property
     def output_directory(self):
-        return self.config['output_directory']
+        return FileUtils.absolutize(bundle=self.bundle, filename=self.config['output_directory'])
