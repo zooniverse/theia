@@ -24,27 +24,20 @@ class TestUsgsAdapter:
         bundle = JobBundle(scene_entity_id='LC08', local_path='tmp/')
         assert(Adapter.construct_filename(bundle, 'aerosol')=='LC08_sr_aerosol.tif')
 
-    def test_process_request(self):
-        dummyRequest = RequestedScene(id=3)
-        with mock.patch('theia.adapters.usgs.ImagerySearch.build_search') as mockBuild, \
-                mock.patch('theia.adapters.usgs.ErosWrapper.search') as mockSearch, \
-                mock.patch('theia.adapters.usgs.EspaWrapper.order_all') as mockOrderAll, \
-                mock.patch('theia.api.models.RequestedScene.objects.create') as mockRSO, \
-                mock.patch('theia.adapters.usgs.tasks.wait_for_scene.delay') as mockWait:
+    @patch('theia.adapters.usgs.ImagerySearch.build_search', return_value={})
+    @patch('theia.adapters.usgs.ErosWrapper.search', return_value=['some scene id'])
+    @patch('theia.adapters.usgs.EspaWrapper.order_all', return_value=[{}])
+    @patch('theia.api.models.RequestedScene.objects.create', return_value=RequestedScene(id=3))
+    @patch('theia.adapters.usgs.tasks.wait_for_scene.delay')
+    def test_process_request(self, mock_wait, mock_rso, mock_order_all, mock_search, mock_build):
+        request = ImageryRequest()
+        Adapter.process_request(request)
 
-            mockBuild.return_value = {}
-            mockSearch.return_value = ['some scene id']
-            mockOrderAll.return_value = [{}]
-            mockRSO.return_value = dummyRequest
-
-            request = ImageryRequest()
-            Adapter.process_request(request)
-
-            mockBuild.assert_called_once_with(request)
-            mockSearch.assert_called_once_with({})
-            mockOrderAll.assert_called_once_with('some scene id', 'sr')
-            mockRSO.assert_called_once()
-            mockWait.assert_called_once_with(3)
+        mock_build.assert_called_once_with(request)
+        mock_search.assert_called_once_with({})
+        mock_order_all.assert_called_once_with('some scene id', 'sr')
+        mock_rso.assert_called_once()
+        mock_wait.assert_called_once_with(3)
 
     @patch('os.path.isfile', return_value=False)
     @patch('platform.uname_result.node', new_callable=PropertyMock, return_value='testhostname')
@@ -69,3 +62,15 @@ class TestUsgsAdapter:
         remap = Adapter.remap_pixel(np.array([-9999, 0, 5000, 10000, 20000]))
         assert(remap.tolist()==[0, 0, 125, 250, 255])
         assert(remap.dtype==np.uint8)
+
+    @patch('theia.adapters.usgs.ImagerySearch.build_search', return_value={})
+    @patch('theia.adapters.usgs.ErosWrapper.search', return_value=[1, 2, 3, 4, 5])
+    @patch('theia.adapters.usgs.EspaWrapper.order_all', return_value=[{}])
+    @patch('theia.api.models.RequestedScene.objects.create', return_value=RequestedScene(id=3))
+    @patch('theia.adapters.usgs.tasks.wait_for_scene.delay')
+    def test_limit_scenes(self, mock_wait, mock_rso, mock_order_all, mock_search, mock_build):
+        request = ImageryRequest(max_results=3)
+        Adapter.process_request(request)
+
+        assert(mock_order_all.call_count==3)
+

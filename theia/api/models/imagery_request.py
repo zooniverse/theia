@@ -15,6 +15,8 @@ class ImageryRequest(models.Model):
     begin_date = models.DateTimeField(null=True)
     end_date = models.DateTimeField(null=True)
 
+    max_results = models.IntegerField(null=True)
+
     wgs_row = models.IntegerField(null=True)
     wgs_path = models.IntegerField(null=True)
 
