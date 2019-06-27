@@ -112,3 +112,7 @@ class Adapter:
                np.where(x < 0, 0,                                       # noqa: E126, E128
                np.where(x > 10000, 255,                                 # noqa: E126, E128
                         np.floor_divide(x, 40)))).astype(np.uint8)      # noqa: E126, E128
+
+    @classmethod
+    def get_metadata(cls, field_name):
+        raise NotImplementedError  # pragma: nocover

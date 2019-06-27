@@ -26,3 +26,7 @@ class Adapter:
     @classmethod
     def construct_filename(cls, bundle, suffix):
         pass  # pragma: nocover
+
+    @classmethod
+    def get_metadata(cls, field_name):
+        pass  # pragma: nocover
