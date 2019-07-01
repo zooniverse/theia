@@ -9,20 +9,14 @@ from theia.api.models import ImageryRequest, JobBundle, RequestedScene
 import tarfile
 
 class TestUsgsAdapter:
-    def test_enum_datasets(self):
-        assert(not Adapter.enum_datasets())
-
-    def test_acquire_image(self):
-        assert(not Adapter.acquire_image({}))
-
     def test_resolve_relative_image(self):
         request = ImageryRequest(adapter_name='usgs', dataset_name='LANDSAT_8_C1')
         bundle = JobBundle(scene_entity_id='LC08', imagery_request=request, local_path='tmp/')
-        assert(Adapter.resolve_relative_image(bundle, 'red') == 'LC08_sr_band4.tif')
+        assert(Adapter().resolve_relative_image(bundle, 'red') == 'LC08_sr_band4.tif')
 
     def test_construct_filename(self):
         bundle = JobBundle(scene_entity_id='LC08', local_path='tmp/')
-        assert(Adapter.construct_filename(bundle, 'aerosol')=='LC08_sr_aerosol.tif')
+        assert(Adapter().construct_filename(bundle, 'aerosol')=='LC08_sr_aerosol.tif')
 
     @patch('theia.adapters.usgs.ImagerySearch.build_search', return_value={})
     @patch('theia.adapters.usgs.ErosWrapper.search', return_value=['some scene id'])
@@ -31,7 +25,7 @@ class TestUsgsAdapter:
     @patch('theia.adapters.usgs.tasks.wait_for_scene.delay')
     def test_process_request(self, mock_wait, mock_rso, mock_order_all, mock_search, mock_build):
         request = ImageryRequest()
-        Adapter.process_request(request)
+        Adapter().process_request(request)
 
         mock_build.assert_called_once_with(request)
         mock_search.assert_called_once_with({})
@@ -48,7 +42,7 @@ class TestUsgsAdapter:
         scene = RequestedScene(scene_url='https://example.org')
         bundle = JobBundle(scene_entity_id='test_id', requested_scene=scene)
 
-        Adapter.retrieve(bundle)
+        Adapter().retrieve(bundle)
 
         mockUnameNode.assert_called_once()
         assert(bundle.hostname=='testhostname')
@@ -58,8 +52,8 @@ class TestUsgsAdapter:
         mockExtract.assert_called_once_with('tmp/test_id.tar.gz', bundle.local_path)
 
     def test_remap_pixel(self):
-        assert(Adapter.remap_pixel(0)==0)
-        remap = Adapter.remap_pixel(np.array([-9999, 0, 5000, 10000, 20000]))
+        assert(Adapter().remap_pixel(0)==0)
+        remap = Adapter().remap_pixel(np.array([-9999, 0, 5000, 10000, 20000]))
         assert(remap.tolist()==[0, 0, 125, 250, 255])
         assert(remap.dtype==np.uint8)
 
@@ -70,7 +64,12 @@ class TestUsgsAdapter:
     @patch('theia.adapters.usgs.tasks.wait_for_scene.delay')
     def test_limit_scenes(self, mock_wait, mock_rso, mock_order_all, mock_search, mock_build):
         request = ImageryRequest(max_results=3)
-        Adapter.process_request(request)
+        Adapter().process_request(request)
 
         assert(mock_order_all.call_count==3)
 
+    @patch('theia.adapters.usgs.XmlHelper.resolve')
+    def test_get_metadata(self, mock_resolve):
+        bundle = JobBundle(scene_entity_id='test_id')
+        Adapter().get_metadata(bundle, 'some_field')
+        mock_resolve.assert_called_once_with('some_field')

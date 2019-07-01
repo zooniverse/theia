@@ -13,7 +13,7 @@ from theia.utils import FileUtils
 @shared_task(name='theia.tasks.locate_scenes')
 def locate_scenes(imagery_request_id):
     request = models.ImageryRequest.objects.get(pk=imagery_request_id)
-    adapter = adapters[request.adapter_name]
+    adapter = adapters[request.adapter_name]()
     adapter.process_request(request)
 
 
@@ -23,7 +23,7 @@ def process_bundle(job_bundle_id):
     request = bundle.imagery_request
     pipeline = bundle.pipeline
 
-    adapter = adapters[request.adapter_name]
+    adapter = adapters[request.adapter_name]()
     adapter.retrieve(bundle)
 
     for stage in pipeline.get_stages():

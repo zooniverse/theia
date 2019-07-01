@@ -57,10 +57,10 @@ class ComputeCorners(AbstractOperation):
 
     def get_scene_coords(self):
         return (
-            [self.adapter.get_metadata('utm_left'),
-                self.adapter.get_metadata('utm_top')],
-            [self.adapter.get_metadata('utm_right'),
-                self.adapter.get_metadata('utm_bottom')],
+            [self.adapter.get_metadata(self.bundle, 'utm_left'),
+                self.adapter.get_metadata(self.bundle, 'utm_top')],
+            [self.adapter.get_metadata(self.bundle, 'utm_right'),
+                self.adapter.get_metadata(self.bundle, 'utm_bottom')],
         )
 
     @property

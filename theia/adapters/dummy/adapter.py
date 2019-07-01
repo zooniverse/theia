@@ -1,32 +1,24 @@
 class Adapter:
-    @classmethod
-    def enum_datasets(cls):
+    def enum_datasets(self):
         pass  # pragma: nocover
 
-    @classmethod
-    def process_request(cls, imagery_request):
+    def process_request(self, imagery_request):
         pass  # pragma: nocover
 
-    @classmethod
-    def resolve_relative_image(cls, bundle, semantic_image_name):
+    def resolve_relative_image(self, bundle, semantic_image_name):
         pass  # pragma: nocover
 
-    @classmethod
-    def retrieve(cls, job_bundle):
+    def retrieve(self, job_bundle):
         pass  # pragma: nocover
 
-    @classmethod
-    def acquire_image(cls, imagery_request):
+    def acquire_image(self, imagery_request):
         pass  # pragma: nocover
 
-    @classmethod
-    def remap_pixel(cls, pixel_value):
+    def remap_pixel(self, pixel_value):
         pass  # pragma: nocover
 
-    @classmethod
-    def construct_filename(cls, bundle, suffix):
+    def construct_filename(self, bundle, suffix):
         pass  # pragma: nocover
 
-    @classmethod
-    def get_metadata(cls, field_name):
+    def get_metadata(self, bundle, field_name):
         pass  # pragma: nocover
