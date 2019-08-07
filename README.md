@@ -74,11 +74,15 @@ Add the user `theia` with password `theia`:
 
 `createuser theia -d -P`
 
-To drop or create the local DB that theia will be using:
+Make sure that you have an entry in your `/etc/hosts` file that looks like this:
 
-`pipenv run create_local_db`
+`127.0.0.1 redis`
 
-`pipenv run drop_local_db`
+so that we can find the redis server when the app is running locally
+
+Install the current version of redis:
+
+`brew install redis`
 
 Ensure that you have a modern python:
 
@@ -97,6 +101,12 @@ Then use `pipenv` to install dependencies:
 Install GIS related dependencies:
 
 `brew install postgis gdal`
+
+To drop or create the local DB that theia will be using:
+
+`pipenv run create_local_db`
+
+`pipenv run drop_local_db`
 
 Run Django app locally (applying migrations if necessary):
 
