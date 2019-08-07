@@ -114,3 +114,7 @@ tmp/
 
 # restframework support files
 theia/static/
+
+# libtiff fix
+src
+
