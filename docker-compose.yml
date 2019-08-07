@@ -17,6 +17,10 @@ services:
       context: .
     volumes:
       - ./:/usr/src/app
+    environment:
+      - DJANGO_ENV
+      - USGS_USERNAME
+      - USGS_PASSWORD
     ports:
       - "8080:8080"
     links:
@@ -30,6 +34,7 @@ services:
     volumes:
       - ./:/usr/src/app
     environment:
+      - DJANGO_ENV
       - USGS_USERNAME
       - USGS_PASSWORD
     links:
