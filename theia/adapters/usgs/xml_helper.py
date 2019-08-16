@@ -18,10 +18,12 @@ class XmlHelper:
         'utm_zone': 'espa:global_metadata/espa:projection_information/espa:utm_proj_params/espa:zone_code/text()'
     }
 
+    filename =''
+    tree = None
+    nsmap = None
+
     def __init__(self, file_name):
         self.file_name = file_name
-        self.tree = None
-        self.nsmap = None
 
     def resolve(self, field_name):
         field_name = re.sub('\W+', '', field_name)
@@ -30,7 +32,11 @@ class XmlHelper:
     def retrieve(self, field_name):
         path = self.resolve(field_name)
         tree = self.get_tree()
-        return tree.xpath(path, namespaces=self.nsmap)
+        result = tree.xpath(path, namespaces=self.nsmap)
+        if isinstance(result, list):
+            return result[0]
+        else:
+            return result  # pragma: nocover
 
     def get_tree(self):
         if not self.tree:
