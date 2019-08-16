@@ -65,19 +65,19 @@ class ComputeCorners(AbstractOperation):
 
     @property
     def left_edge(self):
-        return self._topleft[0]
+        return float(self._topleft[0])
 
     @property
     def right_edge(self):
-        return self._bottomright[0]
+        return float(self._bottomright[0])
 
     @property
     def top_edge(self):
-        return self._topleft[1]
+        return float(self._topleft[1])
 
     @property
     def bottom_edge(self):
-        return self._bottomright[1]
+        return float(self._bottomright[1])
 
     @property
     def x_scale(self):

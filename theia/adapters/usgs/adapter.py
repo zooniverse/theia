@@ -106,6 +106,8 @@ class Adapter:
 
     def get_metadata(self, bundle, field_name):
         if not self.xml_helper:
-            self.xml_helper = XmlHelper('%s.xml' % (bundle.scene_entity_id,))
+            relative_filename = '%s.xml' % (bundle.scene_entity_id,)
+            absolute_filename = FileUtils.absolutize(bundle=bundle, filename=relative_filename)
+            self.xml_helper = XmlHelper(absolute_filename)
 
-        return self.xml_helper.resolve(field_name)
+        return self.xml_helper.retrieve(field_name)
