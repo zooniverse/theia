@@ -25,8 +25,11 @@ class XmlHelper:
 
     def resolve(self, field_name):
         field_name = re.sub('\W+', '', field_name)
+        return XmlHelper.METADATA_PATHS.get(field_name, None)
+
+    def retrieve(self, field_name):
+        path = self.resolve(field_name)
         tree = self.get_tree()
-        path = XmlHelper.METADATA_PATHS.get(field_name, None)
         return tree.xpath(path, namespaces=self.nsmap)
 
     def get_tree(self):
