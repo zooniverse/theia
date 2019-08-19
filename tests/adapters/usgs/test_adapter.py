@@ -68,8 +68,10 @@ class TestUsgsAdapter:
 
         assert(mock_order_all.call_count==3)
 
+    @patch('theia.adapters.usgs.XmlHelper.get_tree', autospec=True)
     @patch('theia.adapters.usgs.XmlHelper.resolve')
-    def test_get_metadata(self, mock_resolve):
-        bundle = JobBundle(scene_entity_id='test_id')
+    def test_get_metadata(self, mock_resolve, mock_get_tree):
+        patch.object(mock_get_tree.return_value, 'xpath', return_value='some value')
+        bundle = JobBundle(scene_entity_id='full')
         Adapter().get_metadata(bundle, 'some_field')
         mock_resolve.assert_called_once_with('some_field')

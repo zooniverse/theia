@@ -35,6 +35,7 @@ class XmlHelper:
 
     def retrieve(self, field_name):
         path = self.resolve(field_name)
+
         tree = self.get_tree()
         result = tree.xpath(path, namespaces=self.nsmap)
         if isinstance(result, list):
