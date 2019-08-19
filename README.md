@@ -102,6 +102,10 @@ Install GIS related dependencies:
 
 `brew install postgis gdal`
 
+Install other related dependencies:
+
+`brew install libtiff`
+
 To drop or create the local DB that theia will be using:
 
 `pipenv run create_local_db`
