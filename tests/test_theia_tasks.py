@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import patch, Mock, PropertyMock, call
+from unittest.mock import patch, Mock, PropertyMock, call, ANY
 
 import theia.tasks as tasks
 from theia.api.models import ImageryRequest, JobBundle, Pipeline, PipelineStage, Project
@@ -36,7 +36,7 @@ def test_process_bundle(mock_resolve, mock_apply, mock_save, mock_get, mock_retr
         assert(mock_apply.call_count==2)
         mock_apply.assert_called_with(['blue_resolved'])
 
-        mock_resolve.assert_called_with(Adapter, stage_2, bundle, 'blue')
+        mock_resolve.assert_called_with(ANY, stage_2, bundle, 'blue')
         mock_retrieve.assert_called_once()
 
 @patch('glob.glob', return_value=['/tmp/literal name'])

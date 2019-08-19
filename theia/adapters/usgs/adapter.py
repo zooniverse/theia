@@ -1,15 +1,17 @@
 import os.path
 import platform
+import re
 import urllib.request
 import numpy as np
 
 from theia.api import models
 from theia.utils import FileUtils
 
-from .imagery_search import ImagerySearch
 from .eros_wrapper import ErosWrapper
 from .espa_wrapper import EspaWrapper
+from .imagery_search import ImagerySearch
 from .tasks import wait_for_scene
+from .xml_helper import XmlHelper
 
 
 class Adapter:
@@ -44,12 +46,10 @@ class Adapter:
         },
     }
 
-    @classmethod
-    def enum_datasets(cls):
-        pass
+    def __init__(self):
+        self.xml_helper = None
 
-    @classmethod
-    def process_request(cls, imagery_request):
+    def process_request(self, imagery_request):
         search = ImagerySearch.build_search(imagery_request)
         scenes = ErosWrapper.search(search)
         if imagery_request.max_results:
@@ -61,24 +61,21 @@ class Adapter:
                 req = models.RequestedScene.objects.create(**{**item, **{'imagery_request': imagery_request}})
                 wait_for_scene.delay(req.id)
 
-    @classmethod
-    def construct_filename(cls, bundle, suffix):
+    def construct_filename(self, bundle, suffix):
         product = "sr"
-        return '%s_%s_%s.%s' % (bundle.scene_entity_id, product, suffix, cls.default_extension())
+        return '%s_%s_%s.%s' % (bundle.scene_entity_id, product, suffix, self.default_extension())
 
-    @classmethod
-    def resolve_relative_image(cls, bundle, semantic_image_name):
+    def resolve_relative_image(self, bundle, semantic_image_name):
         request = bundle.imagery_request
         dataset_name = request.dataset_name
 
-        lookup = cls.DATASET_LOOKUP.get(dataset_name, {})
+        lookup = self.DATASET_LOOKUP.get(dataset_name, {})
         suffix = lookup.get(semantic_image_name, semantic_image_name)
         product = 'sr'
 
-        return '%s_%s_%s.%s' % (bundle.scene_entity_id, product, suffix, cls.default_extension())
+        return '%s_%s_%s.%s' % (bundle.scene_entity_id, product, suffix, self.default_extension())
 
-    @classmethod
-    def retrieve(cls, job_bundle):
+    def retrieve(self, job_bundle):
         if not job_bundle.local_path or not os.path.isdir(job_bundle.local_path):
             # configure bundle with information about who is processing it where
             job_bundle.local_path = 'tmp/%s' % (job_bundle.scene_entity_id,)
@@ -92,16 +89,10 @@ class Adapter:
 
             FileUtils.untar(zip_path, job_bundle.local_path)
 
-    @classmethod
-    def acquire_image(cls, imagery_request):
-        pass
-
-    @classmethod
-    def default_extension(cls):
+    def default_extension(self):
         return 'tif'
 
-    @classmethod
-    def remap_pixel(cls, x):
+    def remap_pixel(self, x):
         # https://www.usgs.gov/media/files/landsat-8-surface-reflectance-code-lasrc-product-guide
         # remap all valid pixels to 2-255
         # remap out-of-range low pixels to 0
@@ -112,3 +103,11 @@ class Adapter:
                np.where(x < 0, 0,                                       # noqa: E126, E128
                np.where(x > 10000, 255,                                 # noqa: E126, E128
                         np.floor_divide(x, 40)))).astype(np.uint8)      # noqa: E126, E128
+
+    def get_metadata(self, bundle, field_name):
+        if not self.xml_helper:
+            relative_filename = '%s.xml' % (bundle.scene_entity_id,)
+            absolute_filename = FileUtils.absolutize(bundle=bundle, filename=relative_filename)
+            self.xml_helper = XmlHelper(absolute_filename)
+
+        return self.xml_helper.retrieve(field_name)

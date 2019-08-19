@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<espa_metadata version="2.0"
+xmlns="http://espa.cr.usgs.gov/v2"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://espa.cr.usgs.gov/v2 http://espa.cr.usgs.gov/schema/espa_internal_metadata_v2_0.xsd">
+  <global_metadata>
+    <acquisition_date>2013-06-08</acquisition_date>
+  </global_metadata>
+  <bands></bands>
+</espa_metadata>

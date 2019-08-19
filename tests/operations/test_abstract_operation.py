@@ -1,4 +1,5 @@
 import pytest
+from unittest import TestCase
 from unittest.mock import patch
 from theia.operations import AbstractOperation
 from theia.api import models
@@ -10,7 +11,7 @@ class ConcreteOperation(AbstractOperation):
     def apply(self, filenames):
         return 'not implemented'
 
-class TestAbstractOperation:
+class TestAbstractOperation(TestCase):
     def test_init(self):
         bundle = models.JobBundle()
         operation = ConcreteOperation(bundle)
@@ -25,7 +26,7 @@ class TestAbstractOperation:
         assert(operation.imagery_request==request)
         assert(operation.adapter_name=='dummy')
         assert(operation.dataset_name=='bar')
-        assert(operation.adapter==Adapter)
+        self.assertIsInstance(operation.adapter, Adapter)
 
     def test_pipeline_stage(self):
         stage = models.PipelineStage(

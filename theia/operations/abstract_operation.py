@@ -36,7 +36,7 @@ class AbstractOperation(ABC):
 
     @property
     def adapter(self):
-        return adapters[self.imagery_request.adapter_name]
+        return adapters[self.imagery_request.adapter_name]()
 
     @property
     def adapter_name(self):
