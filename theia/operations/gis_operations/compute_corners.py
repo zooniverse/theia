@@ -41,6 +41,7 @@ class ComputeCorners(AbstractOperation):
             'utm_right': self.transform_x(x + self.tile_size),
             'utm_top': self.transform_y(y),
             'utm_bottom': self.transform_y(y + self.tile_size),
+            'utm_zone': self.utm_zone,
         })
 
     def transform_x(self, x):

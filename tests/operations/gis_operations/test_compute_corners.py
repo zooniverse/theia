@@ -97,11 +97,10 @@ class TestComputeCorners(TestCase):
         mock_open.assert_called_once_with('somefile')
         p.assert_called_once()
 
-    @patch('theia.operations.gis_operations.ComputeCorners.transform_y')
-    @patch('theia.operations.gis_operations.ComputeCorners.transform_x')
-    def test_write_one(self, mock_tx, mock_ty):
-        mock_tx.side_effect = [10, 12]
-        mock_ty.side_effect = [11, 13]
+    @patch('theia.operations.gis_operations.ComputeCorners.utm_zone', new_callable=PropertyMock, return_value='15')
+    @patch('theia.operations.gis_operations.ComputeCorners.transform_y', side_effect=[11, 13])
+    @patch('theia.operations.gis_operations.ComputeCorners.transform_x', side_effect=[10, 12])
+    def test_write_one(self, mock_tx, mock_ty, mock_utm_zone):
         mock = Mock()
 
         self.operation.write_one(mock, 0, 1, 2, 3)
@@ -112,7 +111,8 @@ class TestComputeCorners(TestCase):
             'utm_left': 10,
             'utm_right': 12,
             'utm_top': 11,
-            'utm_bottom': 13
+            'utm_bottom': 13,
+            'utm_zone': '15',
         })
 
     @patch('theia.operations.gis_operations.ComputeCorners.stagger', new_callable=PropertyMock, return_value=9)
