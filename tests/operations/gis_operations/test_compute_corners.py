@@ -52,6 +52,10 @@ class TestComputeCorners(TestCase):
     def test_tile_size(self):
         assert(self.operation.tile_size==100)
 
+    @patch('theia.adapters.dummy.Adapter.get_metadata', return_value='16')
+    def test_tile_utm_zone(self, *args):
+        assert(self.operation.utm_zone=='16')
+
     @patch('theia.operations.gis_operations.ComputeCorners.x_scale', new_callable=PropertyMock, return_value=0.1)
     @patch('theia.operations.gis_operations.ComputeCorners.left_edge', new_callable=PropertyMock, return_value=10)
     @patch('theia.operations.gis_operations.ComputeCorners.scene_width', new_callable=PropertyMock, return_value=1000)

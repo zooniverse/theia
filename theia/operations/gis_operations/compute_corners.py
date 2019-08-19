@@ -110,3 +110,7 @@ class ComputeCorners(AbstractOperation):
     @property
     def tile_overlap(self):
         return self.config['tile_overlap']
+
+    @property
+    def utm_zone(self):
+        return self.adapter.get_metadata(self.bundle, 'utm_zone')
