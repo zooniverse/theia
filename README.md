@@ -128,6 +128,12 @@ Regardless of whether you're running it locally or inside the image, the Django 
 
 Locally:
 
+Make sure that you have done all of the above, and if you have never run the server you may also need to run the migrations:
+
+`pipenv run migrate`
+
+and then you can run the tests with
+
 `pipenv run tests`
 
 In the container:
