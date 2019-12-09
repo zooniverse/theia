@@ -12,24 +12,24 @@ class ImageryRequest(models.Model):
     dataset_name = models.CharField(max_length=64, null=False)
 
     max_cloud_cover = models.IntegerField(null=True)
-    begin_date = models.DateTimeField(null=True)
-    end_date = models.DateTimeField(null=True)
+    begin_date = models.DateTimeField(null=True, blank=True)
+    end_date = models.DateTimeField(null=True, blank=True)
 
     max_results = models.IntegerField(null=True)
 
     wgs_row = models.IntegerField(null=True)
     wgs_path = models.IntegerField(null=True)
 
-    kml_polygon = models.TextField(null=True)
-    bounding_left = models.FloatField(null=True)
-    bounding_right = models.FloatField(null=True)
-    bounding_top = models.FloatField(null=True)
-    bounding_bottom = models.FloatField(null=True)
+    kml_polygon = models.TextField(null=True, blank=True)
+    bounding_left = models.FloatField(null=True, blank=True)
+    bounding_right = models.FloatField(null=True, blank=True)
+    bounding_top = models.FloatField(null=True, blank=True)
+    bounding_bottom = models.FloatField(null=True, blank=True)
 
-    user_id = models.IntegerField(null=True)
-    status = models.IntegerField(db_index=True, default=0)
+    user_id = models.IntegerField(null=True, blank=True)
+    status = models.IntegerField(db_index=True, default=0, blank=True)
 
-    created_at = models.DateTimeField(null=False, auto_now_add=True, db_index=True)
+    created_at = models.DateTimeField(null=False, auto_now_add=True, db_index=True, blank=True)
 
     project = models.ForeignKey(Project, related_name='imagery_requests', on_delete=models.CASCADE)
     pipeline = models.ForeignKey(Pipeline, related_name='imagery_requests', on_delete=models.CASCADE)
