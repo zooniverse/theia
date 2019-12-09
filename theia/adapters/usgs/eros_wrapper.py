@@ -1,5 +1,5 @@
 from .utils import Utils
-from urllib.parse import urljoin
+from urllib.parse import urljoin, quote
 from os import environ
 import json
 import requests
@@ -20,7 +20,7 @@ class ErosWrapper():
         response = cls.eros_post('login', {
             'username': Utils.get_username(),
             'password': Utils.get_password()
-        })
+        }, authenticating=True)
 
         if not response.get('errorCode'):
             cls.auth_token = response.get('data')
@@ -52,7 +52,7 @@ class ErosWrapper():
     @classmethod
     def api_url(cls, path):
         # return urljoin('https://demo1580318.mockable.io/', path)
-        return urljoin('https://earthexplorer.usgs.gov/inventory/json/v/stable/', path)
+        return urljoin('https://earthexplorer.usgs.gov/inventory/json/v/1.3.0/', path)
 
     @classmethod
     def parse_result_set(cls, result_set):
@@ -62,40 +62,52 @@ class ErosWrapper():
         return [scene.get('displayId', None) for scene in result_set if 'displayId' in scene]
 
     @classmethod
-    def eros_get(cls, url, request_data, **kwargs):
+    def eros_get(cls, url, request_data, authenticating=False, **kwargs):
         if url != 'login' and (not cls.token()):
             cls.connect()
 
-        new_args = cls.eros_prepare(request_data, **kwargs)
+        new_args = cls.eros_prepare(request_data, authenticating=authenticating, **kwargs)
         return requests.get(cls.api_url(url), **new_args).json()
 
     @classmethod
-    def eros_post(cls, url, request_data, **kwargs):
+    def eros_post(cls, url, request_data, authenticating=False, **kwargs):
         if url != 'login' and (not cls.token()):
             cls.connect()
 
-        new_args = cls.eros_prepare(request_data, **kwargs)
+        new_args = cls.eros_prepare(request_data, authenticating=authenticating, **kwargs)
         return requests.post(cls.api_url(url), **new_args).json()
 
     @classmethod
-    def eros_prepare(cls, request_data, **kwargs):
-        headers = {'Content-Type': 'application/json'}
+    def eros_prepare(cls, request_data, authenticating=False, **kwargs, ):
+        headers = {}
         if cls.token():
             headers['X-Auth-Token'] = cls.token()
         if 'headers' in kwargs:
             headers = {**headers, **(kwargs['headers'])}
 
         params = {}
-
-        if request_data:
-            params = {'jsonRequest': json.dumps(request_data)}
-
         if 'params' in kwargs:
             params = {**params, **(kwargs['params'])}
 
-        new_args = {
-            'headers': headers,
-            'params': params,
-        }
+        if authenticating:
+            headers['Content-Type'] = 'application/x-www-form-urlencoded'
+
+            if request_data:
+                data = 'jsonRequest=' + quote(json.dumps(request_data))
+
+            new_args = {
+                'headers': headers,
+                'data': data,
+            }
+        else:
+            headers['Content-Type'] = 'application/json'
+
+            if request_data:
+                params = {'jsonRequest': json.dumps(request_data)}
+
+            new_args = {
+                'headers': headers,
+                'params': params,
+            }
 
         return {**kwargs, **new_args}

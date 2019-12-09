@@ -23,7 +23,7 @@ class TestErosWrapper:
     @patch('theia.adapters.usgs.ErosWrapper.eros_post', return_value={'data': 'aaaaaa'})
     def test_successful_connect(self, mockPost, mockToken, mockPassword, mockUsername):
         result = ErosWrapper.connect()
-        mockPost.assert_called_once_with('login', {'username': 'u', 'password': 'p'})
+        mockPost.assert_called_once_with('login', {'username': 'u', 'password': 'p'}, authenticating=True)
 
     @patch('theia.adapters.usgs.ErosWrapper.token', return_value=None)
     @patch('theia.adapters.usgs.ErosWrapper.eros_post', return_value={'errorCode': 1})
@@ -84,7 +84,7 @@ class TestErosWrapper:
             result = ErosWrapper.eros_prepare({'key': 'value'}, params={'foo': 'bar'})
             assert result == {
                 'headers': {'Content-Type': 'application/json', 'X-Auth-Token': 'aaaaaa'},
-                'params': {'foo': 'bar', 'jsonRequest': '{"key": "value"}'}
+                'params': {'jsonRequest': '{"key": "value"}'}
             }
 
             result = ErosWrapper.eros_prepare({'key': 'value'}, headers={'X-Foo': 'bar'})
@@ -103,7 +103,7 @@ class TestErosWrapper:
             result = ErosWrapper.eros_post('endpoint', {'foo': 'bar'}, thing='thing')
 
             mockConnect.assert_called_once()
-            mockPrepare.assert_called_once_with({'foo': 'bar'}, thing='thing')
+            mockPrepare.assert_called_once_with({'foo': 'bar'}, authenticating=False, thing='thing')
             mockUrl.assert_called_once_with('endpoint')
             mockPost.assert_called_once_with('api_url', prepare='result')
             assert(result=='some json string')
@@ -118,13 +118,13 @@ class TestErosWrapper:
             result = ErosWrapper.eros_get('endpoint', {'foo': 'bar'}, thing='thing')
 
             mockConnect.assert_called_once()
-            mockPrepare.assert_called_once_with({'foo': 'bar'}, thing='thing')
+            mockPrepare.assert_called_once_with({'foo': 'bar'}, authenticating=False, thing='thing')
             mockUrl.assert_called_once_with('endpoint')
             mockPost.assert_called_once_with('api_url', prepare='result')
             assert(result=='some json string')
 
     def test_api_url(self):
-        assert(ErosWrapper.api_url('foo')=='https://earthexplorer.usgs.gov/inventory/json/v/stable/foo')
+        assert(ErosWrapper.api_url('foo')=='https://earthexplorer.usgs.gov/inventory/json/v/1.3.0/foo')
 
     @patch('theia.adapters.usgs.ErosWrapper.eros_post', return_value={'data': 'foo'})
     def test_search_once(self, mockPost):
