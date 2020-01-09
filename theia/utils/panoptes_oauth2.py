@@ -22,13 +22,19 @@ class PanoptesOAuth2(BaseOAuth2):
     ]
 
     def get_user_details(self, response):
-        with Panoptes() as p:
-            p.bearer_token = response['access_token']
-            p.logged_in = True
-            p.refresh_token = response['refresh_token']
-            p.bearer_expires = (datetime.now() + timedelta(seconds=response['expires_in']))
+        authenticated_panoptes = Panoptes(
+            endpoint=PanoptesUtils.base_url(),
+            client_id=PanoptesUtils.client_id(),
+            client_secret=PanoptesUtils.client_secret()
+        )
 
-            user = p.get('/me')[0]['users'][0]
+        authenticated_panoptes.bearer_token = response['access_token']
+        authenticated_panoptes.logged_in = True
+        authenticated_panoptes.refresh_token = response['refresh_token']
+        authenticated_panoptes.bearer_expires = (datetime.now() + timedelta(seconds=response['expires_in']))
+
+        with authenticated_panoptes:
+            user = authenticated_panoptes.get('/me')[0]['users'][0]
 
             ids = ['admin user']
             if not user['admin']:
