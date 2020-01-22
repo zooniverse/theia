@@ -5,10 +5,10 @@ from .pipeline import Pipeline
 
 class PipelineStage(models.Model):
     sort_order = models.IntegerField(null=False)
-    output_format = models.CharField(max_length=8, null=True)
+    output_format = models.CharField(max_length=8, null=True, blank=True)
     operation = models.CharField(max_length=64, null=False)
     select_images = ArrayField(models.CharField(max_length=64, null=False), null=True)
-    config = JSONField()
+    config = JSONField(blank=True)
     pipeline = models.ForeignKey(Pipeline, related_name='pipeline_stages', on_delete=models.CASCADE)
 
     class Meta:
