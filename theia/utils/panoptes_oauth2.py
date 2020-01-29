@@ -31,7 +31,9 @@ class PanoptesOAuth2(BaseOAuth2):
         authenticated_panoptes.bearer_token = response['access_token']
         authenticated_panoptes.logged_in = True
         authenticated_panoptes.refresh_token = response['refresh_token']
-        authenticated_panoptes.bearer_expires = (datetime.now() + timedelta(seconds=response['expires_in']))
+
+        bearer_expiry = datetime.now() + timedelta(seconds=response['expires_in'])
+        authenticated_panoptes.bearer_expires = (bearer_expiry)
 
         with authenticated_panoptes:
             user = authenticated_panoptes.get('/me')[0]['users'][0]
@@ -44,7 +46,7 @@ class PanoptesOAuth2(BaseOAuth2):
                 'username': user['login'],
                 'email': user['email'],
                 'is_superuser': user['admin'],
-                'projects': ids,
+                'projects': ids
             }
 
     def get_user_id(self, details, response):
