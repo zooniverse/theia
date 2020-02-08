@@ -120,6 +120,17 @@ Run the Celery worker locally (does not apply migrations):
 
 `pipenv run worker`
 
+- If you find yourself running into the following error while attempting to run the above:
+
+```
+File "/Users/chelseatroy/.pyenv/versions/3.7.4/lib/python3.7/ssl.py", line 98, in <module>
+    import _ssl             # if we can't import it, let the error propagate
+ImportError: dlopen(/Users/chelseatroy/.local/share/virtualenvs/theia-LYdUFkJN/lib/python3.7/lib-dynload/_ssl.cpython-37m-darwin.so, 2): Library not loaded: /usr/local/opt/openssl/lib/libssl.1.0.0.dylib
+  Referenced from: /Users/chelseatroy/.local/share/virtualenvs/theia-LYdUFkJN/lib/python3.7/lib-dynload/_ssl.cpython-37m-darwin.so
+  Reason: image not found
+```  
+You can follow the instructions [here](https://mithun.co/hacks/library-not-loaded-libcrypto-1-0-0-dylib-issue-in-mac/).
+
 ### Accessing the app
 
 Regardless of whether you're running it locally or inside the image, the Django app can be accessed at http://localhost:8080/
