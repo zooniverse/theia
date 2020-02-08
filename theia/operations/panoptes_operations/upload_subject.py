@@ -12,19 +12,24 @@ class UploadSubject(AbstractOperation):
         else:
             scope = self.pipeline
 
-        self._connect()
-
-        target_set = self._get_subject_set(scope, self.project.id, scope.name_subject_set())
-        for filename in filenames:
-            new_subject = self._create_subject(self.project.id, filename)
-            target_set.add(new_subject)
-
-    def _connect(self):
-        Panoptes.connect(
-            endpoint=PanoptesUtils.base_url(),
-            client_id=PanoptesUtils.client_id(),
-            client_secret=PanoptesUtils.client_secret()
+        self.authenticated_panoptes = Panoptes(
+             endpoint=PanoptesUtils.base_url(),
+             client_id=PanoptesUtils.client_id(),
+             client_secret=PanoptesUtils.client_secret()
         )
+
+        self.authenticated_panoptes.bearer_token = self.imagery_request.bearer_token
+        self.authenticated_panoptes.logged_in = True
+        self.authenticated_panoptes.refresh_token = self.imagery_request.refresh_token
+        bearer_expiry = datetime.strptime(self.imagery_request.bearer_expiry, "%Y-%m-%d %H:%M:%S.%f")
+        self.authenticated_panoptes.bearer_expires = (bearer_expiry)
+
+        with self.authenticated_panoptes:
+            target_set = self._get_subject_set(scope, self.project.id, scope.name_subject_set())
+
+            for filename in filenames:
+                new_subject = self._create_subject(self.project.id, filename)
+                target_set.add(new_subject)
 
     def _get_subject_set(self, scope, project_id, set_name):
         subject_set = None
