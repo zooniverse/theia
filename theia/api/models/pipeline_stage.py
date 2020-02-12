@@ -13,3 +13,7 @@ class PipelineStage(models.Model):
 
     class Meta:
         ordering = ['pipeline', 'sort_order']
+
+    def __str__(self):
+        return self.pipeline.name + ' Stage ' + str(self.sort_order) + ': ' + self.operation
+
