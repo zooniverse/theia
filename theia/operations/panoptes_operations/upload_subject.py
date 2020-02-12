@@ -4,6 +4,9 @@ from ..abstract_operation import AbstractOperation
 from panoptes_client import Panoptes, Project, Subject, SubjectSet
 from theia.utils import PanoptesUtils
 
+from PIL import Image
+
+from datetime import datetime
 
 class UploadSubject(AbstractOperation):
     def apply(self, filenames):
@@ -28,6 +31,9 @@ class UploadSubject(AbstractOperation):
             target_set = self._get_subject_set(scope, self.project.id, scope.name_subject_set())
 
             for filename in filenames:
+                img = Image.open(filename)
+                img.save(filename, 'png')
+
                 new_subject = self._create_subject(self.project.id, filename)
                 target_set.add(new_subject)
 
