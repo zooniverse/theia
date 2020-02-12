@@ -53,7 +53,7 @@ class TileImage(AbstractOperation):
         slice = pixels[top:bottom, left:right]
 
         with Image.fromarray(slice) as tile:
-            tile.save(filename)
+            tile.save(filename + '.png', 'png')
 
     @property
     def stagger(self):
