@@ -15,7 +15,7 @@ class TestComposeImages:
         request = ImageryRequest(adapter_name='dummy')
         stage = PipelineStage(
             select_images=['ggggg', 'rrr', 'bbbb'],
-            config={'red': 'rrr', 'green': 'ggggg', 'blue': 'bbbb', 'filename': 'newish name'},
+            config={"red": "rrr", "green": "ggggg", "blue": "bbbb", "filename": "newish name"},
             sort_order=3
         )
         bundle = JobBundle(current_stage=stage, imagery_request=request)
