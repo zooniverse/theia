@@ -19,6 +19,7 @@ RUN apt-get update \
 
 RUN pip install \
   pipenv
+  Pillow
 
 WORKDIR /usr/src/app
 
