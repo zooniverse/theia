@@ -30,8 +30,8 @@ class FileUtils:
             archive.extractall(target)
 
     @classmethod
-    def absolutize(cls, *, bundle=None, work_dir=None, filename, new_extension=None):
-        return os.path.join(os.path.abspath(work_dir or bundle.local_path), filename)
+    def absolutize(cls, *, bundle=None, work_dir=None, input_dir=None, filename, new_extension=None):
+        return os.path.join(os.path.abspath(work_dir or bundle.local_path), input_dir or '', filename)
 
     @classmethod
     def _version(cls, filename, version_number, new_extension=None):
