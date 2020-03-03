@@ -10,7 +10,7 @@ class TestTileImage:
     @patch('os.path.isdir', return_value=False)
     @patch('theia.operations.image_operations.TileImage.tile_one')
     def test_apply_absent(self, mock_one, mock_is, mock_mkdir):
-        stage = models.PipelineStage(config={'output_directory': 'foo'})
+        stage = models.PipelineStage(config={'output_directory': 'foo'}, sort_order=1, operation='noop')
         bundle = models.JobBundle(current_stage=stage)
         operation = TileImage(bundle)
         operation.apply(['a', 'b'])
@@ -22,7 +22,7 @@ class TestTileImage:
     @patch('os.path.isdir', return_value=True)
     @patch('theia.operations.image_operations.TileImage.tile_one')
     def test_apply_present(self, mock_one, mock_is, mock_mkdir):
-        stage = models.PipelineStage(config={'output_directory': 'foo'})
+        stage = models.PipelineStage(config={'output_directory': 'foo'}, sort_order=1)
         bundle = models.JobBundle(current_stage=stage)
         operation = TileImage(bundle)
         operation.apply(['a', 'b'])
@@ -65,12 +65,13 @@ class TestTileImage:
     def test_construct_tile_name(self):
         stage = models.PipelineStage(
             output_format='jpg',
-            config={'output_directory': 'foo'}
+            sort_order=1,
+            config={}
         )
 
         bundle = models.JobBundle(current_stage=stage)
         operation = TileImage(bundle)
-        assert(operation.construct_tile_name('f', 3, 4).endswith('foo/f_tile_004_003.jpg'))
+        assert(operation.construct_tile_name('f', 3, 4).endswith("f_tile_004_003.png"))
 
     @patch('theia.operations.image_operations.TileImage.construct_tile_name', return_value='a tile name')
     @patch('theia.operations.image_operations.TileImage.build_tile')
@@ -117,5 +118,5 @@ class TestTileImage:
         operation.build_tile(pixels, 180, 90, 'f')
 
         np.testing.assert_array_equal(np.zeros((100, 100, 4)), mock_array.call_args[0][0])
-        mock_enter.return_value.save.assert_called_once_with('f')
+        mock_enter.return_value.save.assert_called_once_with('f', 'png')
 
