@@ -17,3 +17,10 @@ class PipelineStage(models.Model):
     def __str__(self):
         return self.pipeline.name + ' Stage ' + str(self.sort_order) + ': ' + self.operation
 
+    @property
+    def output_filename(self):
+        return "%d_%s" % (
+            self.sort_order,
+            self.operation.replace('.', '_')
+        )
+
