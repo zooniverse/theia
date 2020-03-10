@@ -32,8 +32,8 @@ def process_bundle(job_bundle_id):
 
         if index == 0:
             images = stage.select_images or []  # This means the channels. Not sure whether it will ever be something besides channels
-            fimenames_array = [_resolve_name(adapter, stage, bundle, input_directory, name) for name in images]
-            filename_list = [item for sublist in fimenames_array for item in sublist]
+            filenames_array = [_resolve_name(adapter, stage, bundle, input_directory, name) for name in images]
+            filename_list = [item for sublist in filenames_array for item in sublist]
         else:
             input_directory = pipeline.get_stages()[index -1].output_filename
             images = images_in_input_directory(bundle, input_directory)

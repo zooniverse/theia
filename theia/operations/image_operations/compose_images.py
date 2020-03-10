@@ -9,8 +9,6 @@ class ComposeImages(AbstractOperation):
     def apply(self, filenames):
         self.establish_output_directory()
 
-        #This is somewhere fully actualizing the file name, but with the OLD
-        #File structure.
         output_filename = self.get_new_version(f"{self.config['filename']}.{self.output_extension}")
 
         try:
