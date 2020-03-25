@@ -4,8 +4,10 @@ from typing import NamedTuple
 
 from theia.utils import PanoptesOAuth2
 
-class FakeProject(NamedTuple):
-    id: str
+class FakeProject():
+    def __init__(self, id, href='default.org'):
+        self.id = id
+        self.href = href
 
 class TestPanoptesOauth2:
     def test_get_user_id(self):

@@ -16,4 +16,7 @@ class TestResizeImage:
 
         mock_open.assert_called_once_with('literal filename')
         mock_open.return_value.thumbnail.assert_called_once_with((10, 20), Image.ANTIALIAS)
-        mock_open.return_value.save.assert_called_once_with('/Users/chelseatroy/workspace/theia/3_/literal filename_resized_to_10_20.tif')
+        mock_open.return_value.save.assert_called_once()
+        first_method_call = mock_open.return_value.save.call_args_list[0]
+        args = first_method_call[0]
+        assert str.endswith(args[0], 'theia/3_/literal filename_resized_to_10_20.tif')
