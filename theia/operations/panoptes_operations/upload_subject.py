@@ -8,6 +8,7 @@ from PIL import Image
 
 from datetime import datetime
 
+
 class UploadSubject(AbstractOperation):
     def apply(self, filenames):
         if self.pipeline.multiple_subject_sets:
@@ -15,19 +16,13 @@ class UploadSubject(AbstractOperation):
         else:
             scope = self.pipeline
 
-        self.authenticated_panoptes = Panoptes(
-             endpoint=PanoptesUtils.base_url(),
-             client_id=PanoptesUtils.client_id(),
-             client_secret=PanoptesUtils.client_secret()
+        authenticated_client = Panoptes(
+            endpoint=PanoptesUtils.base_url(),
+            client_id=PanoptesUtils.client_id(),
+            client_secret=PanoptesUtils.client_secret()
         )
 
-        self.authenticated_panoptes.bearer_token = self.imagery_request.bearer_token
-        self.authenticated_panoptes.logged_in = True
-        self.authenticated_panoptes.refresh_token = self.imagery_request.refresh_token
-        bearer_expiry = datetime.strptime(self.imagery_request.bearer_expiry, "%Y-%m-%d %H:%M:%S.%f")
-        self.authenticated_panoptes.bearer_expires = (bearer_expiry)
-
-        with self.authenticated_panoptes:
+        with authenticated_client:
             target_set = self._get_subject_set(scope, self.project.id, scope.name_subject_set())
 
             for filename in filenames:

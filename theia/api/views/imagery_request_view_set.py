@@ -3,6 +3,11 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
 
+from datetime import datetime
+from panoptes_client import Panoptes, Project
+from panoptes_client.panoptes import PanoptesAPIException
+
+from theia.utils.panoptes_utils import PanoptesUtils
 from theia.api.serializers import ImageryRequestSerializer
 
 
@@ -11,14 +16,37 @@ class ImageryRequestViewSet(viewsets.ModelViewSet):
     serializer_class = ImageryRequestSerializer
 
     def create(self, request, *args, **kwargs):
-        copy = request.data.copy()
-        copy['bearer_token'] = request.session['bearer_token']
-        copy['refresh_token'] = request.session['refresh_token']
-        copy['bearer_expiry'] = request.session['bearer_expiry']
-
-        serializer = self.get_serializer(data=copy)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
 
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        with get_authenticated_panoptes(
+                request.session['bearer_token'],
+                request.session['refresh_token'],
+                request.session['bearer_expiry']):
+            try:
+                Project.find(_id_for(request.data['project']))
+                self.perform_create(serializer)
+
+                headers = self.get_success_headers(serializer.data)
+                return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+            except PanoptesAPIException:
+                return Response(serializer.data, status=status.HTTP_401_UNAUTHORIZED, headers=headers)
+
+
+def get_authenticated_panoptes(bearer_token, refresh_token, bearer_expiry):
+    authenticated_panoptes = Panoptes(
+        endpoint=PanoptesUtils.base_url()
+    )
+
+    authenticated_panoptes.bearer_token = bearer_token
+    authenticated_panoptes.logged_in = True
+    authenticated_panoptes.refresh_token = refresh_token
+    bearer_expiry = datetime.strptime(bearer_expiry, "%Y-%m-%d %H:%M:%S.%f")
+    authenticated_panoptes.bearer_expires = (bearer_expiry)
+
+    return authenticated_panoptes
+
+
+def _id_for(project_url):
+    components = list(filter(lambda x: x != '', str.split(project_url, "/")))
+    return components[len(components) - 1]

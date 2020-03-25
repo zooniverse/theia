@@ -34,10 +34,6 @@ class ImageryRequest(models.Model):
     project = models.ForeignKey(Project, related_name='imagery_requests', on_delete=models.CASCADE)
     pipeline = models.ForeignKey(Pipeline, related_name='imagery_requests', on_delete=models.CASCADE)
 
-    bearer_token = models.CharField(max_length=2048, default="tist")
-    refresh_token = models.CharField(max_length=512, default="TAST")
-    bearer_expiry = models.CharField(max_length=128, default="TESTO")
-
     def __str__(self):
         when = self.created_at or datetime.utcnow()
         return '[ImageryRequest project %d at %s]' % (self.project_id, when.strftime('%F'))
