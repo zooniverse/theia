@@ -6,6 +6,26 @@
             {{ site_name }}{% endblock %}</title>
     <meta name="keywords" content="{{ meta_keywords }}" />
     <meta name="description" content="{{ meta_description }}" />
+    <style>
+        body {
+            background-image: url('https://images.unsplash.com/photo-1531707566548-6577aab321d7?ixlib=rb-1.2.1');
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        h1, h2, h3 {
+            color: white;
+        }
+        p {
+            color: teal;
+        }
+        .theia-button {
+            background-color: teal;
+            padding: 10px;
+            margin: 10px;
+            corner-radius: 5px;
+            color: white;
+        }
+    </style>
 </head>
 <body>
     {% block site_wrapper %}
