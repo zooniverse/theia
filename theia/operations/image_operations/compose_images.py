@@ -7,15 +7,19 @@ from theia.utils import FileUtils
 
 class ComposeImages(AbstractOperation):
     def apply(self, filenames):
-        output_filename = self.get_new_version(self.get_new_filename(self.config['filename']))
+        self.establish_output_directory()
 
-        redname = filenames[self.select_images.index(self.config['red'])]
-        greenname = filenames[self.select_images.index(self.config['green'])]
-        bluename = filenames[self.select_images.index(self.config['blue'])]
+        output_filename = self.get_new_version(f"{self.config['filename']}.{self.output_extension}")
 
-        channel_r = Image.open(redname).convert('L')
-        channel_g = Image.open(greenname).convert('L')
-        channel_b = Image.open(bluename).convert('L')
+        try:
+            channels = []
 
-        merged = Image.merge('RGB', (channel_r, channel_g, channel_b))
-        merged.save(output_filename)
+            for name in filenames:
+                channels.append(Image.open(name).convert('L'))
+
+            merged = Image.merge('RGB', tuple(channels))
+
+            merged.save(self.output_directory + "/" + output_filename)
+
+        except ValueError as e:
+            raise ValueError("e.message " + str(filenames))

@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from os.path import splitext
+import os
 
 from theia.adapters import adapters
 from theia.utils import FileUtils
@@ -21,10 +22,6 @@ class AbstractOperation(ABC):
     @property
     def pipeline_stage(self):
         return self.bundle.current_stage
-
-    @property
-    def output_extension(self):
-        return self.pipeline_stage.output_format
 
     @property
     def pipeline(self):
@@ -58,14 +55,29 @@ class AbstractOperation(ABC):
     def sort_order(self):
         return self.pipeline_stage.sort_order
 
+    @property
+    def output_directory(self):
+        output_directory_name = self.pipeline_stage.output_filename
+        return FileUtils.absolutize(bundle=self.bundle, filename=output_directory_name)
+
+    @property
+    def output_extension(self):
+        if self.pipeline_stage.output_format:
+            return self.pipeline_stage.output_format
+        else:
+            return "tif" #We default to tif because that is the format of the incoming ESPA data
+
     @abstractmethod
     def apply(self, filenames):
         pass  # pragma: nocover
 
-    def get_new_version(self, filename):
-        filename = FileUtils.version_filename(filename, self.sort_order)
-        if self.output_extension:
-            filename = splitext(filename)[0] + '.' + self.output_extension
+    def establish_output_directory(self):
+        if not os.path.isdir(self.output_directory):
+            os.mkdir(self.output_directory)
+
+    def get_new_version(self, file_title):
+        file_title = FileUtils.version_filename(file_title, self.sort_order)
+        filename = splitext(file_title)[0] + '.' + self.output_extension
 
         return filename
 

@@ -8,8 +8,7 @@ from theia.utils import FileUtils
 
 class TileImage(AbstractOperation):
     def apply(self, filenames):
-        if not os.path.isdir(self.output_directory):
-            os.mkdir(self.output_directory)
+        self.establish_output_directory()
         for filename in filenames:
             self.tile_one(filename)
 
@@ -34,7 +33,7 @@ class TileImage(AbstractOperation):
             file,
             y,
             x,
-            self.output_extension
+            'png'
         )
 
     def build_row(self, filename, top, y, pixels, width):
@@ -53,7 +52,7 @@ class TileImage(AbstractOperation):
         slice = pixels[top:bottom, left:right]
 
         with Image.fromarray(slice) as tile:
-            tile.save(filename)
+            tile.save(filename, 'png')
 
     @property
     def stagger(self):
@@ -66,7 +65,3 @@ class TileImage(AbstractOperation):
     @property
     def tile_overlap(self):
         return self.config['tile_overlap']
-
-    @property
-    def output_directory(self):
-        return FileUtils.absolutize(bundle=self.bundle, filename=self.config['output_directory'])

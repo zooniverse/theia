@@ -24,7 +24,7 @@ class JobBundleManager(models.Manager):
 class JobBundle(models.Model):
     imagery_request = models.ForeignKey(ImageryRequest, related_name='job_bundles', on_delete=models.SET_NULL, null=True)
     pipeline = models.ForeignKey(Pipeline, related_name='job_bundles', on_delete=models.CASCADE)
-    current_stage = models.ForeignKey(PipelineStage, related_name='job_bundles', on_delete=models.SET_NULL, null=True)
+    current_stage = models.ForeignKey(PipelineStage, related_name='%(class)s_current_stage', on_delete=models.SET_NULL, null=True)
     requested_scene = models.ForeignKey(RequestedScene, related_name='job_bundles', on_delete=models.SET_NULL, null=True)
 
     scene_entity_id = models.CharField(max_length=64, null=False)

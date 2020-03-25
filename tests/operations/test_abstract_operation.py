@@ -45,13 +45,13 @@ class TestAbstractOperation(TestCase):
         assert(operation.sort_order==7)
 
     def test_get_new_version_simple(self):
-        stage = models.PipelineStage(sort_order=2)
+        stage = models.PipelineStage(sort_order=2, config={})
         bundle = models.JobBundle(current_stage=stage)
         operation = ConcreteOperation(bundle)
-        assert(operation.get_new_version('foo.bar')=='foo_stage_02.bar')
+        assert(operation.get_new_version('foo.bar')=='foo_stage_02.tif')
 
     def test_get_new_version_extension(self):
-        stage = models.PipelineStage(sort_order=2, output_format='png')
+        stage = models.PipelineStage(sort_order=2, output_format='png', config={})
         bundle = models.JobBundle(current_stage=stage)
         operation = ConcreteOperation(bundle)
         assert(operation.get_new_version('foo.bar')=='foo_stage_02.png')
@@ -61,7 +61,7 @@ class TestAbstractOperation(TestCase):
     @patch('theia.operations.AbstractOperation.get_new_version', return_value='new version name')
     def test_get_new_filename(self, mock_get_new_version, mock_absolute, mock_construct):
         request = models.ImageryRequest(adapter_name='dummy')
-        stage = models.PipelineStage(sort_order=3, output_format='png')
+        stage = models.PipelineStage(sort_order=3, output_format='png', config={})
         bundle = models.JobBundle(current_stage=stage, imagery_request=request)
         operation = ConcreteOperation(bundle)
 

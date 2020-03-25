@@ -3,18 +3,17 @@ from unittest.mock import patch, Mock, PropertyMock
 
 from theia.api.models import JobBundle, Pipeline, Project
 from theia.operations.panoptes_operations import UploadSubject
-from panoptes_client import Subject, SubjectSet
+from panoptes_client import Subject, SubjectSet, Panoptes
 
 # some of the tests here are weird because writing tests for the python api client
 # is really difficult
 # the panoptes api client intercepts property accesses and so is hard to mock
 class TestUploadSubject:
     @patch('theia.api.models.Pipeline.name_subject_set', return_value='pipeline name')
-    @patch('theia.operations.panoptes_operations.UploadSubject._connect')
     @patch('theia.operations.panoptes_operations.UploadSubject._get_subject_set', return_value=SubjectSet())
     @patch('theia.operations.panoptes_operations.UploadSubject._create_subject', return_value=Subject())
     @patch('panoptes_client.SubjectSet.add')
-    def test_apply_single(self, mockAdd, mockCreate, mockGet, mockConnect, mockGetName, *args):
+    def test_apply_single(self, mockAdd, mockCreate, mockGet, mockGetName, *args):
         project = Project(id=8)
         pipeline = Pipeline(project=project)
         bundle = JobBundle(pipeline=pipeline)
@@ -22,18 +21,16 @@ class TestUploadSubject:
         operation = UploadSubject(bundle)
         operation.apply(['some_file'])
 
-        mockConnect.assert_called_once()
         mockGetName.assert_called_once()
         mockGet.assert_called_once_with(pipeline, 8, 'pipeline name')
         mockCreate.assert_called_once_with(8, 'some_file')
         mockAdd.assert_called_once_with(mockCreate.return_value)
 
     @patch('theia.api.models.JobBundle.name_subject_set', return_value='bundle name')
-    @patch('theia.operations.panoptes_operations.UploadSubject._connect')
     @patch('theia.operations.panoptes_operations.UploadSubject._get_subject_set', return_value=SubjectSet())
     @patch('theia.operations.panoptes_operations.UploadSubject._create_subject', return_value=Subject())
     @patch('panoptes_client.SubjectSet.add')
-    def test_apply_multiple(self, mockAdd, mockCreate, mockGet, mockConnect, mockGetName, *args):
+    def test_apply_multiple(self, mockAdd, mockCreate, mockGet, mockGetName, *args):
         project = Project(id=8)
         pipeline = Pipeline(project=project, multiple_subject_sets=True)
         bundle = JobBundle(pipeline=pipeline)
@@ -41,29 +38,17 @@ class TestUploadSubject:
         operation = UploadSubject(bundle)
         operation.apply(['some_file'])
 
-        mockConnect.assert_called_once()
         mockGetName.assert_called_once()
         mockGet.assert_called_once_with(bundle, 8, 'bundle name')
         mockCreate.assert_called_once_with(8, 'some_file')
         mockAdd.assert_called_once_with(mockCreate.return_value)
 
-    @patch('panoptes_client.Panoptes.connect')
-    @patch('theia.utils.PanoptesUtils.base_url', return_value='sample url')
-    @patch('theia.utils.PanoptesUtils.client_id', return_value='sample id')
-    @patch('theia.utils.PanoptesUtils.client_secret', return_value='sample secret')
-    def test__connect(self, mockSecret, mockId, mockUrl, mockConnect):
-        operation = UploadSubject(JobBundle())
-        operation._connect()
-        mockUrl.assert_called_once()
-        mockId.assert_called_once()
-        mockSecret.assert_called_once()
-        mockConnect.assert_called_once_with(endpoint='sample url', client_id='sample id', client_secret='sample secret')
-
     @patch('theia.api.models.JobBundle.save')
     @patch('theia.api.models.Pipeline.save')
     @patch('theia.operations.panoptes_operations.UploadSubject._create_subject_set')
     @patch('panoptes_client.SubjectSet.find', autospec=True)
-    def test__get_subject_set(self, mockFind, mockCreateSet, *args):
+    @patch('panoptes_client.Panoptes', return_value=Panoptes())
+    def test__get_subject_set(self, mock_client, mockFind, mockCreateSet, *args):
         mockFind.reset_mock()
         mockCreateSet.reset_mock()
 

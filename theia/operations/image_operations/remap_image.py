@@ -7,6 +7,8 @@ from theia.adapters import adapters
 
 class RemapImage(AbstractOperation):
     def apply(self, filenames):
+        self.establish_output_directory()
+
         for filename in filenames:
             # https://stackoverflow.com/questions/50761021/how-to-open-a-tif-cmyk-16-bit-image-file
             # 'Using libtiff instead of GDAL'
@@ -17,4 +19,4 @@ class RemapImage(AbstractOperation):
             im = Image.fromarray(remapped)
             im.convert('L')
 
-            im.save(new_filename)
+            im.save(self.output_directory + "/" + new_filename)
