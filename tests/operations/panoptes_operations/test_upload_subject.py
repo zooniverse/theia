@@ -13,7 +13,8 @@ class TestUploadSubject:
     @patch('theia.operations.panoptes_operations.UploadSubject._get_subject_set', return_value=SubjectSet())
     @patch('theia.operations.panoptes_operations.UploadSubject._create_subject', return_value=Subject())
     @patch('panoptes_client.SubjectSet.add')
-    def test_apply_single(self, mockAdd, mockCreate, mockGet, mockGetName, *args):
+    @patch('PIL.Image.open', return_value=Mock())
+    def test_apply_single(self, mockOpen, mockAdd, mockCreate, mockGet, mockGetName, *args):
         project = Project(id=8)
         pipeline = Pipeline(project=project)
         bundle = JobBundle(pipeline=pipeline)
@@ -21,6 +22,7 @@ class TestUploadSubject:
         operation = UploadSubject(bundle)
         operation.apply(['some_file'])
 
+        mockOpen.assert_called_once()
         mockGetName.assert_called_once()
         mockGet.assert_called_once_with(pipeline, 8, 'pipeline name')
         mockCreate.assert_called_once_with(8, 'some_file')
@@ -30,7 +32,8 @@ class TestUploadSubject:
     @patch('theia.operations.panoptes_operations.UploadSubject._get_subject_set', return_value=SubjectSet())
     @patch('theia.operations.panoptes_operations.UploadSubject._create_subject', return_value=Subject())
     @patch('panoptes_client.SubjectSet.add')
-    def test_apply_multiple(self, mockAdd, mockCreate, mockGet, mockGetName, *args):
+    @patch('PIL.Image.open', return_value=Mock())
+    def test_apply_multiple(self, mockOpen, mockAdd, mockCreate, mockGet, mockGetName, *args):
         project = Project(id=8)
         pipeline = Pipeline(project=project, multiple_subject_sets=True)
         bundle = JobBundle(pipeline=pipeline)
@@ -38,6 +41,7 @@ class TestUploadSubject:
         operation = UploadSubject(bundle)
         operation.apply(['some_file'])
 
+        mockOpen.assert_called_once()
         mockGetName.assert_called_once()
         mockGet.assert_called_once_with(bundle, 8, 'bundle name')
         mockCreate.assert_called_once_with(8, 'some_file')
