@@ -21,7 +21,6 @@ class ImageryRequestViewSet(viewsets.ModelViewSet):
 
         with get_authenticated_panoptes(
                 request.session['bearer_token'],
-                request.session['refresh_token'],
                 request.session['bearer_expiry']):
             try:
                 Project.find(_id_for(request.data['project']))
@@ -33,18 +32,17 @@ class ImageryRequestViewSet(viewsets.ModelViewSet):
                 return Response(serializer.data, status=status.HTTP_401_UNAUTHORIZED, headers=headers)
 
 
-def get_authenticated_panoptes(bearer_token, refresh_token, bearer_expiry):
-    authenticated_panoptes = Panoptes(
+def get_authenticated_panoptes(bearer_token, bearer_expiry):
+    guest_authenticated_panoptes = Panoptes(
         endpoint=PanoptesUtils.base_url()
     )
 
-    authenticated_panoptes.bearer_token = bearer_token
-    authenticated_panoptes.logged_in = True
-    authenticated_panoptes.refresh_token = refresh_token
+    guest_authenticated_panoptes.bearer_token = bearer_token
+    guest_authenticated_panoptes.logged_in = True
     bearer_expiry = datetime.strptime(bearer_expiry, "%Y-%m-%d %H:%M:%S.%f")
-    authenticated_panoptes.bearer_expires = (bearer_expiry)
+    guest_authenticated_panoptes.bearer_expires = (bearer_expiry)
 
-    return authenticated_panoptes
+    return guest_authenticated_panoptes
 
 
 def _id_for(project_url):

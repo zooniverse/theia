@@ -16,13 +16,13 @@ class UploadSubject(AbstractOperation):
         else:
             scope = self.pipeline
 
-        authenticated_client = Panoptes(
+        theia_authenticated_client = Panoptes(
             endpoint=PanoptesUtils.base_url(),
             client_id=PanoptesUtils.client_id(),
             client_secret=PanoptesUtils.client_secret()
         )
 
-        with authenticated_client:
+        with theia_authenticated_client:
             target_set = self._get_subject_set(scope, self.project.id, scope.name_subject_set())
 
             for filename in filenames:
