@@ -43,7 +43,10 @@ def test_process_bundle(mock_input_files, mock_resolve, mock_apply, mock_retriev
     tasks.process_bundle(3)
 
     assert (mock_apply.call_count == 2)
-    mock_apply.assert_called_with(['/Users/chelseatroy/workspace/theia/1_noop/input_file'])
+    second_method_call = mock_apply.call_args_list[1]
+    arguments = second_method_call[0]
+    file_list = arguments[0]
+    assert str.endswith(file_list[0], '/theia/1_noop/input_file')
 
     mock_retrieve.assert_called_once()
 

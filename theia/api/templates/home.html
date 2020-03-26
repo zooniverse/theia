@@ -1,9 +1,13 @@
 {% extends 'api.html' %}
 
 {% block content %}
-  <h2>Homepage</h2>
-  <p>Hello {{ user.username }}!</p>
-  <h3>Projects</h3>
+  <h2>Hello, {{ user.username }}!</h2>
+  <p>Welcome to the NASA Landsat data processing pipeline.</p>
+
+  <h3>Here are your projects:</h3>
   <p>{{ projects }}</p>
-  <a href="{% url 'logout' %}">log out</a>
+
+  <a href="{% url 'imageryrequest-list' %}" class="theia-button">Run a Pipeline!</a>
+
+  <a href="{% url 'logout' %}" class="theia-button">Sign Out</a>
 {% endblock %}

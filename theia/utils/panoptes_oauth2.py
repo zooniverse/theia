@@ -40,7 +40,7 @@ class PanoptesOAuth2(BaseOAuth2):
 
             ids = ['admin user']
             if not user['admin']:
-                ids = [project.id for project in Project.where()]
+                ids = [project.href for project in Project.where(current_user_roles='collaborator')]
 
             return {
                 'username': user['login'],
