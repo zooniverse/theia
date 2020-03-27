@@ -4,6 +4,7 @@ from theia.operations.noop import AbstractOperation, NoOp
 
 operations = {
     'gis_operations.compute_corners': gis_operations.ComputeCorners,
+    'gis_operations.compute_lat_long': gis_operations.ComputeLatLong,
 
     'image_operations.resize_image': image_operations.ResizeImage,
     'image_operations.remap_image': image_operations.RemapImage,
