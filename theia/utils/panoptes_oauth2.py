@@ -21,6 +21,9 @@ class PanoptesOAuth2(BaseOAuth2):
         ('projects', 'projects')
     ]
 
+    def get_key_and_secret(self):
+        return PanoptesUtils.client_id(), PanoptesUtils.client_secret()
+
     def get_user_details(self, response):
         authenticated_panoptes = Panoptes(
             endpoint=PanoptesUtils.base_url(),

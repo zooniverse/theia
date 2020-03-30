@@ -19,12 +19,13 @@ RUN apt-get update \
 
 RUN pip install \
   pipenv
-  Pillow
 
 WORKDIR /usr/src/app
 
 COPY Pipfile ./
 COPY Pipfile.lock ./
+COPY start_server.sh ./
+COPY start_worker.sh ./
 
 RUN pipenv install --system --dev
 
