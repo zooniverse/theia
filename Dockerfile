@@ -26,6 +26,8 @@ COPY Pipfile ./
 COPY Pipfile.lock ./
 COPY start_server.sh ./
 COPY start_worker.sh ./
+COPY . /usr/src/app
+
 
 RUN pipenv install --system --dev
 
@@ -37,6 +39,7 @@ RUN pip install -e git+https://github.com/pearu/pylibtiff#egg=libtiff
 RUN export GDAL_VERSION=$(gdal-config --version) \
   && pip install --global-option=build_ext --global-option="-I/usr/include/gdal/" \
     gdal~=${GDAL_VERSION}
+
 
 ENV PYTHONUNBUFFERED=1
 
