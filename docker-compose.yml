@@ -3,7 +3,7 @@ services:
   postgres:
     image: postgres:9.4
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
     environment:
       - "POSTGRES_USER=theia"
       - "POSTGRES_PASSWORD=theia"
@@ -20,8 +20,8 @@ services:
       - ./:/usr/src/app
     environment:
       - DJANGO_ENV
-      - USGS_USERNAME
-      - USGS_PASSWORD
+      - USGS_USERNAME=something_secret_goes_here
+      - USGS_PASSWORD=something_secret_goes_here
       - PANOPTES_PROD_CLIENT_ID
       - PANOPTES_PROD_CLIENT_SECRET
       - PANOPTES_PROD_URL
@@ -42,8 +42,8 @@ services:
       - ./:/usr/src/app
     environment:
       - DJANGO_ENV
-      - USGS_USERNAME
-      - USGS_PASSWORD
+      - USGS_USERNAME=something_secret_goes_here
+      - USGS_PASSWORD=something_secret_goes_here
       - PANOPTES_PROD_CLIENT_ID
       - PANOPTES_PROD_CLIENT_SECRET
       - PANOPTES_PROD_URL
@@ -53,3 +53,6 @@ services:
     links:
       - redis:redis
       - postgres:postgres
+
+volumes:
+  pgdata:
