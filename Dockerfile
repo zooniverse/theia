@@ -6,7 +6,7 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     postgresql-client \
     gdal-bin \
-    libtiff-dev \
+    libtiff5-dev \
     libgdal-dev \
     python-gdal \
     python3-gdal \
