@@ -14,7 +14,7 @@ from file_operations import (
     maybe_clean_scratch, find_scene_name)
 from gis_operations import compute_coordinate_metadata
 from xml_operations import parse_metadata
-from ff_config import ff_config as config
+from ff_config import ff_config
 
 logging.basicConfig(
     format='[ff-import %(name)s] %(levelname)s %(asctime)-15s %(message)s'
@@ -77,92 +77,92 @@ def parse_options(filenames):
             () #noqa
 
         elif arg == "--full":
-            config.WITHTEMPDIR = False
-            config.REBUILD = True
-            config.ASSEMBLE_IMAGE = True
-            config.SLICE_IMAGE = True
-            config.GENERATE_MASK_TILES = True
-            config.REMOVE_LAND = True
-            config.REMOVE_CLOUDS = True
-            config.REJECT_TILES = True
-            config.BUILD_MANIFEST = True
-            config.VISUALIZE_SORT = True
+            ff_config.WITHTEMPDIR = False
+            ff_config.REBUILD = True
+            ff_config.ASSEMBLE_IMAGE = True
+            ff_config.SLICE_IMAGE = True
+            ff_config.GENERATE_MASK_TILES = True
+            ff_config.REMOVE_LAND = True
+            ff_config.REMOVE_CLOUDS = True
+            ff_config.REJECT_TILES = True
+            ff_config.BUILD_MANIFEST = True
+            ff_config.VISUALIZE_SORT = True
 
         elif arg == "--assemble":
-            config.ASSEMBLE_IMAGE = True
+            ff_config.ASSEMBLE_IMAGE = True
         elif arg == "--generate-tiles":
-            config.SLICE_IMAGE = True
+            ff_config.SLICE_IMAGE = True
         elif arg == "--generate":
-            config.ASSEMBLE_IMAGE = True
-            config.SLICE_IMAGE = True
+            ff_config.ASSEMBLE_IMAGE = True
+            ff_config.SLICE_IMAGE = True
 
         elif arg == "--clean":
-            config.REBUILD = True
+            ff_config.REBUILD = True
 
         elif arg == "--sort-tiles":
-            config.GENERATE_MASK_TILES = True
-            config.REMOVE_LAND = True
-            config.REMOVE_CLOUDS = True
-            config.REJECT_TILES = True
+            ff_config.GENERATE_MASK_TILES = True
+            ff_config.REMOVE_LAND = True
+            ff_config.REMOVE_CLOUDS = True
+            ff_config.REJECT_TILES = True
         elif arg == "--generate-mask":
-            config.GENERATE_MASK_TILES = True
+            ff_config.GENERATE_MASK_TILES = True
         elif arg == "--remove-land":
-            config.REMOVE_LAND = True
+            ff_config.REMOVE_LAND = True
         elif arg == "--remove-clouds":
-            config.REMOVE_CLOUDS = True
+            ff_config.REMOVE_CLOUDS = True
         elif arg == "--remove-all":
-            config.REMOVE_CLOUDS = True
-            config.REMOVE_LAND = True
+            ff_config.REMOVE_CLOUDS = True
+            ff_config.REMOVE_LAND = True
         elif arg == "--visualize":
-            config.VISUALIZE_SORT = True
+            ff_config.VISUALIZE_SORT = True
         elif arg == "--reject":
-            config.REJECT_TILES = True
+            ff_config.REJECT_TILES = True
         elif arg == "--manifest":
-            config.BUILD_MANIFEST = True
+            ff_config.BUILD_MANIFEST = True
 
         elif arg.startswith("--grid-size="):
-            config.GRID_SIZE = int(arg.split("=")[1])
+            ff_config.GRID_SIZE = int(arg.split("=")[1])
         elif arg.startswith("--land-threshhold="):
-            config.LAND_THRESHHOLD = int(arg.split("=")[1])
+            ff_config.LAND_THRESHHOLD = int(arg.split("=")[1])
         elif arg.startswith("--land-sensitivity="):
-            config.LAND_SENSITIVITY = int(arg.split("=")[1])
+            ff_config.LAND_SENSITIVITY = int(arg.split("=")[1])
         elif arg.startswith("--cloud-threshhold="):
-            config.CLOUD_THRESHHOLD = int(arg.split("=")[1])
+            ff_config.CLOUD_THRESHHOLD = int(arg.split("=")[1])
         elif arg.startswith("--cloud-sensitivity="):
-            config.CLOUD_SENSITIVITY = int(arg.split("=")[1])
+            ff_config.CLOUD_SENSITIVITY = int(arg.split("=")[1])
         else:
-            config.SCENE_DIR = arg
+            ff_config.SCENE_DIR = arg
 
-    config.SCENE_NAME = path.dirname(filenames[0])
-    print("ZE SCENE NAME IS: " + config.SCENE_NAME)
-    config.NEW_MASK = path.join(config.SCENE_DIR, config.SCENE_NAME + "_pixel_qa.tif")
-    config.METADATA_SRC = path.join(config.SCENE_DIR, config.SCENE_NAME + ".xml")
-    config.INPUT_FILE = config.NEW_MASK
+    ff_config.SCENE_NAME = path.dirname(filenames[0])
+    print("ZE SCENE NAME IS: " + ff_config.SCENE_NAME)
+    ff_config.NEW_MASK = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_pixel_qa.tif")
+    ff_config.METADATA_SRC = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + ".xml")
+    ff_config.INPUT_FILE = ff_config.NEW_MASK
 
 def generate_mask_tiles():
-    logger = logging.getLogger(config.SCENE_NAME)
+    logger = logging.getLogger(ff_config.SCENE_NAME)
     logger.info(
-        "Generating mask tiles of " + str(config.GRID_SIZE) +
-        "x" + str(config.GRID_SIZE) + " pixels")
+        "Generating mask tiles of " + str(ff_config.GRID_SIZE) +
+        "x" + str(ff_config.GRID_SIZE) + " pixels")
 
     logger.info("Generating land mask tiles")
-    img.prepare_land_mask(config)
+    img.prepare_land_mask(ff_config)
 
     logger.info("Generating cloud mask tiles")
-    img.prepare_cloud_mask(config)
+    img.prepare_cloud_mask(ff_config)
 
-    generated_count = len(get_files_by_extension(path.join(config.SCRATCH_PATH, "land"), "png"))
+    generated_count = len(get_files_by_extension(path.join(ff_config.SCRATCH_PATH, "land"), "png"))
     logger.info("Generated " + str(generated_count) + " tiles")
 
 def apply_rules(candidates, rejects, subdirectory, rules):
     accum = []
-    logger = logging.getLogger(config.SCENE_NAME)
+    logger = logging.getLogger(ff_config.SCENE_NAME)
 
     logger.info("Examining " + str(len(candidates)) + " tiles for " + subdirectory)
     for filename in candidates:
         done = False
         statistics = img.get_image_statistics(path.join(
-            config.SCRATCH_PATH,
+            ff_config.SCRATCH_PATH,
             subdirectory,
             filename))
 	#debug
@@ -186,9 +186,9 @@ def index_to_location(filename, width, grid_size):
 
     return [row, col]
 
-def build_dict_for_csv(filename, reason, config):
-    [width, height] = img.get_dimensions(path.join(config.SCRATCH_PATH, "scene", filename))
-    [row, column] = index_to_location(filename, config.width, config.GRID_SIZE)
+def build_dict_for_csv(filename, reason, ff_config):
+    [width, height] = img.get_dimensions(path.join(ff_config.SCRATCH_PATH, "scene", filename))
+    [row, column] = index_to_location(filename, ff_config.width, ff_config.GRID_SIZE)
 
     my_dict = {
         '#filename': filename,
@@ -199,10 +199,10 @@ def build_dict_for_csv(filename, reason, config):
         '#height': height,
     }
 
-    coordinate_metadata = compute_coordinate_metadata(row, column, width, height, config)
+    coordinate_metadata = compute_coordinate_metadata(row, column, width, height, ff_config)
 
     my_dict.update(coordinate_metadata)
-    my_dict.update(config.METADATA)
+    my_dict.update(ff_config.METADATA)
     return my_dict
 
 
@@ -213,182 +213,182 @@ def main(filenames):
 
     parse_options(filenames)
 
-    if  (not config.GENERATE_MASK_TILES and
-         not config.REJECT_TILES and
-         not config.VISUALIZE_SORT and
-         not config.ASSEMBLE_IMAGE and
-         not config.SLICE_IMAGE and
-         not config.BUILD_MANIFEST and
-         not config.REBUILD):
+    if  (not ff_config.GENERATE_MASK_TILES and
+         not ff_config.REJECT_TILES and
+         not ff_config.VISUALIZE_SORT and
+         not ff_config.ASSEMBLE_IMAGE and
+         not ff_config.SLICE_IMAGE and
+         not ff_config.BUILD_MANIFEST and
+         not ff_config.REBUILD):
         usage()
         return
 
-    if ((config.GENERATE_MASK_TILES or
-         config.REJECT_TILES or
-         config.VISUALIZE_SORT or
-         config.ASSEMBLE_IMAGE or
-         config.BUILD_MANIFEST or
-         config.SLICE_IMAGE) and
-            config.SCENE_DIR == ''):
+    if ((ff_config.GENERATE_MASK_TILES or
+         ff_config.REJECT_TILES or
+         ff_config.VISUALIZE_SORT or
+         ff_config.ASSEMBLE_IMAGE or
+         ff_config.BUILD_MANIFEST or
+         ff_config.SLICE_IMAGE) and
+            ff_config.SCENE_DIR == ''):
         usage()
         return
 
-    logger = logging.getLogger(config.SCENE_NAME)
+    logger = logging.getLogger(ff_config.SCENE_NAME)
     logger.setLevel(logging.INFO)
     logger.info("Processing start")
 
     accepts = []
     rejects = []
 
-    [config.width, config.height] = img.get_dimensions(config.INPUT_FILE)
+    [ff_config.width, ff_config.height] = img.get_dimensions(ff_config.INPUT_FILE)
 
-    if config.REBUILD or not scratch_exists(config):
-        build_scratch(config)
+    if ff_config.REBUILD or not scratch_exists(ff_config):
+        build_scratch(ff_config)
 
     logger.info("Building scene tile output directory")
-    build_output(config.SCENE_NAME)
+    build_output(ff_config.SCENE_NAME)
 
-    config.SATELLITE = LANDSAT
-    metadata = parse_metadata(config.SCENE_DIR, config.METADATA_SRC)
-    config.METADATA = metadata
-    if config.METADATA['spacecraft'] == 'LANDSAT_8':
-        config.SATELLITE = LANDSAT8
+    ff_config.SATELLITE = LANDSAT
+    metadata = parse_metadata(ff_config.SCENE_DIR, ff_config.METADATA_SRC)
+    ff_config.METADATA = metadata
+    if ff_config.METADATA['spacecraft'] == 'LANDSAT_8':
+        ff_config.SATELLITE = LANDSAT8
 
-    config.RED_CHANNEL = path.join(
-        config.SCENE_DIR, config.SCENE_NAME + "_sr_" + config.SATELLITE['red'] + ".tif")
-    config.GREEN_CHANNEL = path.join(
-        config.SCENE_DIR, config.SCENE_NAME + "_sr_" + config.SATELLITE['green'] + ".tif")
-    config.BLUE_CHANNEL = path.join(
-        config.SCENE_DIR, config.SCENE_NAME + "_sr_" + config.SATELLITE['blue'] + ".tif")
-    config.INFRARED_CHANNEL = path.join(
-        config.SCENE_DIR, config.SCENE_NAME + "_sr_" + config.SATELLITE['infrared'] + ".tif")
+    ff_config.RED_CHANNEL = path.join(
+        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['red'] + ".tif")
+    ff_config.GREEN_CHANNEL = path.join(
+        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['green'] + ".tif")
+    ff_config.BLUE_CHANNEL = path.join(
+        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['blue'] + ".tif")
+    ff_config.INFRARED_CHANNEL = path.join(
+        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['infrared'] + ".tif")
 
     logger.info("Building water mask")
-    config.WATER_MASK = path.join(config.SCRATCH_PATH, "water_mask.png")
-    img.build_mask_files(config, "water_lut.pgm", config.WATER_MASK)
+    ff_config.WATER_MASK = path.join(ff_config.SCRATCH_PATH, "water_mask.png")
+    img.build_mask_files(ff_config, "water_lut.pgm", ff_config.WATER_MASK)
     logger.info("Building cloud mask")
-    config.CLOUD_MASK = path.join(config.SCRATCH_PATH, "cloud_mask.png")
-    img.build_mask_files(config, "cloud_lut.pgm", config.CLOUD_MASK)
+    ff_config.CLOUD_MASK = path.join(ff_config.SCRATCH_PATH, "cloud_mask.png")
+    img.build_mask_files(ff_config, "cloud_lut.pgm", ff_config.CLOUD_MASK)
     logger.info("Building snow mask")
-    config.SNOW_MASK = path.join(config.SCRATCH_PATH, "snow_mask.png")
-    img.build_mask_files(config, "snow_lut.pgm", config.SNOW_MASK)
-    config.INPUT_FILE = config.WATER_MASK
+    ff_config.SNOW_MASK = path.join(ff_config.SCRATCH_PATH, "snow_mask.png")
+    img.build_mask_files(ff_config, "snow_lut.pgm", ff_config.SNOW_MASK)
+    ff_config.INPUT_FILE = ff_config.WATER_MASK
 
-    if config.ASSEMBLE_IMAGE:
+    if ff_config.ASSEMBLE_IMAGE:
         logger.info("Processing source data to remove negative pixels")
         clamp = img.clamp_image
         boost = img.boost_image
-        clamp(config.RED_CHANNEL, "red", config, False)
-        clamp(config.INFRARED_CHANNEL, "green", config, False)
-        clamp(config.BLUE_CHANNEL, "blue", config, True)
+        clamp(ff_config.RED_CHANNEL, "red", ff_config, False)
+        clamp(ff_config.INFRARED_CHANNEL, "green", ff_config, False)
+        clamp(ff_config.BLUE_CHANNEL, "blue", ff_config, True)
 
-        # red_output = path.join(config.SCRATCH_PATH, "red.png")
-        # green_output = path.join(config.SCRATCH_PATH, "green.png")
-        # blue_output = path.join(config.SCRATCH_PATH, "blue.png")
+        # red_output = path.join(ff_config.SCRATCH_PATH, "red.png")
+        # green_output = path.join(ff_config.SCRATCH_PATH, "green.png")
+        # blue_output = path.join(ff_config.SCRATCH_PATH, "blue.png")
         #
-        # red_image = Image.open(config.RED_CHANNEL).convert('L')
+        # red_image = Image.open(ff_config.RED_CHANNEL).convert('L')
         # red_enhanced = ImageEnhance.Contrast(red_image)
         # red_enhanced.enhance(0.5).save(red_output)
         #
-        # green_image = Image.open(config.GREEN_CHANNEL).convert('L')
+        # green_image = Image.open(ff_config.GREEN_CHANNEL).convert('L')
         # green_enhanced = ImageEnhance.Contrast(green_image)
         # green_enhanced.enhance(0.5).save(green_output)
         #
-        # blue_image = Image.open(config.BLUE_CHANNEL).convert('L')
+        # blue_image = Image.open(ff_config.BLUE_CHANNEL).convert('L')
         # blue_enhanced = ImageEnhance.Contrast(blue_image)
         # blue_enhanced.enhance(0.5).save(blue_output)
 
-        boost(config.INFRARED_CHANNEL, config)
-        config.RED_CHANNEL = path.join(config.SCRATCH_PATH, "red.png")
-        config.GREEN_CHANNEL = path.join(config.SCRATCH_PATH, "green.png")
-        config.BLUE_CHANNEL = path.join(config.SCRATCH_PATH, "blue.png")
-        config.INFRARED_CHANNEL = path.join(config.SCRATCH_PATH, "boost.png")
-        img.assemble_image(config)
+        boost(ff_config.INFRARED_CHANNEL, ff_config)
+        ff_config.RED_CHANNEL = path.join(ff_config.SCRATCH_PATH, "red.png")
+        ff_config.GREEN_CHANNEL = path.join(ff_config.SCRATCH_PATH, "green.png")
+        ff_config.BLUE_CHANNEL = path.join(ff_config.SCRATCH_PATH, "blue.png")
+        ff_config.INFRARED_CHANNEL = path.join(ff_config.SCRATCH_PATH, "boost.png")
+        img.assemble_image(ff_config)
     else:
         logger.info("Skipping scene generation")
 
-    if config.SLICE_IMAGE:
+    if ff_config.SLICE_IMAGE:
         logger.info(
             "Generating scene tiles of " +
-            str(config.GRID_SIZE) + "x" +
-            str(config.GRID_SIZE)+" pixels")
-        img.prepare_tiles(config)
+            str(ff_config.GRID_SIZE) + "x" +
+            str(ff_config.GRID_SIZE)+" pixels")
+        img.prepare_tiles(ff_config)
     else:
         logger.info("Skipping scene tile generation")
 
-    if config.GENERATE_MASK_TILES:
+    if ff_config.GENERATE_MASK_TILES:
         generate_mask_tiles()
     else:
         logger.info("Skipping mask generation")
 
-    if config.REJECT_TILES or config.VISUALIZE_SORT:
+    if ff_config.REJECT_TILES or ff_config.VISUALIZE_SORT:
 
-        retained_tiles = get_files_by_extension(path.join(config.SCRATCH_PATH, "land"), "png")
+        retained_tiles = get_files_by_extension(path.join(ff_config.SCRATCH_PATH, "land"), "png")
 
-        if config.REMOVE_CLOUDS:
+        if ff_config.REMOVE_CLOUDS:
             retained_tiles = apply_rules(
                 retained_tiles, too_cloudy, "cloud", [
-                    lambda imin, imax, imean, idev: float(imin) < config.CLOUD_THRESHHOLD,
+                    lambda imin, imax, imean, idev: float(imin) < ff_config.CLOUD_THRESHHOLD,
                     lambda imin, imax, imean, idev: (
-                        float(imean) < config.CLOUD_THRESHHOLD or
-                        float(idev) > config.CLOUD_SENSITIVITY
+                        float(imean) < ff_config.CLOUD_THRESHHOLD or
+                        float(idev) > ff_config.CLOUD_SENSITIVITY
                     )
                 ])
         else:
             logger.info("Skipping cloud removal")
 
-        if config.REMOVE_LAND:
+        if ff_config.REMOVE_LAND:
             retained_tiles = apply_rules(
                 retained_tiles, no_water, "land", [
-                    lambda imin, imax, imean, idev: float(imax) > config.LAND_THRESHHOLD,
+                    lambda imin, imax, imean, idev: float(imax) > ff_config.LAND_THRESHHOLD,
                     lambda imin, imax, imean, idev: (
-                        float(imean) > config.LAND_THRESHHOLD or
-                        float(idev) > config.LAND_SENSITIVITY
+                        float(imean) > ff_config.LAND_THRESHHOLD or
+                        float(idev) > ff_config.LAND_SENSITIVITY
                     )
                 ])
         else:
             logger.info("Skipping land removal")
 
 
-    if config.VISUALIZE_SORT:
+    if ff_config.VISUALIZE_SORT:
         logger.info(str(len(retained_tiles))+" tiles retained")
         logger.info(str(len(no_water))+" tiles without water rejected")
         logger.info(str(len(too_cloudy))+" tiles rejected for clouds")
 
         logger.info("Generating tile visualization")
-        land = img.generate_rectangles(no_water, config.width, config.GRID_SIZE)
-        clouds = img.generate_rectangles(too_cloudy, config.width, config.GRID_SIZE)
-        water = img.generate_rectangles(retained_tiles, config.width, config.GRID_SIZE)
-        img.draw_visualization(land, clouds, water, config)
+        land = img.generate_rectangles(no_water, ff_config.width, ff_config.GRID_SIZE)
+        clouds = img.generate_rectangles(too_cloudy, ff_config.width, ff_config.GRID_SIZE)
+        water = img.generate_rectangles(retained_tiles, ff_config.width, ff_config.GRID_SIZE)
+        img.draw_visualization(land, clouds, water, ff_config)
 
-    if config.REJECT_TILES:
+    if ff_config.REJECT_TILES:
         logger.info("Copying accepted tiles")
         for filename in retained_tiles:
-            accept_tile(filename, config)
-            accepts.append(build_dict_for_csv(filename, "Accepted", config))
+            accept_tile(filename, ff_config)
+            accepts.append(build_dict_for_csv(filename, "Accepted", ff_config))
 
         logger.info("Copying rejected tiles")
         for filename in no_water:
-            reject_tile(filename, config)
-            rejects.append(build_dict_for_csv(filename, "No Water", config))
+            reject_tile(filename, ff_config)
+            rejects.append(build_dict_for_csv(filename, "No Water", ff_config))
 
         for filename in too_cloudy:
-            reject_tile(filename, config)
-            rejects.append(build_dict_for_csv(filename, "Too Cloudy", config))
+            reject_tile(filename, ff_config)
+            rejects.append(build_dict_for_csv(filename, "Too Cloudy", ff_config))
 
         logger.info("Writing csv file")
         rejects = sorted(rejects, key=lambda k: k['#filename'])
         write_rejects(
-            path.join("{0}_tiles".format(config.SCENE_NAME), "rejected", "rejected.csv"),
+            path.join("{0}_tiles".format(ff_config.SCENE_NAME), "rejected", "rejected.csv"),
             rejects)
 
-    if config.BUILD_MANIFEST:
+    if ff_config.BUILD_MANIFEST:
         logger.info("Writing manifest")
         write_manifest(
-            path.join("{0}_tiles".format(config.SCENE_NAME), "accepted", "manifest.csv"),
+            path.join("{0}_tiles".format(ff_config.SCENE_NAME), "accepted", "manifest.csv"),
             accepts)
 
-    maybe_clean_scratch(config)
+    maybe_clean_scratch(ff_config)
 
     logger.info("Processing finished")
 
