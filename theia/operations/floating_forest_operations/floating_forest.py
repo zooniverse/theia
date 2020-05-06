@@ -1,17 +1,13 @@
-import csv
-from PIL import Image
-
-from ..abstract_operation import AbstractOperation
-from os import path
-import logging
-
-from os import path, mkdir, listdir
-from shutil import rmtree, copy
-import tempfile
 from lxml import etree
+
+import logging
+import tempfile
+from os import mkdir
+from os import path
+from shutil import rmtree
 from subprocess import check_output, call
 
-
+from ..abstract_operation import AbstractOperation
 
 # https://docs.python.org/3/library/csv.html
 LANDSAT = {'red': 'band5', 'green': 'band2', 'blue': 'band3', 'infrared': 'band4'}
