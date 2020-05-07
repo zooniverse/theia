@@ -108,75 +108,22 @@ channel to aid in kelp-spotting.
     --cloud-sensitivity=XX
     """)
 
-
 def parse_options(filenames):
     # note that logger is undefined when this method is active
-    for arg in argv:
-        if arg == "simple.py":
-            continue
+    ff_config.WITHTEMPDIR = True
+    ff_config.REBUILD = True
+    ff_config.ASSEMBLE_IMAGE = True
+    ff_config.SLICE_IMAGE = True
+    ff_config.GENERATE_MASK_TILES = True
+    ff_config.REMOVE_LAND = True
+    ff_config.REMOVE_CLOUDS = True
+    ff_config.REJECT_TILES = True
+    ff_config.BUILD_MANIFEST = True
+    ff_config.VISUALIZE_SORT = True
 
-        if arg == "--help" or arg == "-?":
-            # do nothing, we'll fall through to usage
-            () #noqa
-
-        elif arg == "--full":
-            ff_config.WITHTEMPDIR = False
-            ff_config.REBUILD = True
-            ff_config.ASSEMBLE_IMAGE = True
-            ff_config.SLICE_IMAGE = True
-            ff_config.GENERATE_MASK_TILES = True
-            ff_config.REMOVE_LAND = True
-            ff_config.REMOVE_CLOUDS = True
-            ff_config.REJECT_TILES = True
-            ff_config.BUILD_MANIFEST = True
-            ff_config.VISUALIZE_SORT = True
-
-        elif arg == "--assemble":
-            ff_config.ASSEMBLE_IMAGE = True
-        elif arg == "--generate-tiles":
-            ff_config.SLICE_IMAGE = True
-        elif arg == "--generate":
-            ff_config.ASSEMBLE_IMAGE = True
-            ff_config.SLICE_IMAGE = True
-
-        elif arg == "--clean":
-            ff_config.REBUILD = True
-
-        elif arg == "--sort-tiles":
-            ff_config.GENERATE_MASK_TILES = True
-            ff_config.REMOVE_LAND = True
-            ff_config.REMOVE_CLOUDS = True
-            ff_config.REJECT_TILES = True
-        elif arg == "--generate-mask":
-            ff_config.GENERATE_MASK_TILES = True
-        elif arg == "--remove-land":
-            ff_config.REMOVE_LAND = True
-        elif arg == "--remove-clouds":
-            ff_config.REMOVE_CLOUDS = True
-        elif arg == "--remove-all":
-            ff_config.REMOVE_CLOUDS = True
-            ff_config.REMOVE_LAND = True
-        elif arg == "--visualize":
-            ff_config.VISUALIZE_SORT = True
-        elif arg == "--reject":
-            ff_config.REJECT_TILES = True
-        elif arg == "--manifest":
-            ff_config.BUILD_MANIFEST = True
-
-        elif arg.startswith("--grid-size="):
-            ff_config.GRID_SIZE = int(arg.split("=")[1])
-        elif arg.startswith("--land-threshhold="):
-            ff_config.LAND_THRESHHOLD = int(arg.split("=")[1])
-        elif arg.startswith("--land-sensitivity="):
-            ff_config.LAND_SENSITIVITY = int(arg.split("=")[1])
-        elif arg.startswith("--cloud-threshhold="):
-            ff_config.CLOUD_THRESHHOLD = int(arg.split("=")[1])
-        elif arg.startswith("--cloud-sensitivity="):
-            ff_config.CLOUD_SENSITIVITY = int(arg.split("=")[1])
-        else:
-            ff_config.SCENE_DIR = arg
-
-    ff_config.SCENE_NAME = path.dirname(filenames[0])
+    ff_config.SCENE_DIR = path.dirname(filenames[0])
+    path_components = ff_config.SCENE_DIR.split('/')
+    ff_config.SCENE_NAME = path_components[len(path_components) - 1]
     print("ZE SCENE NAME IS: " + ff_config.SCENE_NAME)
     ff_config.NEW_MASK = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_pixel_qa.tif")
     ff_config.METADATA_SRC = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + ".xml")
@@ -189,10 +136,10 @@ def generate_mask_tiles():
         "x" + str(ff_config.GRID_SIZE) + " pixels")
 
     logger.info("Generating land mask tiles")
-    img.prepare_land_mask(ff_config)
+    prepare_land_mask(ff_config)
 
     logger.info("Generating cloud mask tiles")
-    img.prepare_cloud_mask(ff_config)
+    prepare_cloud_mask(ff_config)
 
     generated_count = len(get_files_by_extension(path.join(ff_config.SCRATCH_PATH, "land"), "png"))
     logger.info("Generated " + str(generated_count) + " tiles")
@@ -204,7 +151,7 @@ def apply_rules(candidates, rejects, subdirectory, rules):
     logger.info("Examining " + str(len(candidates)) + " tiles for " + subdirectory)
     for filename in candidates:
         done = False
-        statistics = img.get_image_statistics(path.join(
+        statistics = get_image_statistics(path.join(
             ff_config.SCRATCH_PATH,
             subdirectory,
             filename))
@@ -230,7 +177,7 @@ def index_to_location(filename, width, grid_size):
     return [row, col]
 
 def build_dict_for_csv(filename, reason, ff_config):
-    [width, height] = img.get_dimensions(path.join(ff_config.SCRATCH_PATH, "scene", filename))
+    [width, height] = get_dimensions(path.join(ff_config.SCRATCH_PATH, "scene", filename))
     [row, column] = index_to_location(filename, ff_config.width, ff_config.GRID_SIZE)
 
     my_dict = {
@@ -256,26 +203,6 @@ def run_ff(filenames):
 
     parse_options(filenames)
 
-    if  (not ff_config.GENERATE_MASK_TILES and
-         not ff_config.REJECT_TILES and
-         not ff_config.VISUALIZE_SORT and
-         not ff_config.ASSEMBLE_IMAGE and
-         not ff_config.SLICE_IMAGE and
-         not ff_config.BUILD_MANIFEST and
-         not ff_config.REBUILD):
-        usage()
-        return
-
-    if ((ff_config.GENERATE_MASK_TILES or
-         ff_config.REJECT_TILES or
-         ff_config.VISUALIZE_SORT or
-         ff_config.ASSEMBLE_IMAGE or
-         ff_config.BUILD_MANIFEST or
-         ff_config.SLICE_IMAGE) and
-            ff_config.SCENE_DIR == ''):
-        usage()
-        return
-
     logger = logging.getLogger(ff_config.SCENE_NAME)
     logger.setLevel(logging.INFO)
     logger.info("Processing start")
@@ -283,7 +210,7 @@ def run_ff(filenames):
     accepts = []
     rejects = []
 
-    [ff_config.width, ff_config.height] = img.get_dimensions(ff_config.INPUT_FILE)
+    [ff_config.width, ff_config.height] = get_dimensions(ff_config.INPUT_FILE)
 
     if ff_config.REBUILD or not scratch_exists(ff_config):
         build_scratch(ff_config)
@@ -308,19 +235,19 @@ def run_ff(filenames):
 
     logger.info("Building water mask")
     ff_config.WATER_MASK = path.join(ff_config.SCRATCH_PATH, "water_mask.png")
-    img.build_mask_files(ff_config, "water_lut.pgm", ff_config.WATER_MASK)
+    build_mask_files(ff_config, "water_lut.pgm", ff_config.WATER_MASK)
     logger.info("Building cloud mask")
     ff_config.CLOUD_MASK = path.join(ff_config.SCRATCH_PATH, "cloud_mask.png")
-    img.build_mask_files(ff_config, "cloud_lut.pgm", ff_config.CLOUD_MASK)
+    build_mask_files(ff_config, "cloud_lut.pgm", ff_config.CLOUD_MASK)
     logger.info("Building snow mask")
     ff_config.SNOW_MASK = path.join(ff_config.SCRATCH_PATH, "snow_mask.png")
-    img.build_mask_files(ff_config, "snow_lut.pgm", ff_config.SNOW_MASK)
+    build_mask_files(ff_config, "snow_lut.pgm", ff_config.SNOW_MASK)
     ff_config.INPUT_FILE = ff_config.WATER_MASK
 
     if ff_config.ASSEMBLE_IMAGE:
         logger.info("Processing source data to remove negative pixels")
-        clamp = img.clamp_image
-        boost = img.boost_image
+        clamp = clamp_image
+        boost = boost_image
         clamp(ff_config.RED_CHANNEL, "red", ff_config, False)
         clamp(ff_config.INFRARED_CHANNEL, "green", ff_config, False)
         clamp(ff_config.BLUE_CHANNEL, "blue", ff_config, True)
@@ -346,7 +273,7 @@ def run_ff(filenames):
         ff_config.GREEN_CHANNEL = path.join(ff_config.SCRATCH_PATH, "green.png")
         ff_config.BLUE_CHANNEL = path.join(ff_config.SCRATCH_PATH, "blue.png")
         ff_config.INFRARED_CHANNEL = path.join(ff_config.SCRATCH_PATH, "boost.png")
-        img.assemble_image(ff_config)
+        assemble_image(ff_config)
     else:
         logger.info("Skipping scene generation")
 
@@ -355,7 +282,7 @@ def run_ff(filenames):
             "Generating scene tiles of " +
             str(ff_config.GRID_SIZE) + "x" +
             str(ff_config.GRID_SIZE)+" pixels")
-        img.prepare_tiles(ff_config)
+        prepare_tiles(ff_config)
     else:
         logger.info("Skipping scene tile generation")
 
@@ -399,10 +326,10 @@ def run_ff(filenames):
         logger.info(str(len(too_cloudy))+" tiles rejected for clouds")
 
         logger.info("Generating tile visualization")
-        land = img.generate_rectangles(no_water, ff_config.width, ff_config.GRID_SIZE)
-        clouds = img.generate_rectangles(too_cloudy, ff_config.width, ff_config.GRID_SIZE)
-        water = img.generate_rectangles(retained_tiles, ff_config.width, ff_config.GRID_SIZE)
-        img.draw_visualization(land, clouds, water, ff_config)
+        land = generate_rectangles(no_water, ff_config.width, ff_config.GRID_SIZE)
+        clouds = generate_rectangles(too_cloudy, ff_config.width, ff_config.GRID_SIZE)
+        water = generate_rectangles(retained_tiles, ff_config.width, ff_config.GRID_SIZE)
+        draw_visualization(land, clouds, water, ff_config)
 
     if ff_config.REJECT_TILES:
         logger.info("Copying accepted tiles")
