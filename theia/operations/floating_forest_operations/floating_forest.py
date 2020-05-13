@@ -47,10 +47,11 @@ ff_config = type('Config', (object,), {
 
 class FloatingForest(AbstractOperation):
     def apply(self, filenames):
+
         print("Floating forest filenames: " + str(filenames))
         self.establish_output_directory()
 
-        run_ff(filenames)
+        run_ff(filenames, self.output_directory)
 
 def parse_options(filenames):
     ff_config.SCENE_NAME = path.dirname(filenames[0])
@@ -124,7 +125,6 @@ def parse_options(filenames):
     ff_config.SCENE_DIR = path.dirname(filenames[0])
     path_components = ff_config.SCENE_DIR.split('/')
     ff_config.SCENE_NAME = path_components[len(path_components) - 1]
-    print("ZE SCENE NAME IS: " + ff_config.SCENE_NAME)
     ff_config.NEW_MASK = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_pixel_qa.tif")
     ff_config.METADATA_SRC = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + ".xml")
     ff_config.INPUT_FILE = ff_config.NEW_MASK
@@ -196,7 +196,7 @@ def build_dict_for_csv(filename, reason, ff_config):
     return my_dict
 
 
-def run_ff(filenames):
+def run_ff(filenames, output_directory):
     retained_tiles = []
     no_water = []
     too_cloudy = []
@@ -213,7 +213,7 @@ def run_ff(filenames):
     [ff_config.width, ff_config.height] = get_dimensions(ff_config.INPUT_FILE)
 
     if ff_config.REBUILD or not scratch_exists(ff_config):
-        build_scratch(ff_config)
+        build_scratch(ff_config, output_directory)
 
     logger.info("Building scene tile output directory")
     build_output(ff_config.SCENE_NAME)
@@ -396,13 +396,13 @@ def build_output(scene_name):
 def scratch_exists(config):
     return path.exists(config.SCRATCH_PATH)
 
-def build_scratch(config):
+def build_scratch(config, output_directory):
     logger = logging.getLogger(config.SCENE_NAME)
 
     should_use_tempdir = config.WITHTEMPDIR
 
     if should_use_tempdir:
-        config.SCRATCH_PATH = tempfile.mkdtemp(prefix='ff-import-')
+        config.SCRATCH_PATH = output_directory
         logger.info("Using true scratch directory {0}".format(config.SCRATCH_PATH))
 
     scratch_path = config.SCRATCH_PATH
@@ -431,9 +431,9 @@ def get_files_by_extension(filepath, extension):
 
 def maybe_clean_scratch(config):
     logger = logging.getLogger(config.SCENE_NAME)
-    if config.WITHTEMPDIR:
-        logger.info("attempting to clean up scratch directory")
-        rmtree(config.SCRATCH_PATH)
+    # if config.WITHTEMPDIR:
+    #     logger.info("attempting to clean up scratch directory")
+        # rmtree(config.SCRATCH_PATH)
 
 #=========XML OPERATIONS=============================
 
