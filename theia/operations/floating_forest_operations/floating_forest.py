@@ -4,8 +4,7 @@ from lxml import etree
 
 import csv
 import logging
-import tempfile
-from os import path, mkdir, listdir
+from os import path, mkdir, listdir, rename
 from shutil import rmtree, copy
 from subprocess import check_output, call
 
@@ -211,12 +210,12 @@ def run_ff(filenames, output_directory):
     rejects = []
 
     [ff_config.width, ff_config.height] = get_dimensions(ff_config.INPUT_FILE)
+    ff_config.SCRATCH_PATH = path.join(path.dirname(output_directory) + "/floating_forest_interstitial_products")
+    ff_config.REJECTED_TILES_PATH = path.join(ff_config.SCRATCH_PATH + "/rejected")
+    ff_config.ACCEPTED_TILES_PATH = output_directory
 
     if ff_config.REBUILD or not scratch_exists(ff_config):
-        build_scratch(ff_config, output_directory)
-
-    logger.info("Building scene tile output directory")
-    build_output(ff_config.SCENE_NAME)
+        build_scratch(ff_config)
 
     ff_config.SATELLITE = LANDSAT
     metadata = parse_metadata(ff_config.SCENE_DIR, ff_config.METADATA_SRC)
@@ -233,15 +232,17 @@ def run_ff(filenames, output_directory):
     ff_config.INFRARED_CHANNEL = path.join(
         ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['infrared'] + ".tif")
 
+    ff_config.YOU_ARE_HERE = path.dirname(path.realpath(__file__))
+
     logger.info("Building water mask")
     ff_config.WATER_MASK = path.join(ff_config.SCRATCH_PATH, "water_mask.png")
-    build_mask_files(ff_config, "water_lut.pgm", ff_config.WATER_MASK)
+    build_mask_files(ff_config, ff_config.YOU_ARE_HERE + "/water_lut.pgm", ff_config.WATER_MASK)
     logger.info("Building cloud mask")
     ff_config.CLOUD_MASK = path.join(ff_config.SCRATCH_PATH, "cloud_mask.png")
-    build_mask_files(ff_config, "cloud_lut.pgm", ff_config.CLOUD_MASK)
+    build_mask_files(ff_config, ff_config.YOU_ARE_HERE + "/cloud_lut.pgm", ff_config.CLOUD_MASK)
     logger.info("Building snow mask")
     ff_config.SNOW_MASK = path.join(ff_config.SCRATCH_PATH, "snow_mask.png")
-    build_mask_files(ff_config, "snow_lut.pgm", ff_config.SNOW_MASK)
+    build_mask_files(ff_config, ff_config.YOU_ARE_HERE + "/snow_lut.pgm", ff_config.SNOW_MASK)
     ff_config.INPUT_FILE = ff_config.WATER_MASK
 
     if ff_config.ASSEMBLE_IMAGE:
@@ -332,15 +333,15 @@ def run_ff(filenames, output_directory):
         draw_visualization(land, clouds, water, ff_config)
 
     if ff_config.REJECT_TILES:
-        logger.info("Copying accepted tiles")
+        logger.info("Copying accepted tiles to " + ff_config.ACCEPTED_TILES_PATH)
         for filename in retained_tiles:
-            accept_tile(filename, ff_config)
             accepts.append(build_dict_for_csv(filename, "Accepted", ff_config))
+            accept_tile(filename, ff_config)
 
-        logger.info("Copying rejected tiles")
+        logger.info("Copying rejected tiles to " + ff_config.REJECTED_TILES_PATH)
         for filename in no_water:
-            reject_tile(filename, ff_config)
             rejects.append(build_dict_for_csv(filename, "No Water", ff_config))
+            reject_tile(filename, ff_config)
 
         for filename in too_cloudy:
             reject_tile(filename, ff_config)
@@ -349,13 +350,13 @@ def run_ff(filenames, output_directory):
         logger.info("Writing csv file")
         rejects = sorted(rejects, key=lambda k: k['#filename'])
         write_rejects(
-            path.join("{0}_tiles".format(ff_config.SCENE_NAME), "rejected", "rejected.csv"),
+            path.join(ff_config.REJECTED_TILES_PATH, "rejected.csv"),
             rejects)
 
     if ff_config.BUILD_MANIFEST:
         logger.info("Writing manifest")
         write_manifest(
-            path.join("{0}_tiles".format(ff_config.SCENE_NAME), "accepted", "manifest.csv"),
+            path.join(ff_config.ACCEPTED_TILES_PATH, "manifest.csv"),
             accepts)
 
     maybe_clean_scratch(ff_config)
@@ -369,54 +370,53 @@ def find_scene_name(config):
     return path.splitext(files[0])[0]
 
 def accept_tile(filename, config):
-    copy(
+    rename(
         path.join(config.SCRATCH_PATH, "scene", filename),
-        path.join("{0}_tiles".format(config.SCENE_NAME), "accepted", filename)
+        path.join(config.ACCEPTED_TILES_PATH, filename)
     )
 
 def reject_tile(filename, config):
-    copy(
+    if not path.exists(config.REJECTED_TILES_PATH):
+        mkdir(config.REJECTED_TILES_PATH)
+    rename(
         path.join(config.SCRATCH_PATH, "scene", filename),
-        path.join("{0}_tiles".format(config.SCENE_NAME), "rejected", filename)
+        path.join(config.REJECTED_TILES_PATH, filename)
     )
 
-def build_output(scene_name):
-    logger = logging.getLogger(scene_name)
-    target = "{0}_tiles".format(scene_name)
-
-    if path.exists(target):
-        logger.info("Removing existing output tiles")
-        rmtree(target)
-
-    logger.info("Building output subdirectories")
-    mkdir(target)
-    mkdir(path.join(target, "accepted"))
-    mkdir(path.join(target, "rejected"))
+# def build_output(config):
+#     logger = logging.getLogger(config.SCRATCH_PATH)
+#     reject_location = config.SCRATCH_PATH
+#
+#     if path.exists(reject_location):
+#         logger.info("Pretending to remove existing output tiles")
+#         # rmtree(reject_location)
+#     else:
+#         logger.info("Building output subdirectories")
+#       # mkdir(path.join(reject_location, "rejected"))
 
 def scratch_exists(config):
     return path.exists(config.SCRATCH_PATH)
 
-def build_scratch(config, output_directory):
+def build_scratch(config):
     logger = logging.getLogger(config.SCENE_NAME)
 
     should_use_tempdir = config.WITHTEMPDIR
 
     if should_use_tempdir:
-        config.SCRATCH_PATH = output_directory
+        if not path.exists(config.SCRATCH_PATH):
+            mkdir(config.SCRATCH_PATH)
         logger.info("Using true scratch directory {0}".format(config.SCRATCH_PATH))
 
-    scratch_path = config.SCRATCH_PATH
-    if not config.WITHTEMPDIR and path.exists(scratch_path):
+    if not config.WITHTEMPDIR and path.exists(config.SCRATCH_PATH):
         logger.info("Removing existing scratch tiles")
-        rmtree(scratch_path)
-
-    if not config.WITHTEMPDIR:
-        mkdir(scratch_path)
 
     logger.info("Building scratch tile directories")
-    mkdir(path.join(scratch_path, "land"))
-    mkdir(path.join(scratch_path, "cloud"))
-    mkdir(path.join(scratch_path, "scene"))
+    if not path.exists(path.join(config.SCRATCH_PATH, "land")):
+        mkdir(path.join(config.SCRATCH_PATH, "land"))
+    if not path.exists(path.join(config.SCRATCH_PATH, "cloud")):
+        mkdir(path.join(config.SCRATCH_PATH, "cloud"))
+    if not path.exists(path.join(config.SCRATCH_PATH, "scene")):
+        mkdir(path.join(config.SCRATCH_PATH, "scene"))
 
 def get_files_by_extension(filepath, extension):
     accum = []
@@ -614,7 +614,7 @@ def draw_visualization(land, clouds, water, config):
         + ["-fill", "rgba(0,0,255,0.5)"] \
         + water \
         + ["-alpha", "remove"] \
-        + ["-resize", "1000x1000", config.SCENE_NAME + "_tiles/visualize.png"]
+        + ["-resize", "1000x1000", config.SCRATCH_PATH + "/visualize.png"]
 
     call(args)
 
@@ -641,7 +641,7 @@ def _clamp_image(source, dest, config, boost, brighten):
         "16",
         "-clut",
         source,
-        lut,
+        ff_config.YOU_ARE_HERE + "/" + lut,
         "-dither",
         "None",
         "-colors",
@@ -749,11 +749,6 @@ def assemble_image(config):
 
     logger.info("Compositing red, green, and blue images")
     call(assemble_args)
-    call([
-        "cp",
-        path.join(config.SCRATCH_PATH, "render.png"),
-        config.SCENE_NAME + "_tiles/render.png"
-    ])
 
 def prepare_tiles(config):
     call([
