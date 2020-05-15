@@ -344,8 +344,8 @@ def run_ff(filenames, output_directory):
             reject_tile(filename, ff_config)
 
         for filename in too_cloudy:
-            reject_tile(filename, ff_config)
             rejects.append(build_dict_for_csv(filename, "Too Cloudy", ff_config))
+            reject_tile(filename, ff_config)
 
         logger.info("Writing csv file")
         rejects = sorted(rejects, key=lambda k: k['#filename'])
