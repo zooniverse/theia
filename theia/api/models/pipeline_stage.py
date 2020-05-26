@@ -24,3 +24,11 @@ class PipelineStage(models.Model):
             self.operation.replace('.', '_')
         )
 
+    @property
+    def interstitial_product_location(self):
+        return "%d_%s" % (
+            self.sort_order,
+            self.operation.replace('.', '_')
+        ) + "_interstitial_products"
+
+
