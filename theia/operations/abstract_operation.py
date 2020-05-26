@@ -61,6 +61,12 @@ class AbstractOperation(ABC):
         return FileUtils.absolutize(bundle=self.bundle, filename=output_directory_name)
 
     @property
+    def manifest_directory(self):
+        manifest_directory_name = self.pipeline_stage.interstitial_product_location
+        return FileUtils.absolutize(bundle=self.bundle, filename=manifest_directory_name)
+
+
+    @property
     def output_extension(self):
         if self.pipeline_stage.output_format:
             return self.pipeline_stage.output_format

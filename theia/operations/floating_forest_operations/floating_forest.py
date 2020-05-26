@@ -50,7 +50,7 @@ class FloatingForest(AbstractOperation):
         print("Floating forest filenames: " + str(filenames))
         self.establish_output_directory()
 
-        run_ff(filenames, self.output_directory)
+        run_ff(filenames, self.output_directory, self.manifest_directory)
 
 def parse_options(filenames):
     ff_config.SCENE_NAME = path.dirname(filenames[0])
@@ -195,7 +195,7 @@ def build_dict_for_csv(filename, reason, ff_config):
     return my_dict
 
 
-def run_ff(filenames, output_directory):
+def run_ff(filenames, output_directory, manifest_directory):
     retained_tiles = []
     no_water = []
     too_cloudy = []
@@ -210,7 +210,7 @@ def run_ff(filenames, output_directory):
     rejects = []
 
     [ff_config.width, ff_config.height] = get_dimensions(ff_config.INPUT_FILE)
-    ff_config.SCRATCH_PATH = path.join(path.dirname(output_directory) + "/floating_forest_interstitial_products")
+    ff_config.SCRATCH_PATH = manifest_directory
     ff_config.REJECTED_TILES_PATH = path.join(ff_config.SCRATCH_PATH + "/rejected")
     ff_config.ACCEPTED_TILES_PATH = output_directory
 
@@ -356,7 +356,7 @@ def run_ff(filenames, output_directory):
     if ff_config.BUILD_MANIFEST:
         logger.info("Writing manifest")
         write_manifest(
-            path.join(ff_config.ACCEPTED_TILES_PATH, "manifest.csv"),
+            path.join(ff_config.SCRATCH_PATH, "manifest.csv"),
             accepts)
 
     maybe_clean_scratch(ff_config)
