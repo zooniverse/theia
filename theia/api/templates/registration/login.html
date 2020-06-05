@@ -1,6 +1,36 @@
 {% extends 'api.html' %}
 
 {% block content %}
-  <h2>Hi. We're glad you're here.</h2>
-  <a href="{% url 'social:begin' 'panoptes' %}" class="theia-button">Sign in with Zooniverse</a><br>
+<div class="background">
+    <div class="zoo-banner arrange-horizontally">
+        <img class="padded" src="https://chelseatroy.com/wp-content/uploads/2020/06/zooniverse-logo-teal.png"
+             alt="Zooniverse Logo">
+        <h1>Zooniverse NASA Landsat data processing pipeline</h1>
+    </div>
+    <div class="inset">
+        <h2>Welcome!</h2>
+        <p>Use this tool to create slices using data from NASA’s Landsat pipeline. Log in with your Zooniverse username
+            and
+            password to get started.</p>
+        <a href="{% url 'social:begin' 'panoptes' %}" class="theia-button">Connect to Zooniverse</a><br>
+
+        <div style="height: 200px;"></div>
+        <div class="on-bottom">
+            <div class="divider"></div>
+            <div class="centered">
+                <div class="arrange-horizontally">
+                    <img class="padded"
+                         src="https://chelseatroy.com/wp-content/uploads/2020/06/zooniverse-word-teal.png"
+                         alt="Zooniverse Logo">
+                    <img class="padded" src="https://chelseatroy.com/wp-content/uploads/2020/06/nasa-logo-web-rgb.png"
+                         alt="Zooniverse Logo">
+
+                </div>
+            </div>
+            <p class="text-center">This project is made possible in part thanks to NASA Grant - Co-Operative Agreement Number: NNX17AI22A</p>
+        </div>
+    </div>
+
+</div>
+</div>
 {% endblock %}
