@@ -2,25 +2,27 @@
 
 {% block content %}
 <div class="background">
-    <div class="zoo-banner arrange-horizontally">
+    <div class="header arrange-horizontally">
         <img class="padded" src="https://chelseatroy.com/wp-content/uploads/2020/06/zooniverse-logo-teal.png"
              alt="Zooniverse Logo">
         <h1>Zooniverse NASA Landsat data processing pipeline</h1>
     </div>
     <div class="inset">
-        <h2>Hello,
-            <span style="color: teal">{{ user.username }}</span>
-            <a href="{% url 'logout' %}">SIGN OUT</a>
-        </h2>
-        <p>Use this tool to create slices using data from NASA’s Landsat pipeline. Log in with your Zooniverse username and password to get started.
-        </p>
+        <div class="content">
+            <h2>Hello,
+                <span style="color: teal">{{ user.username }}</span>
+                <a href="{% url 'logout' %}">SIGN OUT</a>
+            </h2>
+            <p>Use this tool to create slices using data from NASA’s Landsat pipeline. Log in with your Zooniverse
+                username and password to get started.
+            </p>
 
-        <h3>Here are your projects:</h3>
-        <p>{{ projects }}</p>
+            <h3>Here are your projects:</h3>
+            <p>{{ projects }}</p>
 
-        <a href="{% url 'imageryrequest-list' %}" class="theia-button">Run a Pipeline!</a>
-
-        <div class="on-bottom">
+            <a href="{% url 'imageryrequest-list' %}" class="theia-button">Run a Pipeline!</a>
+        </div>
+        <div class="footer">
             <div class="divider"></div>
             <div class="centered">
                 <div class="arrange-horizontally">
