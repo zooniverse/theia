@@ -15,12 +15,19 @@ services:
   app:
     build:
       context: .
+      dockerfile: Dockerfile
     volumes:
       - ./:/usr/src/app
     environment:
       - DJANGO_ENV
       - USGS_USERNAME
       - USGS_PASSWORD
+      - PANOPTES_PROD_CLIENT_ID
+      - PANOPTES_PROD_CLIENT_SECRET
+      - PANOPTES_PROD_URL
+      - PANOPTES_STAGING_CLIENT_ID
+      - PANOPTES_STAGING_CLIENT_SECRET
+      - PANOPTES_STAGING_URL
     ports:
       - "8080:8080"
     links:
@@ -37,6 +44,12 @@ services:
       - DJANGO_ENV
       - USGS_USERNAME
       - USGS_PASSWORD
+      - PANOPTES_PROD_CLIENT_ID
+      - PANOPTES_PROD_CLIENT_SECRET
+      - PANOPTES_PROD_URL
+      - PANOPTES_STAGING_CLIENT_ID
+      - PANOPTES_STAGING_CLIENT_SECRET
+      - PANOPTES_STAGING_URL
     links:
       - redis:redis
       - postgres:postgres

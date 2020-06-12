@@ -1,8 +1,10 @@
-from theia.operations import gis_operations, image_operations, panoptes_operations
+from theia.operations import gis_operations, image_operations, panoptes_operations, floating_forest_operations
 from theia.operations.noop import AbstractOperation, NoOp
 
 
 operations = {
+    'floating_forest_operations.floating_forest': floating_forest_operations.FloatingForest,
+
     'gis_operations.compute_corners': gis_operations.ComputeCorners,
 
     'image_operations.resize_image': image_operations.ResizeImage,

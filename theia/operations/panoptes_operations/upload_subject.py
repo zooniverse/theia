@@ -1,4 +1,5 @@
-from os import getenv
+from os import getenv, path, path
+import csv
 
 from ..abstract_operation import AbstractOperation
 from panoptes_client import Panoptes, Project, Subject, SubjectSet
@@ -7,7 +8,6 @@ from theia.utils import PanoptesUtils
 from PIL import Image
 
 from datetime import datetime
-
 
 class UploadSubject(AbstractOperation):
     def apply(self, filenames):
@@ -25,12 +25,33 @@ class UploadSubject(AbstractOperation):
         with theia_authenticated_client:
             target_set = self._get_subject_set(scope, self.project.id, scope.name_subject_set())
 
+            using_manifest = False
+            metadata_dictionary = {}
+
+            path_example = filenames[0]
+            manifest_file_location = path.join((path.dirname(path_example) + "_interstitial_products"), "manifest.csv")
+            if self.include_metadata and path.exists(manifest_file_location):
+                using_manifest = True
+                with open(manifest_file_location, newline='') as csvfile:
+                    reader = csv.DictReader(csvfile)
+                    for row in reader:
+                        metadata_dictionary[row['#filename']] = row
+
             for filename in filenames:
                 img = Image.open(filename)
                 img.save(filename, 'png')
 
-                new_subject = self._create_subject(self.project.id, filename)
+                #This line might have to be done with os.path to translate across OSes
+                name_only = filename.split("/")[len(filename.split("/")) - 1]
+
+                metadata = {}
+                if using_manifest:
+                    metadata = metadata_dictionary[name_only]
+                    print(metadata)
+
+                new_subject = self._create_subject(self.project.id, filename, metadata=metadata)
                 target_set.add(new_subject)
+
 
     def _get_subject_set(self, scope, project_id, set_name):
         subject_set = None
@@ -65,3 +86,15 @@ class UploadSubject(AbstractOperation):
         subject_set.save()
 
         return subject_set
+
+    @property
+    def include_metadata(self):
+        print("CONFIG")
+        print(self.config)
+        if self.config['include_metadata']:
+            return self.config['include_metadata']
+        else:
+            return False
+
+
+
