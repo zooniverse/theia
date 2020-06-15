@@ -37,6 +37,13 @@ spec:
                 secretKeyRef:
                   name: theia-production
                   key: panoptes-client-secret
+            volumeMounts:
+            - mountPath: "/tmp"
+               name: theia-production-volume
+      volumes:
+        - name: theia-production-volume
+          persistentVolumeClaim:
+          claimName: theia-production-data-storage
 ---
 apiVersion: v1
 kind: Service
@@ -50,3 +57,15 @@ spec:
       port: 80
       targetPort: 80
   type: NodePort
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: theia-production-data-storage
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: azurefile
+  resources:
+    requests:
+      storage: 5Gi
