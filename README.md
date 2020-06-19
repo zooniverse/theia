@@ -22,25 +22,19 @@ The proposed tech stack for Theia is:
 
 ### Docker environment
 
-#### Build Image
+Ensure that you have docker & docker-compose installed.
 
-Ensure that you have a modern-ish version of docker installed. Simply run
+Then run
 
-`docker build -t theia .` to build the image
-
-If you have an image built, you can run it with:
-
-`docker run theia`
-
-#### Build Environment
+`docker-compose build` to build the image
 
 To create the environment, including the postgres and redis servers and a web app and worker node
 
-`docker-compose up &`
+`docker-compose up -d`
 
 To, for example, create a second worker node
 
-`docker-compose up --scale worker=2 &`
+`docker-compose up --scale worker=2 -d`
 
 To halt instances
 
@@ -49,6 +43,19 @@ To halt instances
 Note that you can also remove the volumes (they will need to be recreated next time)
 
 `docker-compose down -v`
+
+To develop in the docker containers via bash
+`docker-compose run --rm --service-ports app bash`
+
+this will provide you with access to python, libraries and all dependent services needed for development, e.g. from the bash console run:
+`pytest` to test the application
+setup local databases
+`pipenv run create_local_db`
+`pipenv run drop_local_db`
+Run Django app locally (applying migrations if necessary):
+`pipenv run server`
+Run the Celery worker locally (does not apply migrations):
+`pipenv run worker`
 
 ### Local environment
 
@@ -128,7 +135,7 @@ File "/Users/chelseatroy/.pyenv/versions/3.7.4/lib/python3.7/ssl.py", line 98, i
 ImportError: dlopen(/Users/chelseatroy/.local/share/virtualenvs/theia-LYdUFkJN/lib/python3.7/lib-dynload/_ssl.cpython-37m-darwin.so, 2): Library not loaded: /usr/local/opt/openssl/lib/libssl.1.0.0.dylib
   Referenced from: /Users/chelseatroy/.local/share/virtualenvs/theia-LYdUFkJN/lib/python3.7/lib-dynload/_ssl.cpython-37m-darwin.so
   Reason: image not found
-```  
+```
 You can follow the instructions [here](https://mithun.co/hacks/library-not-loaded-libcrypto-1-0-0-dylib-issue-in-mac/).
 
 ### Accessing the app
@@ -148,5 +155,8 @@ and then you can run the tests with
 `pipenv run tests`
 
 In the container:
+`docker-compose run --rm app bash`
 
-`docker-compose up postgres && docker-compose run app bash -c 'python -B -m pytest'`
+Then from the bash shell in the container
+`python manage.py migrate` setup the db
+`pytest --cov=theia` run the tests
