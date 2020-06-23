@@ -1,13 +1,46 @@
 {% extends 'api.html' %}
 
 {% block content %}
-  <h2>Hello, {{ user.username }}!</h2>
-  <p>Welcome to the NASA Landsat data processing pipeline.</p>
+<div class="background">
+    <div class="header arrange-horizontally">
+        <img class="padded" src="https://chelseatroy.com/wp-content/uploads/2020/06/zooniverse-logo-teal.png"
+             alt="Zooniverse Logo">
+        <h1>Zooniverse NASA Landsat data processing pipeline</h1>
+    </div>
+    <div class="inset">
+        <div class="content">
+            <h2>Hello,
+                <span style="color: teal">{{ user.username }}</span>
+                <a class="sign-out" href="{% url 'logout' %}">SIGN OUT</a>
+            </h2>
+            <p>
+                NASA Landsat data: ordered, processed, and sliced just how you need it for your community science endeavors.
+            </p>
 
-  <h3>Here are your projects:</h3>
-  <p>{{ projects }}</p>
+            <h3>Here are your projects:</h3>
+            <p>{{ projects }}</p>
 
-  <a href="{% url 'imageryrequest-list' %}" class="theia-button">Run a Pipeline!</a>
+            <a href="{% url 'imageryrequest-list' %}" class="theia-button">Run a Pipeline!</a>
+        </div>
+        <div class="footer">
+            <div class="divider"></div>
+            <div class="centered">
+                <div class="arrange-horizontally">
+                    <img class="padded"
+                         src="https://chelseatroy.com/wp-content/uploads/2020/06/zooniverse-word-teal.png"
+                         alt="Zooniverse Logo">
+                    <img class="padded" src="https://chelseatroy.com/wp-content/uploads/2020/06/nasa-logo-web-rgb.png"
+                         alt="NASA Logo">
 
-  <a href="{% url 'logout' %}" class="theia-button">Sign Out</a>
+                </div>
+            </div>
+            <p class="text-center">This project is made possible in part thanks to NASA Grant - Co-Operative Agreement
+                Number: NNX17AI22A</p>
+        </div>
+    </div>
+
+</div>
+</div>
+
+
 {% endblock %}

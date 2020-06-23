@@ -1,34 +1,95 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "XHTML1-s.dtd" >
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>{% block title %}{% if page_title %}{{ page_title }} - {% endif %}
-            {{ site_name }}{% endblock %}</title>
-    <meta name="keywords" content="{{ meta_keywords }}" />
-    <meta name="description" content="{{ meta_description }}" />
+        {{ site_name }}{% endblock %}</title>
+    <meta name="keywords" content="{{ meta_keywords }}"/>
+    <meta name="description" content="{{ meta_description }}"/>
+    <link href="https://fonts.googleapis.com/css2?family=Karla:wght@400&display=swap" rel="stylesheet">
     <style>
         body {
-            background-image: url('https://images.unsplash.com/photo-1531707566548-6577aab321d7?ixlib=rb-1.2.1');
             background-repeat: no-repeat;
             background-size: cover;
         }
-        h1, h2, h3 {
+        h1 {
             color: white;
+            font-family: 'Karla';
+            font-weight: 'bold';
+        }
+        h2, h3 {
+            font-family: 'Karla';
+            font-weight: 'bold';
         }
         p {
-            color: teal;
+            font-family: 'Karla';
+            line-height: 2;
+            padding-top: 15px;
+            padding-bottom: 15px;
         }
         .theia-button {
-            background-color: teal;
+            background-color: #00979D;
+            font-family: 'Karla';
             padding: 10px;
-            margin: 10px;
-            corner-radius: 5px;
+            padding-left: 20px;
+            padding-right: 20px;
+            margin-top: 50px;
+            margin-bottom:30px;
+            text-decoration: none;
             color: white;
         }
+        .divider {
+            border: 0.5px solid #a6a7a9;
+            margin-top: 30px;
+        }
+        .header {
+            background-color: #005d69;
+            padding: 30px;
+        }
+        .sign-out {
+            text-decoration: none;
+            padding-left: 10px;
+        }
+        .arrange-horizontally > * {
+            display: inline-block;
+              vertical-align:middle;
+
+        }
+        .padded {
+            padding: 10px;
+        }
+        .inset {
+            padding: 10px;
+            background-color: white;
+            margin-left: 80px;
+            margin-left: 80px;
+                          min-height: 100vh;
+
+        }
+        .background {
+            background-color: #eff2f5;
+              min-height: 100vh;
+
+        }
+        .footer {
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+        }
+        .centered {
+            width: 50%;
+            margin: 0 auto;
+        }
+        .text-center {
+            text-align: center;
+        }
+
+
+
     </style>
 </head>
 <body>
-    {% block site_wrapper %}
-    {% endblock %}
+{% block site_wrapper %}
+{% endblock %}
 </body>
 </html>
