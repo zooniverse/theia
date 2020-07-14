@@ -113,6 +113,13 @@ Install other related dependencies:
 
 `brew install libtiff`
 
+This project doesn't work with allversions of ssl, so if you run into:
+`ImportError: dlopen(.../.pyenv/versions/3.7.4/lib/python3.7/lib-dynload/_ssl.cpython-37m-darwin.so, 2): Library not loaded: /usr/local/opt/openssl/lib/libssl.1.0.0.dylib
+  Referenced from: .../.pyenv/versions/3.7.4/lib/python3.7/lib-dynload/_ssl.cpython-37m-darwin.so
+  Reason: image not found`
+run:
+`brew uninstall openssl; brew uninstall openssl; brew install https://github.com/tebelorg/Tump/releases/download/v1.0.0/openssl.rb`
+
 To drop or create the local DB that theia will be using:
 
 `pipenv run create_local_db`
