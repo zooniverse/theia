@@ -113,14 +113,6 @@ Install other related dependencies:
 
 `brew install libtiff`
 
-This project doesn't work with allversions of ssl, so if you run into:
-```
-ImportError: dlopen(.../.pyenv/versions/3.7.4/lib/python3.7/lib-dynload/_ssl.cpython-37m-darwin.so, 2): Library not loaded: /usr/local/opt/openssl/lib/libssl.1.0.0.dylib
-  Referenced from: .../.pyenv/versions/3.7.4/lib/python3.7/lib-dynload/_ssl.cpython-37m-darwin.so
-  Reason: image not found
-```
-run:
-`brew uninstall openssl; brew uninstall openssl; brew install https://github.com/tebelorg/Tump/releases/download/v1.0.0/openssl.rb`
 
 To drop or create the local DB that theia will be using:
 
@@ -146,6 +138,13 @@ ImportError: dlopen(/Users/chelseatroy/.local/share/virtualenvs/theia-LYdUFkJN/l
   Reason: image not found
 ```
 You can follow the instructions [here](https://mithun.co/hacks/library-not-loaded-libcrypto-1-0-0-dylib-issue-in-mac/).
+
+Short Version—run this:
+
+```
+brew uninstall openssl; brew uninstall openssl; brew install https://github.com/tebelorg/Tump/releases/download/v1.0.0/openssl.rb
+```
+
 
 ### Accessing the app
 
