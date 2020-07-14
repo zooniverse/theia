@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: theia-staging-app
+  labels:
+    app: theia-staging-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: theia-staging-app
+  template:
+    metadata:
+      labels:
+        app: theia-staging-app
+    spec:
+      containers:
+        - name: theia-staging-app
+          image: zooniverse/theia:__IMAGE_TAG__
+          resources:
+            requests:
+              memory: "200Mi"
+              cpu: "10m"
+            limits:
+              memory: "200Mi"
+              cpu: "500m"
+          env:
+            - name: PANOPTES_URL
+              value: https://panoptes-staging.zooniverse.org/
+            - name: PANOPTES_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: theia-staging
+                  key: panoptes-client-id
+            - name: PANOPTES_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: theia-staging
+                  key: panoptes-client-secret
+          volumeMounts:
+            - mountPath: "/tmp"
+               name: theia-staging-volume
+      volumes:
+        - name: theia-staging-volume
+          persistentVolumeClaim:
+          claimName: theia-staging-data-storage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: theia-staging-app
+spec:
+  selector:
+    app: theia-staging-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: NodePort
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: theia-staging-data-storage
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: azurefile
+  resources:
+    requests:
+      storage: 5Gi

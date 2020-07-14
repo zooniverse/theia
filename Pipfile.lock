@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "745f3b2dc3bc5584c9583a9faf5508f865003922dd5ba9cb5750c3f86380f38b"
+            "sha256": "7ff8bd6324b57fc0733f69da35c6bce50cfa1bc7a781b764dbd11c99e913b3fc"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -209,6 +209,13 @@
             ],
             "index": "pypi",
             "version": "==1.0"
+        },
+        "libtiff": {
+            "hashes": [
+                "sha256:8b80660541bfc51309b22dd676bcc94a8d77324b00fba3d331b7f564775f17a6"
+            ],
+            "index": "pypi",
+            "version": "==0.4.2"
         },
         "lxml": {
             "hashes": [
@@ -660,11 +667,11 @@
         },
         "pytest-mock": {
             "hashes": [
-                "sha256:98e02534f170e4f37d7e1abdfc5973fd4207aa609582291717f643764e71c925",
-                "sha256:a4494016753a30231f8519bfd160242a0f3c8fb82ca36e7b6f82a7fb602ac6b8"
+                "sha256:636e792f7dd9e2c80657e174c04bf7aa92672350090736d82e97e92ce8f68737",
+                "sha256:a9fedba70e37acf016238bb2293f2652ce19985ceb245bbd3d7f3e4032667402"
             ],
             "index": "pypi",
-            "version": "==3.0.0"
+            "version": "==3.1.1"
         },
         "pytest-pspec": {
             "hashes": [

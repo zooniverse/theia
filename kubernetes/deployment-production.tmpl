@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: theia-production-app
+  labels:
+    app: theia-production-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: theia-production-app
+  template:
+    metadata:
+      labels:
+        app: theia-production-app
+    spec:
+      containers:
+        - name: theia-production-app
+          image: zooniverse/theia:__IMAGE_TAG__
+          resources:
+            requests:
+              memory: "200Mi"
+              cpu: "10m"
+            limits:
+              memory: "200Mi"
+              cpu: "500m"
+          env:
+            - name: PANOPTES_URL
+              value: https://panoptes.zooniverse.org/
+            - name: PANOPTES_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: theia-production
+                  key: panoptes-client-id
+            - name: PANOPTES_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: theia-production
+                  key: panoptes-client-secret
+            volumeMounts:
+            - mountPath: "/tmp"
+               name: theia-production-volume
+      volumes:
+        - name: theia-production-volume
+          persistentVolumeClaim:
+          claimName: theia-production-data-storage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: theia-production-app
+spec:
+  selector:
+    app: theia-production-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: NodePort
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: theia-production-data-storage
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: azurefile
+  resources:
+    requests:
+      storage: 5Gi
