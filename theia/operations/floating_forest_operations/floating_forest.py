@@ -7,6 +7,7 @@ import logging
 from os import path, mkdir, listdir, rename
 from shutil import rmtree, copy
 from subprocess import check_output, call
+from pyproj import Proj
 
 from ..abstract_operation import AbstractOperation
 
@@ -68,10 +69,6 @@ LANDSAT8 = {'red': 'band6', 'green': 'band3', 'blue': 'band4', 'infrared': 'band
 
 def usage():
     print("""
-simple.py (Simple Image Pipeline)
-
-python simple.py [--option] SCENE_DIR
-
 This script is used to process satellite imagery from LANDSAT 4, 5, 7, and 8
 into subjects for Floating Forests. This includes sorting out tiles that only
 contain land or contain too many clouds, as well as compositing the different
@@ -192,6 +189,9 @@ def build_dict_for_csv(filename, reason, ff_config):
 
     my_dict.update(coordinate_metadata)
     my_dict.update(ff_config.METADATA)
+
+    my_dict['#utm_zone'] = str(abs(int(my_dict['#utm_zone'])))
+
     return my_dict
 
 
@@ -763,10 +763,9 @@ def prepare_tiles(config):
 #========GIS OPERATIONS==================
 
 def compute_lat_lon(x, y, utm_zone):
-    # p = Proj(proj='utm', zone=utm_zone, ellps='WGS84')
-    # lat, lon = p(x, y, inverse=True)
-    # return [lat, lon]
-    return [x, y]
+    p = Proj(proj='utm', zone=str(abs(int(utm_zone))), ellps='WGS84')
+    lat, lon = p(x, y, inverse=True)
+    return [lat, lon]
 
 def compute_tile_coords(row, col, width, height, config):
     scene_top = float(config.METADATA["#scene_corner_UL_y"])
@@ -781,6 +780,10 @@ def compute_tile_coords(row, col, width, height, config):
     top = scene_top + ((row * config.GRID_SIZE) / config.height) * scene_span_y
     right = left + (width / config.width) * scene_span_x
     bottom = top + (height / config.height) * scene_span_y
+    
+    if int(config.METADATA['#utm_zone']) < 0:
+        top = top - 10000000
+        bottom = bottom - 10000000
 
     return [left, top, right, bottom]
 
