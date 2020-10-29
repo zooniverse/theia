@@ -69,3 +69,78 @@ spec:
   resources:
     requests:
       storage: 5Gi
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: thiea-staging-redis
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: azurefile
+  resources:
+    requests:
+      storage: 250Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: theia-staging-redis
+  labels:
+    app: theia-staging-redis
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: theia-staging-redis
+  template:
+    metadata:
+      labels:
+        app: theia-staging-redis
+    spec:
+      tolerations:
+      - key: "servicelife"
+        operator: "Equal"
+        value: "longlife"
+        effect: "NoSchedule"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: servicelife
+                operator: In
+                values:
+                - longlife
+      containers:
+        - name: theia-staging-redis
+          image: redis
+          resources:
+            requests:
+              memory: "10Mi"
+              cpu: "10m"
+            limits:
+              memory: "100Mi"
+              cpu: "500m"
+          volumeMounts:
+          - name: theia-staging-redis-data
+            mountPath: "/data"
+      volumes:
+      - name: theia-staging-redis-data
+        persistentVolumeClaim:
+          claimName: theia-staging-redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: theia-staging-redis
+spec:
+  selector:
+    app: theia-staging-redis
+  ports:
+    - protocol: TCP
+      port: 6379
+      targetPort: 6379
+  type: NodePort
