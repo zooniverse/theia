@@ -31,12 +31,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: theia-staging
-                  key: panoptes-client-id
+                  key: PANOPTES_CLIENT_ID
             - name: PANOPTES_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: theia-staging
-                  key: panoptes-client-secret
+                  key: PANOPTES_CLIENT_SECRET
           volumeMounts:
             - name: theia-staging-volume
               mountPath: "/tmp"
