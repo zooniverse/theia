@@ -38,12 +38,12 @@ spec:
                   name: theia-production
                   key: panoptes-client-secret
             volumeMounts:
-            - mountPath: "/tmp"
-               name: theia-production-volume
+              - name: theia-production-volume
+                mountPath: "/tmp"
       volumes:
         - name: theia-production-volume
           persistentVolumeClaim:
-          claimName: theia-production-data-storage
+            claimName: theia-production-data-storage
 ---
 apiVersion: v1
 kind: Service
