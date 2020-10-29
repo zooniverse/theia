@@ -38,12 +38,12 @@ spec:
                   name: theia-staging
                   key: panoptes-client-secret
           volumeMounts:
-            - mountPath: "/tmp"
-               name: theia-staging-volume
+            - name: theia-staging-volume
+              mountPath: "/tmp"
       volumes:
         - name: theia-staging-volume
           persistentVolumeClaim:
-          claimName: theia-staging-data-storage
+            claimName: theia-staging-data-storage
 ---
 apiVersion: v1
 kind: Service
