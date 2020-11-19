@@ -36,17 +36,55 @@ class ErosWrapper():
 
     @classmethod
     def search(cls, search):
+        search = {
+            "datasetName": "LANDSAT_8_C1",
+            "metadataFilter": {
+                "filterType": "and",
+                "childFilters": [
+                    {
+                        "filterType": "value",
+                        "filterId": "5e83d0b81d20cee8",
+                        "value": "23"
+                    },
+                    {
+                        "filterType": "value",
+                        "filterId": "5e83d0b849ed5ee7",
+                        "value": "47"
+                    },
+                    {
+                        "filterType": "value",
+                        "filterId": "5e83d0b83a03f8ee",
+                        "value": "DAY"
+                    }
+                ]
+            },
+            "cloudCoverFilter": {
+                "max": 45,
+                "min": 0
+            },
+            "startingNumber": 0
+        }
+
         result = []
         data = {'lastRecord': 0, 'nextRecord': 0, 'totalHits': 1}
         while data['lastRecord'] < data['totalHits']:
             search['startingNumber'] = data['nextRecord']
             data = cls.search_once(search)
+            print("DATA")
+            print(data)
             result = result + cls.parse_result_set(data['results'])
         return result
 
     @classmethod
     def search_once(cls, search):
-        response = cls.eros_post('search', search)
+        if not cls.token():
+            cls.connect()
+
+        new_args = cls.eros_prepare(search)
+        response = requests.post("https://m2m.cr.usgs.gov/api/api/json/stable/scene-search", **new_args).json()
+
+        print("SO EROS SAYS: ")
+        print(response)
         return response['data']
 
     @classmethod
@@ -81,6 +119,7 @@ class ErosWrapper():
     def eros_prepare(cls, request_data, authenticating=False, **kwargs, ):
         headers = {}
         if cls.token():
+            print("THE GAHTDAMN TOKEN: " + cls.token())
             headers['X-Auth-Token'] = cls.token()
         if 'headers' in kwargs:
             headers = {**headers, **(kwargs['headers'])}

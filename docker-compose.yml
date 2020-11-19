@@ -28,6 +28,8 @@ services:
       - PANOPTES_STAGING_CLIENT_ID
       - PANOPTES_STAGING_CLIENT_SECRET
       - PANOPTES_STAGING_URL
+      - STAGING_DB_USERNAME
+      - STAGING_DB_PASSWORD
     ports:
       - "8080:8080"
     links:
@@ -50,6 +52,8 @@ services:
       - PANOPTES_STAGING_CLIENT_ID
       - PANOPTES_STAGING_CLIENT_SECRET
       - PANOPTES_STAGING_URL
+      - STAGING_DB_USERNAME
+      - STAGING_DB_PASSWORD
     links:
       - redis:redis
       - postgres:postgres
