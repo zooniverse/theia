@@ -30,6 +30,7 @@ services:
       - PANOPTES_STAGING_URL
       - STAGING_DB_USERNAME
       - STAGING_DB_PASSWORD
+      - STAGING_DB_HOST
     ports:
       - "8080:8080"
     links:
@@ -54,6 +55,7 @@ services:
       - PANOPTES_STAGING_URL
       - STAGING_DB_USERNAME
       - STAGING_DB_PASSWORD
+      - STAGING_DB_HOST
     links:
       - redis:redis
       - postgres:postgres

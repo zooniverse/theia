@@ -91,7 +91,7 @@ if os.environ.get('ENV') == "staging":
             'NAME': 'theia_staging',
             'USER': os.getenv('STAGING_DB_USERNAME'),
             'PASSWORD': os.getenv('STAGING_DB_PASSWORD'),
-            'HOST': 'zooniverse-staging.postgres.database.azure.com',
+            'HOST': os.getenv('STAGING_DB_HOST'),
             'PORT': 5432
         }
     }

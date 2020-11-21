@@ -119,7 +119,6 @@ class ErosWrapper():
     def eros_prepare(cls, request_data, authenticating=False, **kwargs, ):
         headers = {}
         if cls.token():
-            print("THE GAHTDAMN TOKEN: " + cls.token())
             headers['X-Auth-Token'] = cls.token()
         if 'headers' in kwargs:
             headers = {**headers, **(kwargs['headers'])}
