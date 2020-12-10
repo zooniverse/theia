@@ -12,9 +12,8 @@ class ErosWrapper():
             'username': Utils.get_username(),
             'password': Utils.get_password()
         }
-        apiKey = self.sendRequest(serviceUrl + "login", loginParameters)
-
-        scenes = self.sendRequest(serviceUrl + "scene-search", search, apiKey)
+        apiKey = self.send_request(serviceUrl + "login", loginParameters)
+        scenes = self.send_request(serviceUrl + "scene-search", search, apiKey)
 
         results = self.parse_result_set(scenes['results'])
         return results
@@ -25,7 +24,7 @@ class ErosWrapper():
 
         return [scene.get('displayId', None) for scene in result_set if 'displayId' in scene]
 
-    def sendRequest(self, url, data, apiKey=None):
+    def send_request(self, url, data, apiKey=None):
         json_data = json.dumps(data)
 
         if apiKey == None:
