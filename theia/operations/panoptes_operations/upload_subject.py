@@ -47,7 +47,6 @@ class UploadSubject(AbstractOperation):
                 metadata = {}
                 if using_manifest:
                     metadata = metadata_dictionary[name_only]
-                    print(metadata)
 
                 new_subject = self._create_subject(self.project.id, filename, metadata=metadata)
                 target_set.add(new_subject)

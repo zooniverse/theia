@@ -9,12 +9,13 @@ from panoptes_client import Subject, SubjectSet, Panoptes
 # is really difficult
 # the panoptes api client intercepts property accesses and so is hard to mock
 class TestUploadSubject:
+    @patch('theia.operations.panoptes_operations.UploadSubject.config', return_value=False)
     @patch('theia.api.models.Pipeline.name_subject_set', return_value='pipeline name')
     @patch('theia.operations.panoptes_operations.UploadSubject._get_subject_set', return_value=SubjectSet())
     @patch('theia.operations.panoptes_operations.UploadSubject._create_subject', return_value=Subject())
     @patch('panoptes_client.SubjectSet.add')
     @patch('PIL.Image.open', return_value=Mock())
-    def test_apply_single(self, mockOpen, mockAdd, mockCreate, mockGet, mockGetName, *args):
+    def test_apply_single(self, mockOpen, mockAdd, mockCreate, mockGet, mockGetName, mockIncludeMetadata, *args):
         project = Project(id=8)
         pipeline = Pipeline(project=project)
         bundle = JobBundle(pipeline=pipeline)
@@ -25,15 +26,16 @@ class TestUploadSubject:
         mockOpen.assert_called_once()
         mockGetName.assert_called_once()
         mockGet.assert_called_once_with(pipeline, 8, 'pipeline name')
-        mockCreate.assert_called_once_with(8, 'some_file')
+        mockCreate.assert_called_once_with(8, 'some_file', metadata={})
         mockAdd.assert_called_once_with(mockCreate.return_value)
 
+    @patch('theia.operations.panoptes_operations.UploadSubject.config', return_value=False)
     @patch('theia.api.models.JobBundle.name_subject_set', return_value='bundle name')
     @patch('theia.operations.panoptes_operations.UploadSubject._get_subject_set', return_value=SubjectSet())
     @patch('theia.operations.panoptes_operations.UploadSubject._create_subject', return_value=Subject())
     @patch('panoptes_client.SubjectSet.add')
     @patch('PIL.Image.open', return_value=Mock())
-    def test_apply_multiple(self, mockOpen, mockAdd, mockCreate, mockGet, mockGetName, *args):
+    def test_apply_multiple(self, mockOpen, mockAdd, mockCreate, mockGet, mockGetName, mockIncludeMetadata, *args):
         project = Project(id=8)
         pipeline = Pipeline(project=project, multiple_subject_sets=True)
         bundle = JobBundle(pipeline=pipeline)
@@ -44,7 +46,7 @@ class TestUploadSubject:
         mockOpen.assert_called_once()
         mockGetName.assert_called_once()
         mockGet.assert_called_once_with(bundle, 8, 'bundle name')
-        mockCreate.assert_called_once_with(8, 'some_file')
+        mockCreate.assert_called_once_with(8, 'some_file', metadata={})
         mockAdd.assert_called_once_with(mockCreate.return_value)
 
     @patch('theia.api.models.JobBundle.save')
