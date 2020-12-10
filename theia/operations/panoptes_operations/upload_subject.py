@@ -89,8 +89,6 @@ class UploadSubject(AbstractOperation):
 
     @property
     def include_metadata(self):
-        print("CONFIG")
-        print(self.config)
         if self.config['include_metadata']:
             return self.config['include_metadata']
         else:
