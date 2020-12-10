@@ -12,7 +12,7 @@ class ImagerySearch:
         search['datasetName'] = imagery_request.dataset_name
 
         if imagery_request.wgs_row and imagery_request.wgs_path:
-            cls.add_wgs_row_and_path(search, imagery_request.wgs_row, imagery_request.wgs_path)
+            cls.add_wgs_row_and_path(search, row=imagery_request.wgs_row, path=imagery_request.wgs_path)
 
         cls.add_day_or_night(search)
         cls.add_scene_cloud_cover(search, imagery_request.max_cloud_cover or 100)
@@ -27,6 +27,7 @@ class ImagerySearch:
 
     @classmethod
     def add_scene_cloud_cover(cls, search, high):
+        search.setdefault('sceneFilter', {})
         search["sceneFilter"]["cloudCoverFilter"] = {"max": high, "min": 0}
         return search
 
