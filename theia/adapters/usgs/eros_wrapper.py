@@ -14,23 +14,7 @@ class ErosWrapper():
         }
         apiKey = self.sendRequest(serviceUrl + "login", loginParameters)
 
-        datasetName = "landsat_8_c1"
-        sceneSearchParameters = {
-            'datasetName': datasetName,
-            "sceneFilter": {
-                "metadataFilter": {
-                    "filterType": "and",
-                    "childFilters": [
-                        {"filterType": "value", "filterId": "5e83d0b81d20cee8", "value": "23"},
-                        {"filterType": "value", "filterId": "5e83d0b849ed5ee7", "value": "47"},
-                        {"filterType": "value", "filterId": "5e83d0b83a03f8ee", "value": "DAY"}
-                    ]
-                },
-                "cloudCoverFilter": {"max": 45, "min": 0}
-            }}
-
-        print("Searching scenes...\n\n")
-        scenes = self.sendRequest(serviceUrl + "scene-search", sceneSearchParameters, apiKey)
+        scenes = self.sendRequest(serviceUrl + "scene-search", search, apiKey)
 
         results = self.parse_result_set(scenes['results'])
         return results
