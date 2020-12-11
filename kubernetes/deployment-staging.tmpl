@@ -37,6 +37,21 @@ spec:
                 secretKeyRef:
                   name: theia-staging
                   key: PANOPTES_CLIENT_SECRET
+            - name: STAGING_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: theia-staging
+                  key: STAGING_DB_USERNAME
+            - name: STAGING_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: theia-staging
+                  key: STAGING_DB_PASSWORD
+            - name: STAGING_DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: theia-staging
+                  key: STAGING_DB_HOST
           volumeMounts:
             - name: theia-staging-volume
               mountPath: "/tmp"
