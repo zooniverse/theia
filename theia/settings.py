@@ -84,14 +84,14 @@ WSGI_APPLICATION = 'theia.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-if os.environ.get('ENV') == "staging":
+if os.environ.get('ENV') == "production":
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'theia_staging',
-            'USER': os.getenv('STAGING_DB_USERNAME'),
-            'PASSWORD': os.getenv('STAGING_DB_PASSWORD'),
-            'HOST': os.getenv('STAGING_DB_HOST'),
+            'NAME': 'theia_production',
+            'USER': os.getenv('PRODUCTION_DB_USERNAME'),
+            'PASSWORD': os.getenv('PRODUCTION_DB_PASSWORD'),
+            'HOST': os.getenv('PRODUCTION_DB_HOST'),
             'PORT': 5432
         }
     }
