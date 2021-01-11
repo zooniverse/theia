@@ -24,22 +24,15 @@ spec:
             limits:
               memory: "200Mi"
               cpu: "500m"
+          envFrom:
+          - secretRef:
+              name: theia-production-env-vars
           env:
-            - name: PANOPTES_URL
-              value: https://panoptes.zooniverse.org/
-            - name: PANOPTES_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: theia-production
-                  key: PANOPTES_CLIENT_ID
-            - name: PANOPTES_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: theia-production
-                  key: PANOPTES_CLIENT_SECRET
-            volumeMounts:
-              - name: theia-production-volume
-                mountPath: "/tmp"
+          - name: PANOPTES_PROD_URL
+            value: https://panoptes.zooniverse.org/
+          volumeMounts:
+            - name: theia-production-volume
+              mountPath: "/tmp"
       volumes:
         - name: theia-production-volume
           persistentVolumeClaim:
