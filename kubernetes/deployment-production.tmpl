@@ -69,3 +69,66 @@ spec:
   resources:
     requests:
       storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: theia-production-redis
+  labels:
+    app: theia-production-redis
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: theia-production-redis
+  template:
+    metadata:
+      labels:
+        app: theia-production-redis
+    spec:
+      tolerations:
+      - key: "servicelife"
+        operator: "Equal"
+        value: "longlife"
+        effect: "NoSchedule"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: servicelife
+                operator: In
+                values:
+                - longlife
+      containers:
+        - name: theia-production-redis
+          image: redis
+          resources:
+            requests:
+              memory: "10Mi"
+              cpu: "10m"
+            limits:
+              memory: "100Mi"
+              cpu: "500m"
+          volumeMounts:
+          - name: theia-production-redis-data
+            mountPath: "/data"
+      volumes:
+      - name: theia-production-redis-data
+        persistentVolumeClaim:
+          claimName: theia-production-redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: theia-production-redis
+spec:
+  selector:
+    app: theia-production-redis
+  ports:
+    - protocol: TCP
+      port: 6379
+      targetPort: 6379
+  type: NodePort
