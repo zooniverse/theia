@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: theia-production-app
-          image: zooniverse/theia:__IMAGE_TAG__
+          image: zooniverse/theia:latest
           resources:
             requests:
               memory: "200Mi"
@@ -112,6 +112,18 @@ spec:
       - name: theia-production-redis-data
         persistentVolumeClaim:
           claimName: theia-production-redis
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: theia-production-redis
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: azurefile
+  resources:
+    requests:
+      storage: 5Gi
 ---
 apiVersion: v1
 kind: Service
