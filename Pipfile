@@ -4,7 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-pytest = "==5.1.0"
+pytest = "==5.4.0"
 pytest-cov = "==2.8.1"
 pytest-pspec = "==0.0.3"
 pytest-django = "*"
@@ -47,6 +47,7 @@ psycopg2-binary = "==2.8.3"
 py = "==1.8.0"
 PyJWT = "==1.7.1"
 pyparsing = "==2.4.2"
+pyproj = "==3.0.0.post1"
 python-magic = "==0.4.15"
 python3-openid = "==3.1.0"
 pytz = "==2019.2"
