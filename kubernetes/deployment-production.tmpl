@@ -30,6 +30,8 @@ spec:
           env:
           - name: PANOPTES_PROD_URL
             value: https://panoptes.zooniverse.org/
+          - name: ENV
+            value: production
           volumeMounts:
             - name: theia-production-volume
               mountPath: "/tmp"
