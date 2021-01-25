@@ -30,6 +30,8 @@ spec:
           env:
           - name: PANOPTES_PROD_URL
             value: https://panoptes.zooniverse.org/
+          - name: ENV
+            value: production
           volumeMounts:
             - name: theia-production-volume
               mountPath: "/tmp"
@@ -112,6 +114,18 @@ spec:
       - name: theia-production-redis-data
         persistentVolumeClaim:
           claimName: theia-production-redis
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: theia-production-redis
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: azurefile
+  resources:
+    requests:
+      storage: 5Gi
 ---
 apiVersion: v1
 kind: Service
