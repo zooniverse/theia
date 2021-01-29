@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ ! "$DJANGO_ENV" == "production" ] && ! [ "$DJANGO_ENV" == "staging" ] ; then
+if [ ! "$ENV" == "production" ] && ! [ "$ENV" == "staging" ] ; then
   while ! nc -z postgres 5432; do
     echo Waiting for Postgres
     sleep 3
