@@ -16,7 +16,7 @@ if [ "$ENV" == "production" ]; then
     python manage.py collectstatic
   fi
   echo Starting production server
-  exec gunicorn theia.wsgi -b 0:8080
+  exec gunicorn theia.wsgi -b 0:80
 else
   echo Starting development server
   exec python manage.py runserver 0:8080
