@@ -32,6 +32,8 @@ spec:
             value: https://panoptes.zooniverse.org/
           - name: ENV
             value: production
+          - name: DJANGO_ALLOWED_HOSTS
+            value: theia.zooniverse.org
           volumeMounts:
             - name: theia-production-volume
               mountPath: "/tmp"
