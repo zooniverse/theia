@@ -31,6 +31,11 @@ services:
       - STAGING_DB_USERNAME
       - STAGING_DB_PASSWORD
       - STAGING_DB_HOST
+      - PANOPTES_CLIENT_ID
+      - PANOPTES_CLIENT_SECRET
+      - PANOPTES_URL
+      - PANOPTES_PROD_USERNAME
+      - PANOPTES_PROD_USER_KEY
     ports:
       - "8080:8080"
     links:
