@@ -51,7 +51,7 @@ class Adapter:
 
     def process_request(self, imagery_request):
         search = ImagerySearch.build_search(imagery_request)
-        scenes = ErosWrapper.search(search)
+        scenes = ErosWrapper().search(search)
         if imagery_request.max_results:
             scenes = scenes[0:imagery_request.max_results]
 
