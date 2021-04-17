@@ -25,7 +25,7 @@ else:
     SECRET_KEY = '6n$fr-9vudyln(o=6jzv*pr_3b9(kajv=#&wq6ep4vm_s1m@6p'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('NAME').lower() != "production"
 
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '127.0.0.1').split(',')
 
