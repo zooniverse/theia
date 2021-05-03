@@ -26,7 +26,7 @@ else:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-DEBUG = os.getenv('ENV').lower() != "production"
+DEBUG = os.getenv('DJANGO_ENV').lower() != "production"
 
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '127.0.0.1').split(',')
 
