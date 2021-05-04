@@ -19,7 +19,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-if os.environ.get('ENV') == "production":
+if os.environ.get('DJANGO_ENV') == "production":
     SECRET_KEY = os.environ.get('SECRET_KEY')
 else:
     SECRET_KEY = '6n$fr-9vudyln(o=6jzv*pr_3b9(kajv=#&wq6ep4vm_s1m@6p'
@@ -88,7 +88,7 @@ WSGI_APPLICATION = 'theia.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-if os.environ.get('ENV') == "production":
+if os.environ.get('DJANGO_ENV') == "production":
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
