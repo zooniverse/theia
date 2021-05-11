@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ ! "$ENV" == "production" ] && ! [ "$ENV" == "staging" ] ; then
+if [ ! "$DJANGO_ENV" == "production" ] && ! [ "$DJANGO_ENV" == "staging" ] ; then
   while ! nc -z postgres 5432; do
     echo Waiting for Postgres
     sleep 3
@@ -10,7 +10,7 @@ fi
 echo Applying migrations
 python manage.py migrate --noinput
 
-if [ "$ENV" == "production" ]; then
+if [ "$DJANGO_ENV" == "production" ]; then
   if [ ! -d "theia/static" ]; then
     echo Generating static files
     python manage.py collectstatic
