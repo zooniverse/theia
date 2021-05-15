@@ -22,9 +22,10 @@ from theia.api import views
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
+from django.views.decorators.csrf import csrf_exempt
 
 router = routers.DefaultRouter()
-router.register(r'imagery_requests', views.ImageryRequestViewSet)
+router.register(r'imagery_requests', csrf_exempt(views.ImageryRequestViewSet))
 router.register(r'job_bundles', views.JobBundleViewSet)
 router.register(r'pipelines', views.PipelineViewSet)
 router.register(r'pipeline_stages', views.PipelineStageViewSet)
