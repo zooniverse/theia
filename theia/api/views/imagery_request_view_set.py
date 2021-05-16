@@ -9,12 +9,13 @@ from panoptes_client.panoptes import PanoptesAPIException
 
 from theia.utils.panoptes_utils import PanoptesUtils
 from theia.api.serializers import ImageryRequestSerializer
-
+from django.views.decorators.csrf import csrf_exempt
 
 class ImageryRequestViewSet(viewsets.ModelViewSet):
     queryset = ImageryRequest.objects.all()
     serializer_class = ImageryRequestSerializer
 
+    @csrf_exempt
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
