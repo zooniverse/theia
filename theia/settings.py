@@ -162,6 +162,8 @@ REST_FRAMEWORK = {
 }
 
 CELERY_ENABLE_UTC = True
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_REDIS_URL', 'redis://redis')
+CELERY_BROKER_URL = os.environ.get('CELERY_REDIS_URL', 'redis://redis')
 
 AUTHENTICATION_BACKENDS = (
     'theia.utils.panoptes_oauth2.PanoptesOAuth2',

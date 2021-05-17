@@ -34,6 +34,8 @@ spec:
             value: production
           - name: DJANGO_ALLOWED_HOSTS
             value: theia.zooniverse.org
+          - name: CELERY_REDIS_URL
+            value: 'redis://theia-production-redis:6379/0'
           volumeMounts:
             - name: theia-production-volume
               mountPath: "/tmp"
