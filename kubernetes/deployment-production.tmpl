@@ -38,7 +38,7 @@ spec:
             value: 'redis://theia-production-redis:6379/0'
           volumeMounts:
             - name: theia-production-volume
-              mountPath: "/tmp"
+              mountPath: "/usr/src/app/tmp"
       volumes:
         - name: theia-production-volume
           persistentVolumeClaim:
