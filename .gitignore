@@ -110,11 +110,9 @@ venv.bak/
 # postgres
 postgres_data/
 
-# tmp files
-tmp/
-
-# restframework support files
-theia/static/
+# tmp files ignored, but directory itself kept
+tmp/*
+!tmp/.gitkeep
 
 # libtiff fix
 src
