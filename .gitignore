@@ -110,9 +110,8 @@ venv.bak/
 # postgres
 postgres_data/
 
-# tmp files ignored, but directory itself kept
-tmp/*
-!tmp/.gitkeep
+# tmp files ignored
+tmp/
 
 # libtiff fix
 src
