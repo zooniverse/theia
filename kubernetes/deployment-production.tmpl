@@ -100,7 +100,7 @@ spec:
             postStart:
               exec:
                 command: ["/bin/bash", "-c", "cp -R /usr/src/app/theia/static/* /static-assets"]
-       - name: theia-production-nginx
+        - name: theia-production-nginx
           image: zooniverse/nginx:1.19.0
           ports:
             - containerPort: 80
