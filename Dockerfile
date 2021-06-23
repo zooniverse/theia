@@ -14,7 +14,6 @@ RUN apt-get update \
     libproj-dev \
     libgeoip1 \
     postgis \
-    git \
   && rm -rf /var/lib/apt/lists/*
 
 RUN pip install pipenv
@@ -28,7 +27,7 @@ COPY start_worker.sh ./
 
 RUN pipenv install --system --dev
 
-RUN (cd /app && git log --format="%H" -n 1 > ./theia/static/commit_id.txt)
+RUN (cd /usr/src/app && git log --format="%H" -n 1 > ./theia/static/commit_id.txt)
 
 RUN export GDAL_VERSION=$(gdal-config --version) \
   && pip install --global-option=build_ext --global-option="-I/usr/include/gdal/" \
