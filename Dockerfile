@@ -27,13 +27,13 @@ COPY start_worker.sh ./
 
 RUN pipenv install --system --dev
 
-RUN (cd /usr/src/app && git log --format="%H" -n 1 > ./theia/static/commit_id.txt)
-
 RUN export GDAL_VERSION=$(gdal-config --version) \
   && pip install --global-option=build_ext --global-option="-I/usr/include/gdal/" \
     gdal~=${GDAL_VERSION}
 
 COPY . /usr/src/app
+
+RUN (cd /usr/src/app && git log --format="%H" -n 1 > ./theia/static/commit_id.txt)
 
 # force std in/out to be unbufferred
 ENV PYTHONUNBUFFERED=1
