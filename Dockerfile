@@ -33,6 +33,8 @@ RUN export GDAL_VERSION=$(gdal-config --version) \
 
 COPY . /usr/src/app
 
+RUN (cd /usr/src/app && git log --format="%H" -n 1 > ./theia/static/commit_id.txt)
+
 # force std in/out to be unbufferred
 ENV PYTHONUNBUFFERED=1
 
