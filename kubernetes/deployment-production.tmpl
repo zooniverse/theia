@@ -118,6 +118,8 @@ spec:
               httpHeaders:
                  - name: X-Forwarded-Proto
                    value: https
+                 - name: Host
+                   value: theia.zooniverse.org
             initialDelaySeconds: 10
           readinessProbe:
             httpGet:
@@ -126,6 +128,8 @@ spec:
               httpHeaders:
                  - name: X-Forwarded-Proto
                    value: https
+                 - name: Host
+                   value: theia.zooniverse.org
             initialDelaySeconds: 10
           lifecycle:
             preStop:
