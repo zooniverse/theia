@@ -19,7 +19,7 @@ services:
     volumes:
       - ./:/usr/src/app
     environment:
-      - DJANGO_ENV
+      - DJANGO_ENV=development
       - USGS_USERNAME=something_secret_goes_here
       - USGS_PASSWORD=something_secret_goes_here
       - PANOPTES_PROD_CLIENT_ID
@@ -49,7 +49,7 @@ services:
     volumes:
       - ./:/usr/src/app
     environment:
-      - DJANGO_ENV
+      - DJANGO_ENV=development
       - USGS_USERNAME=something_secret_goes_here
       - USGS_PASSWORD=something_secret_goes_here
       - PANOPTES_PROD_CLIENT_ID

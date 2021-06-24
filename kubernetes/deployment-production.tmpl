@@ -39,7 +39,7 @@ data:
 
       location / {
         proxy_pass http://docker-theia;
-        proxy_set_header Host $http_host;
+        proxy_set_header Host theia.zooniverse.org;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto https;
@@ -118,6 +118,8 @@ spec:
               httpHeaders:
                  - name: X-Forwarded-Proto
                    value: https
+                 - name: Host
+                   value: theia.zooniverse.org
             initialDelaySeconds: 10
           readinessProbe:
             httpGet:
@@ -126,6 +128,8 @@ spec:
               httpHeaders:
                  - name: X-Forwarded-Proto
                    value: https
+                 - name: Host
+                   value: theia.zooniverse.org
             initialDelaySeconds: 10
           lifecycle:
             preStop:
