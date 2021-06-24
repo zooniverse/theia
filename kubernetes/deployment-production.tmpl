@@ -18,8 +18,8 @@ data:
         add_header 'Access-Control-Allow-Credentials' 'true';
       }
 
-      location ~ ^/static/ {
-        alias /static-assets/;
+      location ~ ^/static/(.*)$ {
+        alias /static-assets/$1;
         gzip_static on; # to serve pre-gzipped version
         expires max;
         add_header Cache-Control public;
@@ -71,7 +71,7 @@ spec:
     spec:
       containers:
         - name: theia-production-app
-          image: zooniverse/theia:__IMAGE_TAG__
+          image: zooniverse/theia:bff7a35ea5f3b30e2a5adc87facfb75add6e4906
           resources:
             requests:
               memory: "200Mi"
