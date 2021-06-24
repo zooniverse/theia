@@ -19,7 +19,7 @@ data:
       }
 
       location ~ ^/static/ {
-        root /static-assets/;
+        alias /static-assets/;
         gzip_static on; # to serve pre-gzipped version
         expires max;
         add_header Cache-Control public;
