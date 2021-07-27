@@ -154,30 +154,52 @@ spec:
           configMap:
             name: theia-nginx-conf-production
 ---
-apiVersion: v1
-kind: Service
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: theia-production-app
+  name: theia-production-worker
+  labels:
+    app: theia-production-worker
 spec:
+  replicas: 1
   selector:
-    app: theia-production-app
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
-  type: NodePort
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: theia-production-data-storage
-spec:
-  accessModes:
-    - ReadWriteMany
-  storageClassName: azurefile
-  resources:
-    requests:
-      storage: 5Gi
+    matchLabels:
+      app: theia-production-worker
+  template:
+    metadata:
+      labels:
+        app: theia-production-worker
+    spec:
+      containers:
+        - name: theia-production-worker
+          image: zooniverse/theia:__IMAGE_TAG__
+          resources:
+            requests:
+              memory: "200Mi"
+              cpu: "10m"
+            limits:
+              memory: "1000Mi"
+              cpu: "500m"
+          envFrom:
+          - secretRef:
+              name: theia-production-env-vars
+          args: ["/usr/src/app/start_worker.sh"]
+          env:
+          - name: PANOPTES_URL
+            value: https://panoptes.zooniverse.org/
+          - name: DJANGO_ENV
+            value: production
+          - name: DJANGO_ALLOWED_HOSTS
+            value: theia.zooniverse.org
+          - name: CELERY_REDIS_URL
+            value: 'redis://theia-production-redis:6379/0'
+          volumeMounts:
+            - name: theia-production-volume
+              mountPath: "/usr/src/app/tmp"
+      volumes:
+        - name: theia-production-volume
+          persistentVolumeClaim:
+            claimName: theia-production-data-storage
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -242,6 +264,18 @@ spec:
       storage: 5Gi
 ---
 apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: theia-production-data-storage
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: azurefile
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: theia-production-redis
@@ -253,3 +287,17 @@ spec:
       port: 6379
       targetPort: 6379
   type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: theia-production-app
+spec:
+  selector:
+    app: theia-production-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: NodePort
+---
