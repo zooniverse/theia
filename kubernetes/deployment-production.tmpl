@@ -91,6 +91,8 @@ spec:
             value: theia.zooniverse.org
           - name: CELERY_REDIS_URL
             value: 'redis://theia-production-redis:6379/0'
+          - name: MAGICK_CONFIGURE_PATH
+            value: '/usr/src/app/.magick'
           volumeMounts:
             - name: theia-production-volume
               mountPath: "/usr/src/app/tmp"
@@ -193,6 +195,8 @@ spec:
             value: theia.zooniverse.org
           - name: CELERY_REDIS_URL
             value: 'redis://theia-production-redis:6379/0'
+          - name: MAGICK_CONFIGURE_PATH
+            value: '/usr/src/app/.magick'
           volumeMounts:
             - name: theia-production-volume
               mountPath: "/usr/src/app/tmp"
