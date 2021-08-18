@@ -116,3 +116,5 @@ tmp/
 # libtiff fix
 src
 
+# mac stuff
+.DS_Store
