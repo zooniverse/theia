@@ -65,11 +65,14 @@ class EspaWrapper:
 
     @classmethod
     def espa_get(cls, url, request_data, **kwargs):
-        new_args = cls.espa_prepare(request_data, **kwargs)
-        new_url = cls.api_url(url)
-        if request_data:
-            new_url = urljoin(new_url + '/', request_data)
-        return requests.get(new_url, **new_args).json()
+        try:
+            new_args = cls.espa_prepare(request_data, **kwargs)
+            new_url = cls.api_url(url)
+            if request_data:
+                new_url = urljoin(new_url + '/', request_data)
+            return requests.get(new_url, **new_args).json()
+        except json.decoder.JsonDecodeError as err:
+            raise RuntimeError("The JSON decode error you just got is " + err + ". Often if this error is 'Expecting value: line 1 column 1 (char 0)', the problem is that the EROS service is temporarily down. When the EROS team schedules downtime for maintenance, they usually do so around midday on Wednesdays.")
 
     @classmethod
     def espa_post(cls, url, request_data, **kwargs):

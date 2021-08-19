@@ -4,6 +4,8 @@ from theia.adapters.usgs import EspaWrapper
 from unittest import mock
 from requests.auth import HTTPBasicAuth
 
+import json
+
 
 class TestEspaWrapper:
     def test_api_url(self):
@@ -73,6 +75,16 @@ class TestEspaWrapper:
             mockGet.reset_mock()
             EspaWrapper.espa_get('foo', None)
             mockGet.assert_called_once_with(EspaWrapper.api_url('foo'), foo='bar')
+
+    def test_espa_get_eros_down(self):
+        with mock.patch('requests.get') as mockGet, \
+                mock.patch('theia.adapters.usgs.EspaWrapper.espa_prepare') as mockPrepare:
+            mockPrepare.side_effect = json.decode.JsonDecodeError('Test error similar to the one from the data service.')
+
+            try:
+                EspaWrapper.espa_get('', None)
+            except json.decode.JsonDecodeError as err:
+                assert all(["EROS", "maintenance", "Wenesdays"]) in err
 
     def test_list_orders(self):
         with mock.patch('theia.adapters.usgs.EspaWrapper.espa_get') as mockGet:
