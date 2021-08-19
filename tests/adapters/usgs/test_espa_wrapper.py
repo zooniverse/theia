@@ -86,6 +86,8 @@ class TestEspaWrapper:
             except json.decode.JsonDecodeError as err:
                 assert all(["EROS", "maintenance", "Wenesdays"]) in err
 
+            raise AssertionError("This test should have forced espa_get to encounter an exception.")
+
     def test_list_orders(self):
         with mock.patch('theia.adapters.usgs.EspaWrapper.espa_get') as mockGet:
             mockGet.return_value = ['orderid_1', 'orderid_2']
