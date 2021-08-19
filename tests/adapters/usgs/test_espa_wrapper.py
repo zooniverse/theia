@@ -76,10 +76,10 @@ class TestEspaWrapper:
             EspaWrapper.espa_get('foo', None)
             mockGet.assert_called_once_with(EspaWrapper.api_url('foo'), foo='bar')
 
-    def test_espa_get_eros_down(self):
+    def test_espa_get__eros_down(self):
         with mock.patch('requests.get') as mockGet, \
                 mock.patch('theia.adapters.usgs.EspaWrapper.espa_prepare') as mockPrepare:
-            mockPrepare.side_effect = json.decode.JsonDecodeError('Test error similar to the one from the data service.')
+            mockPrepare.side_effect = json.decode.JsonDecodeError("We get this exception from the data service when it's down.")
 
             try:
                 EspaWrapper.espa_get('', None)
