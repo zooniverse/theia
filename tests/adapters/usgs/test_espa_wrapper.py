@@ -84,7 +84,7 @@ class TestEspaWrapper:
             try:
                 EspaWrapper.espa_get('', None)
             except json.decode.JsonDecodeError as err:
-                assert all(["EROS", "maintenance", "Wenesdays"]) in err
+                assert all(["EROS", "maintenance", "Wednesdays"]) in err
 
             raise AssertionError("This test should have forced espa_get to encounter an exception.")
 
