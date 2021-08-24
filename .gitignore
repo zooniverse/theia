@@ -118,3 +118,6 @@ src
 
 # mac stuff
 .DS_Store
+
+# devcontainer stuff
+.devcontainer
