@@ -1,6 +1,5 @@
 from urllib.parse import urljoin
 from requests.auth import HTTPBasicAuth
-import json
 import requests
 from os import environ
 
@@ -71,7 +70,7 @@ class EspaWrapper:
             if request_data:
                 new_url = urljoin(new_url + '/', request_data)
             return requests.get(new_url, **new_args).json()
-        except json.decoder.JsonDecodeError as err:
+        except ValueError as err:
             raise RuntimeError("The JSON decode error you just got is " + err + ". Often if this error is 'Expecting value: line 1 column 1 (char 0)', the problem is that the EROS service is temporarily down. When the EROS team schedules downtime for maintenance, they usually do so around midday on Wednesdays.")
 
     @classmethod
