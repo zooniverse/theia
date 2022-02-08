@@ -16,7 +16,6 @@ pipeline {
           def dockerImageName = "${dockerRepoName}:${GIT_COMMIT}"
           def newImage = docker.build(dockerImageName)
           newImage.push()
-          newImage.push('${GIT_COMMIT}')
 
           if (BRANCH_NAME == 'master') {
             stage('Update latest tag') {
