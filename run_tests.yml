@@ -1,0 +1,16 @@
+name: Zooni CI
+on:
+  pull_request:
+  push: { branches: master }
+  workflow_dispatch:
+
+jobs:
+  tests:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build images and create containers
+      run: docker compose up -d --build
+    - name: Run Tests
+      run: docker exec -it app pytest
