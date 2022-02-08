@@ -15,4 +15,4 @@ jobs:
       run: docker compose up -d --build
 
     - name: Run Tests
-      run: docker exec -it theia-app-1 pytest
+      run: docker exec theia-app-1 pytest
