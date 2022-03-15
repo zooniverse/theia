@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "77ccf817db82c3de87c7b43fdfefa0f26b6cea49ce98b64bd6cde1e2cc5f5d1d"
+            "sha256": "f0061dec18cfefeab7f738dd96d74f7a3012f8842ca09e53295125cb39032047"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -305,10 +305,11 @@
         },
         "panoptes-client": {
             "hashes": [
-                "sha256:46167a58bb7d1fc88b56f89f788371967cc71f2b483cf03a4531c5c8067befa6"
+                "sha256:46167a58bb7d1fc88b56f89f788371967cc71f2b483cf03a4531c5c8067befa6",
+                "sha256:7219f32ddf12c34f697ece2645a467c261c47de1ac288a78227566ae56f76e8a"
             ],
             "index": "pypi",
-            "version": "==1.1.1"
+            "version": "==1.4.0"
         },
         "pillow": {
             "hashes": [
