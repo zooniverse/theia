@@ -18,4 +18,4 @@ jobs:
       run: docker exec -i theia-app-1 /bin/bash -c "export USGS_USERNAME=usgs && export USGS_PASSWORD=usgs"
 
     - name: Run Tests
-      run: docker exec theia-app-1
+      run: docker exec theia-app-1 pytest
