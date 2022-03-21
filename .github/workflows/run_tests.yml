@@ -14,5 +14,8 @@ jobs:
     - name: Build images and create containers
       run: docker compose up -d --build
 
+    - name: Set Env Vars
+      run: docker exec -i theia-app-1 /bin/bash -c "export USGS_USERNAME=usgs && export USGS_PASSWORD=usgs"
+
     - name: Run Tests
-      run: docker exec -i theia-app-1 /bin/bash -c "export USGS_USERNAME=usgs && export USGS_PASSWORD=usgs && pytest" & while kill -0 $! > /dev/null 2>&1; do free -m sleep <interval> done
+      run: docker exec theia-app-1
