@@ -79,14 +79,14 @@ class TestEspaWrapper:
     def test_espa_get__eros_down(self):
         with mock.patch('requests.get') as mockGet, \
                 mock.patch('theia.adapters.usgs.EspaWrapper.espa_prepare') as mockPrepare:
-            mockPrepare.side_effect = json.decode.JsonDecodeError("We get this exception from the data service when it's down.")
+            mockPrepare.side_effect = json.decoder.JSONDecodeError("We get this exception from the data service when it's down.", mockPrepare, 2)
 
             try:
                 EspaWrapper.espa_get('', None)
-            except json.decode.JsonDecodeError as err:
-                assert all(["EROS", "maintenance", "Wednesdays"]) in err
+                raise AssertionError("This test should have forced espa_get to encounter an exception.")
+            except RuntimeError as err:
+                assert any(word in str(err) for word in ["EROS", "maintenance", "Wednesdays"])
 
-            raise AssertionError("This test should have forced espa_get to encounter an exception.")
 
     def test_list_orders(self):
         with mock.patch('theia.adapters.usgs.EspaWrapper.espa_get') as mockGet:
