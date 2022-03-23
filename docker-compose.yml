@@ -22,8 +22,8 @@ services:
       - ./:/usr/src/app
     environment:
       - DJANGO_ENV=development
-      - USGS_USERNAME=something_secret_goes_here
-      - USGS_PASSWORD=something_secret_goes_here
+      - USGS_USERNAME
+      - USGS_PASSWORD
       - PANOPTES_PROD_CLIENT_ID
       - PANOPTES_PROD_CLIENT_SECRET
       - PANOPTES_PROD_URL
@@ -52,8 +52,8 @@ services:
       - ./:/usr/src/app
     environment:
       - DJANGO_ENV=development
-      - USGS_USERNAME=something_secret_goes_here
-      - USGS_PASSWORD=something_secret_goes_here
+      - USGS_USERNAME
+      - USGS_PASSWORD
       - PANOPTES_PROD_CLIENT_ID
       - PANOPTES_PROD_CLIENT_SECRET
       - PANOPTES_PROD_URL
@@ -63,6 +63,9 @@ services:
       - STAGING_DB_USERNAME
       - STAGING_DB_PASSWORD
       - STAGING_DB_HOST
+      - PANOPTES_CLIENT_ID
+      - PANOPTES_CLIENT_SECRET
+      - PANOPTES_URL
     links:
       - redis:redis
       - postgres:postgres
