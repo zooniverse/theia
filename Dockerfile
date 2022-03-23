@@ -24,6 +24,8 @@ COPY Pipfile ./
 COPY Pipfile.lock ./
 COPY start_server.sh ./
 COPY start_worker.sh ./
+COPY .magick/policy.xml /etc/ImageMagick-6/policy.xml
+
 
 RUN export GDAL_VERSION=$(gdal-config --version) \
   && pip install --global-option=build_ext --global-option="-I/usr/include/gdal/" \
