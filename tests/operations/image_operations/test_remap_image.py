@@ -34,5 +34,5 @@ class TestRemapImage:
         mockFromArray.return_value.save.assert_called_once()
         first_method_call = mockFromArray.return_value.save.call_args_list[0]
         args = first_method_call[0]
-        assert str.endswith(args[0], '/theia/3_/versioned filename')
+        assert str.endswith(args[0], '/3_/versioned filename')
 

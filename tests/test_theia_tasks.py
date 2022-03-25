@@ -46,7 +46,7 @@ def test_process_bundle(mock_input_files, mock_resolve, mock_apply, mock_retriev
     second_method_call = mock_apply.call_args_list[1]
     arguments = second_method_call[0]
     file_list = arguments[0]
-    assert str.endswith(file_list[0], '/theia/1_noop/input_file')
+    assert str.endswith(file_list[0], '/1_noop/input_file')
 
     mock_retrieve.assert_called_once()
 

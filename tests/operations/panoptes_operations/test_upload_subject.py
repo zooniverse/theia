@@ -1,4 +1,6 @@
+from venv import create
 import pytest
+import json
 from unittest.mock import patch, Mock, PropertyMock
 
 from theia.api.models import JobBundle, Pipeline, Project
@@ -92,7 +94,7 @@ class TestUploadSubject:
         mockFind.assert_called_once_with(3)
         mockCreateSet.assert_not_called()
 
-    @patch('panoptes_client.Project.find', return_value=Mock())
+    @patch('panoptes_client.Project.find', return_value=Mock(raw={}))
     @patch('panoptes_client.Subject.save', autospec=True)
     @patch('panoptes_client.Subject.add_location', autospec=True)
     def test__create_subject_no_metadata(self, mockAdd, mockSave, mockFind):
@@ -101,9 +103,9 @@ class TestUploadSubject:
         mockFind.assert_called_once_with(1)
         mockAdd.assert_called_once_with(created_subject, 'some_file')  # weird
         mockSave.assert_called_once()
-        assert(mockFind.return_value==created_subject.links.project.id)  # weird
+        assert(mockFind.return_value is created_subject.raw['links']['project']) # weird
 
-    @patch('panoptes_client.Project.find', return_value=Mock())
+    @patch('panoptes_client.Project.find', return_value=Mock(raw={}))
     @patch('panoptes_client.Subject.save', autospec=True)
     @patch('panoptes_client.Subject.add_location', autospec=True)
     def test__create_subject_with_metadata(self, mockAdd, mockSave, mockFind):
@@ -112,10 +114,10 @@ class TestUploadSubject:
         mockFind.assert_called_once_with(1)
         mockAdd.assert_called_once_with(created_subject, 'some_file')  # weird
         mockSave.assert_called_once()
-        assert(mockFind.return_value==created_subject.links.project.id)  # weird
+        assert(mockFind.return_value is created_subject.raw['links']['project'])  # weird
         assert(created_subject.metadata=={'foo': 'bar'})
 
-    @patch('panoptes_client.Project.find', return_value=Mock())
+    @patch('panoptes_client.Project.find', return_value=Mock(raw={}))
     @patch('panoptes_client.SubjectSet.save', autospec=True)
     def test__create_subject_set(self, mockSave, mockFind):
         operation = UploadSubject(None)
@@ -124,4 +126,4 @@ class TestUploadSubject:
         mockFind.assert_called_once_with(1)
         mockSave.assert_called_once()
         assert(created_set.display_name=='some name')
-        assert(mockFind.return_value==created_set.links.project.id)  # weird
+        assert(mockFind.return_value is created_set.raw['links']['project'])  # weird
