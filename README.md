@@ -57,6 +57,14 @@ Run Django app locally (applying migrations if necessary):
 Run the Celery worker locally (does not apply migrations):
 `pipenv run worker`
 
+### On Windows (for either local environment or Docker environment): 
+If you are having trouble running app and are using a Windows machine, this could be due to "funny line endings" within `start_server.sh` and `start_worker.sh` that are seen in Windows, but not on other machines or in git.
+
+To mitigate you must run the following in your terminal: 
+ - Run `od -c start_server.sh` and `od -c start_worker.sh`
+ - Install `dos2unix` with `apt-get update` then `apt-get install dos2unix`
+ - convert files with `dos2unix start_server.sh` and `dos2unix start_worker.sh`
+
 ### Local environment
 
 Make sure that you have an entry in your `/etc/hosts` file that looks like this:
