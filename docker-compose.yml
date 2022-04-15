@@ -38,6 +38,7 @@ services:
       - PANOPTES_URL
       - PANOPTES_PROD_USERNAME
       - PANOPTES_PROD_USER_KEY
+      - SENTRY_DSN
     ports:
       - "8080:8080"
     links:
@@ -66,6 +67,7 @@ services:
       - PANOPTES_CLIENT_ID
       - PANOPTES_CLIENT_SECRET
       - PANOPTES_URL
+      - SENTRY_DSN
     links:
       - redis:redis
       - postgres:postgres
