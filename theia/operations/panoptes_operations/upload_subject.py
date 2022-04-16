@@ -7,7 +7,7 @@ from theia.utils import PanoptesUtils
 
 from PIL import Image
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class UploadSubject(AbstractOperation):
     def apply(self, accepted_filenames):
@@ -21,9 +21,6 @@ class UploadSubject(AbstractOperation):
             client_id=PanoptesUtils.client_id(),
             client_secret=PanoptesUtils.client_secret()
         )
-        print('MDY114 TYPE ACCEPTED')
-        print(type(accepted_filenames))
-        print(accepted_filenames)
 
         with theia_authenticated_client:
             target_set = self._get_subject_set(scope, self.project.id, scope.name_subject_set())
@@ -31,11 +28,11 @@ class UploadSubject(AbstractOperation):
             metadata_dictionary = {}
 
             path_example = accepted_filenames[0]
-            manifest_file_location = path.join((path.dirname(path_example) + "_interstitial_products"), "manifest.csv")
-
-            if self.include_metadata and path.exists(manifest_file_location):
+            accepted_manifest_file_location = path.join((path.dirname(path_example) + "_interstitial_products"), "manifest.csv")
+            
+            if self.include_metadata and path.exists(accepted_manifest_file_location):
                 using_manifest = True
-                with open(manifest_file_location, newline='') as csvfile:
+                with open(accepted_manifest_file_location, newline='') as csvfile:
                     reader = csv.DictReader(csvfile)
                     for row in reader:
                         metadata_dictionary[row['#filename']] = row
@@ -53,27 +50,13 @@ class UploadSubject(AbstractOperation):
 
                 new_subject = self._create_subject(self.project.id, accepted_filename, metadata=metadata)
                 target_set.add(new_subject)
+
             
             ##### TODO: DELETE THIS LATER. ONLY APPLICABLE FOR FLOATING FORESTS RESEARCH TEAM DEBUGING ##### 
 
-            rejected_tile_location =  path.join((path.dirname(path_example) + "_interstitial_products"), "rejected")
+            self.upload_rejected_tiles(path_example, scope)
+            ## CREATING MASKS SUBJECT SET/ UPLOAD 
 
-            rejected_tiles = [rejected_file for rejected_file in listdir(rejected_tile_location) if path.isfile(path.join(rejected_tile_location, rejected_file))]
-
-            rejected_subject_set = self._create_subject_set(self.project.id, scope.name_subject_set()+ ' rejected')
-
-            for rejected_filename in rejected_tiles:
-                img = Image.open(rejected_filename)
-                img.save(rejected_filename, 'png')
-
-                name_only = rejected_filename.split("/")[len(rejected_filename.split("/")) - 1]
-
-                metadata = {}
-                if using_manifest:
-                    metadata = metadata_dictionary[name_only]
-
-                new_subject = self._create_subject(self.project.id, rejected_filename, metadata=metadata)
-                rejected_subject_set.add(new_subject)
             #### TODO: END OF DELETE. DELETE ABOVE FROM LAST TODO #### 
 
 
@@ -111,6 +94,45 @@ class UploadSubject(AbstractOperation):
 
         return subject_set
 
+    ## TODO: METHODS TO DELETE ONLY FOR FLOATING FORESTS DEBUG
+
+    def upload_mask_tiles(self, path_example, scope):
+        masked_tile_location =  path.dirname(path_example) + "_interstitial_products"
+
+    def upload_rejected_tiles(self, path_example, scope):
+        rejected_tile_location =  path.dirname(path_example) + "_interstitial_products/rejected"
+    
+        rejected_tiles = [rejected_file for rejected_file in listdir(rejected_tile_location) if (path.isfile(path.join(rejected_tile_location, rejected_file)) and rejected_file.endswith('.png'))]
+        rejected_metadata_dict = {}
+
+        rejected_tile_manifest_location = path.join(rejected_tile_location, "rejected.csv")
+
+        if self.include_metadata and path.exists(rejected_tile_manifest_location):
+            using_manifest = True
+            with open(rejected_tile_manifest_location, newline='') as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    rejected_metadata_dict[row['#filename']] = row
+
+        rejected_subject_set = self._create_subject_set(self.project.id, scope.name_subject_set()+ ' rejected')
+
+        for rejected_filename in rejected_tiles:
+            try:
+                rejected_file_path = path.join(rejected_tile_location, rejected_filename)
+                img = Image.open(rejected_file_path)
+                # img.save(rejected_filename, 'png')
+
+                name_only = rejected_filename.split("/")[len(rejected_filename.split("/")) - 1]
+
+                metadata = {}
+                if using_manifest:
+                    metadata = rejected_metadata_dict[name_only]
+
+                new_subject = self._create_subject(self.project.id, rejected_filename, metadata=metadata)
+                rejected_subject_set.add(new_subject)
+            except Exception as rejected_file_upload_err:
+                print(rejected_file_upload_err)
+                pass
     @property
     def include_metadata(self):
         if self.config['include_metadata']:
