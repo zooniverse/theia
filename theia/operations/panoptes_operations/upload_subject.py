@@ -119,16 +119,18 @@ class UploadSubject(AbstractOperation):
         for rejected_filename in rejected_tiles:
             try:
                 rejected_file_path = path.join(rejected_tile_location, rejected_filename)
-                img = Image.open(rejected_file_path)
-                img.save(rejected_filename, 'png')
+                # img = Image.open(rejected_file_path)
+                # img.save(rejected_filename, 'png')
 
                 name_only = rejected_filename.split("/")[len(rejected_filename.split("/")) - 1]
 
                 metadata = {}
                 if using_manifest:
                     metadata = rejected_metadata_dict[name_only]
+                print('MDY114 REJECTED FILE NAME')
 
-                new_subject = self._create_subject(self.project.id, rejected_filename, metadata=metadata)
+                # new_subject = self._create_subject(self.project.id, rejected_filename, metadata=metadata)
+                new_subject = self._create_subject(self.project.id, rejected_file_path, metadata=metadata)
                 rejected_subject_set.add(new_subject)
             except Exception as rejected_file_upload_err:
                 print(rejected_file_upload_err)
