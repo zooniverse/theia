@@ -120,7 +120,7 @@ class UploadSubject(AbstractOperation):
             try:
                 rejected_file_path = path.join(rejected_tile_location, rejected_filename)
                 img = Image.open(rejected_file_path)
-                # img.save(rejected_filename, 'png')
+                img.save(rejected_filename, 'png')
 
                 name_only = rejected_filename.split("/")[len(rejected_filename.split("/")) - 1]
 
