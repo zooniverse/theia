@@ -55,10 +55,7 @@ class UploadSubject(AbstractOperation):
             ##### TODO: DELETE THIS LATER. ONLY APPLICABLE FOR FLOATING FORESTS RESEARCH TEAM DEBUGING ##### 
 
             self.upload_rejected_tiles(path_example, scope)
-            ## CREATING MASKS SUBJECT SET/ UPLOAD 
-
-            #### TODO: END OF DELETE. DELETE ABOVE FROM LAST TODO #### 
-
+            self.upload_mask_tiles(path_example, scope)
 
     def _get_subject_set(self, scope, project_id, set_name):
         subject_set = None
@@ -98,6 +95,22 @@ class UploadSubject(AbstractOperation):
 
     def upload_mask_tiles(self, path_example, scope):
         masked_tile_location =  path.dirname(path_example) + "_interstitial_products"
+        masked_tiles =  [masked_file for masked_file in listdir(masked_tile_location) if (path.isfile(path.join(masked_tile_location, masked_file)) and masked_file.endswith('.png'))]
+
+        masked_subject_set = self._create_subject_set(self.project.id, scope.name_subject_set() + ' masks')
+
+        for masked_filename in masked_tiles:
+            try:
+                masked_file_path = path.join(masked_tile_location, masked_filename)
+                metadata = {'mask_type': masked_filename}
+    
+                new_subject = self._create_subject(self.project.id, masked_file_path, metadata=metadata)
+                masked_subject_set.add(new_subject)
+            except Exception as masked_tile_upload_err:
+                print(masked_tile_upload_err)
+                pass
+
+
 
     def upload_rejected_tiles(self, path_example, scope):
         rejected_tile_location =  path.dirname(path_example) + "_interstitial_products/rejected"
