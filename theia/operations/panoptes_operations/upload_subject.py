@@ -1,4 +1,5 @@
-from os import getenv, path, listdir
+from os import path
+import os
 import csv
 
 from ..abstract_operation import AbstractOperation
@@ -6,8 +7,6 @@ from panoptes_client import Panoptes, Project, Subject, SubjectSet
 from theia.utils import PanoptesUtils
 
 from PIL import Image
-
-from datetime import datetime, timedelta
 
 class UploadSubject(AbstractOperation):
     def apply(self, accepted_filenames):
@@ -95,7 +94,7 @@ class UploadSubject(AbstractOperation):
 
     def upload_mask_tiles(self, path_example, scope):
         masked_tile_location =  path.dirname(path_example) + "_interstitial_products"
-        masked_tiles =  [masked_file for masked_file in listdir(masked_tile_location) if (path.isfile(path.join(masked_tile_location, masked_file)) and masked_file.endswith('.png'))]
+        masked_tiles =  [masked_file for masked_file in os.listdir(masked_tile_location) if (path.isfile(path.join(masked_tile_location, masked_file)) and masked_file.endswith('.png'))]
 
         masked_subject_set = self._create_subject_set(self.project.id, scope.name_subject_set() + ' masks')
 
@@ -115,7 +114,7 @@ class UploadSubject(AbstractOperation):
     def upload_rejected_tiles(self, path_example, scope):
         rejected_tile_location =  path.dirname(path_example) + "_interstitial_products/rejected"
     
-        rejected_tiles = [rejected_file for rejected_file in listdir(rejected_tile_location) if (path.isfile(path.join(rejected_tile_location, rejected_file)) and rejected_file.endswith('.png'))]
+        rejected_tiles = [rejected_file for rejected_file in os.listdir(rejected_tile_location) if (path.isfile(path.join(rejected_tile_location, rejected_file)) and rejected_file.endswith('.png'))]
         rejected_metadata_dict = {}
 
         rejected_tile_manifest_location = path.join(rejected_tile_location, "rejected.csv")
