@@ -2,6 +2,7 @@ from .utils import Utils
 import json
 import requests
 import sys
+from sentry_sdk import capture_message
 
 class ErosWrapper():
 
@@ -58,6 +59,3 @@ class ErosWrapper():
         response.close()
 
         return output['data']
-
-
-
