@@ -42,6 +42,7 @@ class ErosWrapper():
             output = json.loads(response.text)
             if output['errorCode'] != None:
                 print(output['errorCode'], "- ", output['errorMessage'])
+                capture_message('USGS Connection Error - ' + output['errorCode'] + ' - ' + output['errorMessage'])
                 sys.exit()
             if httpStatusCode == 404:
                 print("404 Not Found")
