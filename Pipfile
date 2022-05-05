@@ -64,6 +64,7 @@ pytest-pspec = "*"
 pytest-django = "*"
 pytest-mock = "*"
 pytest-pythonpath = "*"
+django-extensions = "*"
 
 [requires]
 python_version = "3.7"
@@ -79,4 +80,3 @@ server = "bash -e ./start_server.sh"
 tests = "pytest --cov=theia"
 tree = "bash -c 'find . | grep -v git | grep -v cache'"
 worker = "bash -c ./start_worker.sh"
-
