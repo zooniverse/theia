@@ -2,6 +2,7 @@ from .utils import Utils
 import json
 import requests
 import sys
+from sentry_sdk import capture_message
 
 class ErosWrapper():
 
@@ -41,6 +42,7 @@ class ErosWrapper():
             output = json.loads(response.text)
             if output['errorCode'] != None:
                 print(output['errorCode'], "- ", output['errorMessage'])
+                capture_message('USGS Connection Error - ' + output['errorCode'] + ' - ' + output['errorMessage'])
                 sys.exit()
             if httpStatusCode == 404:
                 print("404 Not Found")
@@ -58,6 +60,3 @@ class ErosWrapper():
         response.close()
 
         return output['data']
-
-
-
