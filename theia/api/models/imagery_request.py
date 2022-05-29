@@ -8,7 +8,9 @@ from .pipeline import Pipeline
 
 
 class ImageryRequest(models.Model):
-    adapter_choices = (('US Geological Survey', 'usgs'))
+    adapter_choices = (
+        ('US Geological Survey', 'usgs')
+    )
     dataset_choices = (
         ("landsat_8_c1","LANDSAT_8_C1"),
         ("landsat_tm_c1","LANDSAT_TM_C1"),
