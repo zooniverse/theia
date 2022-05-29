@@ -8,8 +8,15 @@ from .pipeline import Pipeline
 
 
 class ImageryRequest(models.Model):
-    adapter_name = models.CharField(max_length=64, null=False)
-    dataset_name = models.CharField(max_length=64, null=False)
+    adapter_choices = (('US Geological Survey', 'usgs'))
+    dataset_choices = (
+        ("landsat_8_c1","LANDSAT_8_C1"),
+        ("landsat_tm_c1","LANDSAT_TM_C1"),
+        ("landsat_etm_c1","LANDSAT_ETM_C1")
+    )
+
+    adapter_name = models.CharField(max_length=64, choices=adapter_choices, null=False)
+    dataset_name = models.CharField(max_length=64, choices=dataset_choices, null=False)
 
     max_cloud_cover = models.IntegerField(null=True)
     begin_date = models.DateTimeField(null=True, blank=True)
