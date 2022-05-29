@@ -24,8 +24,8 @@ class ImageryRequest(models.Model):
 
     max_results = models.IntegerField(null=True)
 
-    wgs_row = models.IntegerField(null=True)
-    wgs_path = models.IntegerField(null=True)
+    wrs_row = models.IntegerField(null=True)
+    wrs_path = models.IntegerField(null=True)
 
     kml_polygon = models.TextField(null=True, blank=True)
     bounding_left = models.FloatField(null=True, blank=True)
