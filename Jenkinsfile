@@ -48,7 +48,7 @@ pipeline {
   post {
     success {
       script {
-        if (BRANCH_NAME == 'master' || env.TAG_NAME == 'production-release') {
+        if (env.TAG_NAME == 'production-release') {
           slackSend (
             color: '#00FF00',
             message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})",
