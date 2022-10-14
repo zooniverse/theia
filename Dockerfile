@@ -31,6 +31,9 @@ RUN export GDAL_VERSION=$(gdal-config --version) \
   && pip install --global-option=build_ext --global-option="-I/usr/include/gdal/" \
     gdal~=${GDAL_VERSION}
 
+# ensure numpy installation for libtiff install
+RUN pip install numpy
+
 RUN pipenv install --system --dev
 
 COPY . /usr/src/app
