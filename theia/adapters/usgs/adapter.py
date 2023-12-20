@@ -44,6 +44,15 @@ class Adapter:
             'swir-1': 'band6',
             'swir-2': 'band7',
         },
+        'LANDSAT_OT_C2_L1': {
+            'coastal_aerosol': 'band1',
+            'blue': 'band2',
+            'green': 'band3',
+            'red': 'band4',
+            'nir': 'band5',
+            'swir-1': 'band6',
+            'swir-2': 'band7',
+        },
     }
 
     def __init__(self):
@@ -51,12 +60,20 @@ class Adapter:
 
     def process_request(self, imagery_request):
         search = ImagerySearch.build_search(imagery_request)
+        print('MDY114 BEFORE EROS WRAPPER')
         scenes = ErosWrapper().search(search)
+        print('MDY114 AFTER EROS WRAPPER SCENES')
+        print(scenes)
         if imagery_request.max_results:
             scenes = scenes[0:imagery_request.max_results]
+            print('MDY114 SCENES')
+            print(scenes)
 
         for scene in scenes:
+            print('MDY114 BEFORE ESPA')
             result = EspaWrapper.order_all(scene, 'sr')
+            print('MDY114 AFTER ESPA')
+            print(result)
             for item in result:
                 req = models.RequestedScene.objects.create(**{**item, **{'imagery_request': imagery_request}})
                 wait_for_scene.delay(req.id)

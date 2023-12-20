@@ -1,8 +1,8 @@
-FROM python:3.7-stretch
+FROM python:3.11.5-bookworm
 
 LABEL maintainer="contact@zooniverse.org"
 
-RUN apt-get update \
+RUN apt-get upgrade && apt-get update \
   && apt-get install -y --no-install-recommends \
     postgresql-client \
     gdal-bin \
@@ -10,7 +10,7 @@ RUN apt-get update \
     libgdal-dev \
     python3-gdal \
     binutils \
-    netcat \
+    ncat \
     libproj-dev \
     libgeoip1 \
     postgis \

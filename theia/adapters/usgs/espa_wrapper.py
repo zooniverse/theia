@@ -18,6 +18,8 @@ class EspaWrapper:
     @classmethod
     def locate_collections(cls, scene_id, desired_product_id):
         results = cls.espa_get('available-products', scene_id)
+        print('MDY114 ESPA AFTER GETTING AVAILABLE PRODUCTS')
+        print(results)
         return [collection for collection
                 in results
                 if cls._product_is_available(desired_product_id, results[collection])]
@@ -35,6 +37,10 @@ class EspaWrapper:
 
     @classmethod
     def order_one(cls, collection, scene_id, product_type):
+        print('MDY114 ORDERING ONE IN ESPA')
+        print('SCENE ID')
+        print(scene_id)
+        print(product_type)
         return cls.espa_post('order', {
             collection: {
                 'inputs': [scene_id],

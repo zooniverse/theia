@@ -55,7 +55,7 @@ urllib3 = "*"
 vine = "*"
 wcwidth = "*"
 zipp = "*"
-libtiff = "*"
+pylibtiff = "*"
 
 [dev-packages]
 pytest = "*"
@@ -67,7 +67,7 @@ pytest-pythonpath = "*"
 django-extensions = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.11"
 
 [scripts]
 console = "python manage.py shell_plus"
