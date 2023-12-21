@@ -9,7 +9,7 @@ class EspaWrapper:
     @classmethod
     def api_url(cls, path):
         # return urljoin('https://demo1580318.mockable.io/', path)
-        return urljoin('https://espa.cr.usgs.gov/api/v1/', path)
+        return urljoin('https://espa.cr.usgs.gov/api/v0/', path)
 
     @classmethod
     def list_orders(cls):
@@ -26,6 +26,10 @@ class EspaWrapper:
 
     @classmethod
     def _product_is_available(cls, product_id, result_dict):
+        print('MDY114 HITS PRODUCT IS AVAILABLE')
+        print(product_id)
+        print(result_dict)
+        print(isinstance(result_dict, dict) and result_dict['products'] and  product_id in result_dict['products'])
         return \
             isinstance(result_dict, dict) and \
             result_dict['products'] and \
@@ -41,16 +45,23 @@ class EspaWrapper:
         print('SCENE ID')
         print(scene_id)
         print(product_type)
-        return cls.espa_post('order', {
+        res =  cls.espa_post('order', {
             collection: {
                 'inputs': [scene_id],
                 'products': [product_type]
             },
             'format': 'gtiff'
-        })['orderid']
+        })
+        print('MDY114 AFTER POSTING ORDER')
+        print(res)
+        return res['orderid']
 
     @classmethod
     def order_all(cls, scene_id, product_type):
+        print('MDY114 SCENE ID')
+        print(scene_id)
+        print('MDY114 PRODUCT TYPE')
+        print(product_type)
         return [
             {
                 'scene_entity_id': scene_id,
@@ -82,10 +93,13 @@ class EspaWrapper:
 
     @classmethod
     def espa_post(cls, url, request_data, **kwargs):
+        print('MDY114 HITS ESPA POST')
         new_args = cls.espa_prepare(request_data, **kwargs)
         new_url = cls.api_url(url)
         if request_data:
             new_args = {**new_args, **{'json': request_data}}
+        print(new_url)
+        print(new_args)
         return requests.post(new_url, **new_args).json()
 
     @classmethod
