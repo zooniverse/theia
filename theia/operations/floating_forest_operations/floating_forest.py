@@ -14,6 +14,8 @@ from ..abstract_operation import AbstractOperation
 # https://docs.python.org/3/library/csv.html
 LANDSAT = {'red': 'band5', 'green': 'band2', 'blue': 'band3', 'infrared': 'band4'}
 LANDSAT8 = {'red': 'band6', 'green': 'band3', 'blue': 'band4', 'infrared': 'band5'}
+# https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/atoms/files/LSDS-1822_Landsat8-9-OLI-TIRS-C2-L1-DFCB-v6.pdf
+LANDSAT9 = {'red': 'band4', 'green': 'band3', 'blue': 'band2', 'infrared': 'band5' }
 
 
 ff_config = type('Config', (object,), {
@@ -55,7 +57,8 @@ class FloatingForest(AbstractOperation):
 
 def parse_options(filenames):
     ff_config.SCENE_NAME = path.dirname(filenames[0])
-    ff_config.NEW_MASK = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_pixel_qa.tif")
+    # ff_config.NEW_MASK = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_pixel_qa.tif")
+    ff_config.NEW_MASK = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_qa_pixel.tif")
     ff_config.METADATA_SRC = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + ".xml")
     ff_config.INPUT_FILE = ff_config.NEW_MASK
 
@@ -66,6 +69,7 @@ logging.basicConfig(
 
 LANDSAT = {'red': 'band5', 'green': 'band2', 'blue': 'band3', 'infrared': 'band4'}
 LANDSAT8 = {'red': 'band6', 'green': 'band3', 'blue': 'band4', 'infrared': 'band5'}
+LANDSAT9 = {'red': 'band4', 'green': 'band3', 'blue': 'band2', 'infrared': 'band5' }
 
 def usage():
     print("""
@@ -121,7 +125,8 @@ def parse_options(filenames):
     ff_config.SCENE_DIR = path.dirname(filenames[0])
     path_components = ff_config.SCENE_DIR.split('/')
     ff_config.SCENE_NAME = path_components[len(path_components) - 1]
-    ff_config.NEW_MASK = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_pixel_qa.tif")
+    # ff_config.NEW_MASK = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_pixel_qa.tif")
+    ff_config.NEW_MASK = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_QA_PIXEL.tif")
     ff_config.METADATA_SRC = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + ".xml")
     ff_config.INPUT_FILE = ff_config.NEW_MASK
 
@@ -208,7 +213,8 @@ def run_ff(filenames, output_directory, manifest_directory):
 
     accepts = []
     rejects = []
-
+    print('MDY114 BEFORE GET DIMENSIONS')
+    print(ff_config.INPUT_FILE)
     [ff_config.width, ff_config.height] = get_dimensions(ff_config.INPUT_FILE)
     ff_config.SCRATCH_PATH = manifest_directory
     ff_config.REJECTED_TILES_PATH = path.join(ff_config.SCRATCH_PATH + "/rejected")
@@ -222,15 +228,21 @@ def run_ff(filenames, output_directory, manifest_directory):
     ff_config.METADATA = metadata
     if ff_config.METADATA['spacecraft'] == 'LANDSAT_8':
         ff_config.SATELLITE = LANDSAT8
+    if ff_config.METADATA['spacecraft'] == 'LANDSAT_9':
+        ff_config.SATELLITE = LANDSAT9
 
     ff_config.RED_CHANNEL = path.join(
-        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['red'] + ".tif")
+        # ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['red'] + ".tif")
+        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_ar_" + ff_config.SATELLITE['red'] + ".tif")
     ff_config.GREEN_CHANNEL = path.join(
-        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['green'] + ".tif")
+        # ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['green'] + ".tif")
+        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_ar_" + ff_config.SATELLITE['green'] + ".tif")
     ff_config.BLUE_CHANNEL = path.join(
-        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['blue'] + ".tif")
+        # ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['blue'] + ".tif")
+        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_ar_" + ff_config.SATELLITE['blue'] + ".tif")
     ff_config.INFRARED_CHANNEL = path.join(
-        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['infrared'] + ".tif")
+        # ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['infrared'] + ".tif")
+         ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_ar_" + ff_config.SATELLITE['infrared'] + ".tif")
 
     ff_config.YOU_ARE_HERE = path.dirname(path.realpath(__file__))
 
@@ -780,7 +792,7 @@ def compute_tile_coords(row, col, width, height, config):
     top = scene_top + ((row * config.GRID_SIZE) / config.height) * scene_span_y
     right = left + (width / config.width) * scene_span_x
     bottom = top + (height / config.height) * scene_span_y
-    
+
     if int(config.METADATA['#utm_zone']) < 0:
         top = top - 10000000
         bottom = bottom - 10000000

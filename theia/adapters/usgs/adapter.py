@@ -44,6 +44,15 @@ class Adapter:
             'swir-1': 'band6',
             'swir-2': 'band7',
         },
+        'LANDSAT_OT_C2_L1': {
+            'coastal_aerosol': 'band1',
+            'blue': 'band2',
+            'green': 'band3',
+            'red': 'band4',
+            'nir': 'band5',
+            'swir-1': 'band6',
+            'swir-2': 'band7',
+        },
         'LANDSAT_OT_C2_L2': {
             'coastal_aerosol': 'band1',
             'blue': 'band2',
@@ -71,7 +80,7 @@ class Adapter:
 
         for scene in scenes:
             print('MDY114 BEFORE ESPA')
-            result = EspaWrapper.order_all(scene, 'sr_evi')
+            result = EspaWrapper.order_all(scene, 'aq_refl')
             print('MDY114 AFTER ESPA')
             print(result)
             for item in result:
