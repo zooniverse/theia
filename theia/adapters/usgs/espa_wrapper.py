@@ -9,7 +9,7 @@ class EspaWrapper:
     @classmethod
     def api_url(cls, path):
         # return urljoin('https://demo1580318.mockable.io/', path)
-        return urljoin('https://espa.cr.usgs.gov/api/v1/', path)
+        return urljoin('https://espa.cr.usgs.gov/api/v0/', path)
 
     @classmethod
     def list_orders(cls):
@@ -35,13 +35,14 @@ class EspaWrapper:
 
     @classmethod
     def order_one(cls, collection, scene_id, product_type):
-        return cls.espa_post('order', {
+        res =  cls.espa_post('order', {
             collection: {
                 'inputs': [scene_id],
                 'products': [product_type]
             },
             'format': 'gtiff'
-        })['orderid']
+        })
+        return res['orderid']
 
     @classmethod
     def order_all(cls, scene_id, product_type):

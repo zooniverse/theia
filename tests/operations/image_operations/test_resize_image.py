@@ -15,7 +15,7 @@ class TestResizeImage:
         operation.apply(["literal filename"])
 
         mock_open.assert_called_once_with('literal filename')
-        mock_open.return_value.thumbnail.assert_called_once_with((10, 20), Image.ANTIALIAS)
+        mock_open.return_value.thumbnail.assert_called_once_with((10, 20), Image.LANCZOS)
         mock_open.return_value.save.assert_called_once()
         first_method_call = mock_open.return_value.save.call_args_list[0]
         args = first_method_call[0]

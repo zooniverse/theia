@@ -34,13 +34,12 @@ class TestJobBundle(TestCase):
         bundle = JobBundle(scene_entity_id='entity')
         assert(bundle.__str__()=='[JobBundle entity on no host]')
 
-    def test_post_create(self):
+    @patch('theia.api.models.job_bundle.process_bundle')
+    def test_post_create(self, mock_process_bundle):
         '''it enqueues a job after being created'''
         bundle = JobBundle(id=7)
-        with patch.object(theia.tasks, 'process_bundle', autospec=True) as mockProcess:
-            with patch.object(mockProcess.return_value, 'delay', autospec=True) as mockDelay:
-                JobBundle.post_save(None, bundle, False)
-                mockDelay.assert_not_called()
+        JobBundle.post_save(None, bundle, False)
+        mock_process_bundle.delay.assert_not_called()
 
-                JobBundle.post_save(None, bundle, True)
-                mockDelay.assert_called_once_with(bundle.id)
+        JobBundle.post_save(None, bundle, True)
+        mock_process_bundle.delay.assert_called_once_with(bundle.id)
