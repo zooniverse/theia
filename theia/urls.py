@@ -14,8 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
-from django.conf.urls import url
+from django.urls import path, include, re_path
 from rest_framework import routers
 from theia.api import views
 
@@ -35,9 +34,9 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('admin/', admin.site.urls),
 
-    url(r'^$', views.home, name='home'),
-    url(r'^api-auth/', include('rest_framework.urls')),
-    url(r'oauth/', include('social_django.urls', namespace='social')),
-    url(r'^login$', auth_views.LoginView.as_view(), name='login'),
-    url(r'^logout$', auth_views.LogoutView.as_view(), name='logout'),
+    re_path(r'^$', views.home, name='home'),
+    re_path(r'^api-auth/', include('rest_framework.urls')),
+    re_path(r'oauth/', include('social_django.urls', namespace='social')),
+    re_path(r'^login$', auth_views.LoginView.as_view(), name='login'),
+    re_path(r'^logout$', auth_views.LogoutView.as_view(), name='logout'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

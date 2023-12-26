@@ -1,5 +1,5 @@
 from django.db import models as models
-from django.contrib.postgres.fields import ArrayField, JSONField
+from django.contrib.postgres.fields import ArrayField
 from .pipeline import Pipeline
 
 
@@ -8,7 +8,7 @@ class PipelineStage(models.Model):
     output_format = models.CharField(max_length=8, null=True, blank=True)
     operation = models.CharField(max_length=64, null=False)
     select_images = ArrayField(models.CharField(max_length=64, null=False), null=True)
-    config = JSONField(blank=True)
+    config = models.JSONField(blank=True)
     pipeline = models.ForeignKey(Pipeline, related_name='pipeline_stages', on_delete=models.CASCADE)
 
     class Meta:
