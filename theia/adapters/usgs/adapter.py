@@ -74,7 +74,7 @@ class Adapter:
             scenes = scenes[0:imagery_request.max_results]
 
         for scene in scenes:
-            result = EspaWrapper.order_all(scene, 'aq_refl')
+            result = EspaWrapper.order_all(scene, 'sr')
             for item in result:
                 req = models.RequestedScene.objects.create(**{**item, **{'imagery_request': imagery_request}})
                 wait_for_scene.delay(req.id)
