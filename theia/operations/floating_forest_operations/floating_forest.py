@@ -58,8 +58,7 @@ class FloatingForest(AbstractOperation):
 
 def parse_options(filenames):
     ff_config.SCENE_NAME = path.dirname(filenames[0])
-    # ff_config.NEW_MASK = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_pixel_qa.tif")
-    ff_config.NEW_MASK = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_qa_pixel.tif")
+    ff_config.NEW_MASK = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_pixel_qa.tif")
     ff_config.METADATA_SRC = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + ".xml")
     ff_config.INPUT_FILE = ff_config.NEW_MASK
 
@@ -126,8 +125,7 @@ def parse_options(filenames):
     ff_config.SCENE_DIR = path.dirname(filenames[0])
     path_components = ff_config.SCENE_DIR.split('/')
     ff_config.SCENE_NAME = path_components[len(path_components) - 1]
-    # ff_config.NEW_MASK = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_pixel_qa.tif")
-    ff_config.NEW_MASK = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_QA_PIXEL.tif")
+    ff_config.NEW_MASK = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_pixel_qa.tif")
     ff_config.METADATA_SRC = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + ".xml")
     ff_config.INPUT_FILE = ff_config.NEW_MASK
 
@@ -214,8 +212,6 @@ def run_ff(filenames, output_directory, manifest_directory):
 
     accepts = []
     rejects = []
-    print('MDY114 BEFORE GET DIMENSIONS')
-    print(ff_config.INPUT_FILE)
     [ff_config.width, ff_config.height] = get_dimensions(ff_config.INPUT_FILE)
     ff_config.SCRATCH_PATH = manifest_directory
     ff_config.REJECTED_TILES_PATH = path.join(ff_config.SCRATCH_PATH + "/rejected")
@@ -233,17 +229,13 @@ def run_ff(filenames, output_directory, manifest_directory):
         ff_config.SATELLITE = LANDSAT9
 
     ff_config.RED_CHANNEL = path.join(
-        # ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['red'] + ".tif")
-        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_ar_" + ff_config.SATELLITE['red'] + ".tif")
+        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['red'] + ".tif")
     ff_config.GREEN_CHANNEL = path.join(
-        # ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['green'] + ".tif")
-        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_ar_" + ff_config.SATELLITE['green'] + ".tif")
+        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['green'] + ".tif")
     ff_config.BLUE_CHANNEL = path.join(
-        # ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['blue'] + ".tif")
-        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_ar_" + ff_config.SATELLITE['blue'] + ".tif")
+        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['blue'] + ".tif")
     ff_config.INFRARED_CHANNEL = path.join(
-        # ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['infrared'] + ".tif")
-         ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_ar_" + ff_config.SATELLITE['infrared'] + ".tif")
+        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['infrared'] + ".tif")
 
     ff_config.YOU_ARE_HERE = path.dirname(path.realpath(__file__))
 
