@@ -18,5 +18,5 @@ class ResizeImage(AbstractOperation):
             )
 
             im = Image.open(filename)
-            im.thumbnail(dimensions, Image.ANTIALIAS)
+            im.thumbnail(dimensions, Image.LANCZOS)
             im.save(self.output_directory + "/" + new_filename)

@@ -32,9 +32,8 @@ class TestFileUtils:
     @patch('os.mkdir')
     def test_untar(self, mockMkDir, mockIsDir):
         with patch.object(tarfile, 'open', autospec=True) as mockOpen:
-            with patch.object(mockOpen.return_value, 'extractall', autospec=True) as mockExtract:
-                FileUtils.untar('some/zip/path', 'some/dir/path')
-                mockOpen.assert_called_once_with('some/zip/path', 'r')
-                mockIsDir.assert_called_once_with('some/dir/path')
-                mockMkDir.assert_called_once_with('some/dir/path')
-                mockExtract.assert_called_once_with('some/dir/path')
+            FileUtils.untar('some/zip/path', 'some/dir/path')
+            mockOpen.assert_called_once_with('some/zip/path', 'r')
+            mockIsDir.assert_called_once_with('some/dir/path')
+            mockMkDir.assert_called_once_with('some/dir/path')
+            mockOpen.return_value.__enter__.return_value.extractall.assert_called_once_with('some/dir/path')

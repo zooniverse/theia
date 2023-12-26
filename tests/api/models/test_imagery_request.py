@@ -23,9 +23,9 @@ class TestImageryRequest(TestCase):
     def test_post_create(self):
         '''it enqueues a job after being created'''
         with patch.object(theia.tasks, 'locate_scenes', autospec=True) as mockLocate:
-            with patch.object(mockLocate.return_value, 'delay', autospec=True) as mockDelay:
-                ImageryRequest.post_save(None, self.test_request, False)
-                mockDelay.assert_not_called()
+            ImageryRequest.post_save(None, self.test_request, False)
+            mockLocate.delay.assert_not_called()
 
-                ImageryRequest.post_save(None, self.test_request, True)
-                mockDelay.assert_called_once_with(self.test_request.id)
+            ImageryRequest.post_save(None, self.test_request, True)
+            mockLocate.delay.assert_called_once_with(self.test_request.id)
+
