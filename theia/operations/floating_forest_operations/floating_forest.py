@@ -15,6 +15,7 @@ from ..abstract_operation import AbstractOperation
 LANDSAT = {'red': 'band5', 'green': 'band2', 'blue': 'band3', 'infrared': 'band4'}
 LANDSAT8 = {'red': 'band6', 'green': 'band3', 'blue': 'band4', 'infrared': 'band5'}
 # https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/atoms/files/LSDS-1822_Landsat8-9-OLI-TIRS-C2-L1-DFCB-v6.pdf
+# https://www.usgs.gov/faqs/what-are-band-designations-landsat-satellites
 LANDSAT9 = {'red': 'band4', 'green': 'band3', 'blue': 'band2', 'infrared': 'band5' }
 
 
