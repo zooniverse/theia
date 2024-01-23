@@ -47,7 +47,7 @@ class ErosWrapper():
             "entityId": scene_id,
             "datasetName": search['datasetName']
         }
-        return self.send_request(EROS_SERVICE_URL + "scene-list-add", scene_list_add_payload, apiKey)
+        return self.send_request(EROS_SERVICE_URL + "scene-list-add", scene_list_add_payload)
 
     def available_products(self, list_id, search):
         self.login()
@@ -56,7 +56,7 @@ class ErosWrapper():
             "listId": list_id,
             "datasetName": search['datasetName']
         }
-        results =  self.send_request(EROS_SERVICE_URL + "download-options", download_options_payload, apiKey)
+        results =  self.send_request(EROS_SERVICE_URL + "download-options", download_options_payload)
         products = []
 
         for result in results:
@@ -76,7 +76,7 @@ class ErosWrapper():
 
         product_urls = []
 
-        results = self.send_request(EROS_SERVICE_URL + "download-request", download_request_payload, apiKey)
+        results = self.send_request(EROS_SERVICE_URL + "download-request", download_request_payload)
 
         for result in results['availableDownloads']:
             product_urls.append(result['url'])
@@ -88,7 +88,7 @@ class ErosWrapper():
                 preparingDownloadIds.append(result['downloadId'])
 
             payload = {"label": download_request_label}
-            results = self.send_request("download-retrieve", payload, apiKey)
+            results = self.send_request("download-retrieve", payload)
             if results != False:
                 for result in results['available']:
                     if result['downloadId'] in preparingDownloadIds:
@@ -103,7 +103,7 @@ class ErosWrapper():
             while len(preparingDownloadIds) > 0:
                 print(f"{len(preparingDownloadIds)} downloads are not available yet. Waiting for 30s to retrieve again\n")
                 time.sleep(30)
-                results =  self.send_request("download-retrieve", payload, apiKey)
+                results =  self.send_request("download-retrieve", payload)
                 if results != False:
                     for result in results['available']:
                         if result['downloadId'] in preparingDownloadIds:
