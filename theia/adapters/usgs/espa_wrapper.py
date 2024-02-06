@@ -18,12 +18,18 @@ class EspaWrapper:
     @classmethod
     def locate_collections(cls, scene_id, desired_product_id):
         results = cls.espa_get('available-products', scene_id)
+        print('MDY114 ESPA AFTER GETTING AVAILABLE PRODUCTS')
+        print(results)
         return [collection for collection
                 in results
                 if cls._product_is_available(desired_product_id, results[collection])]
 
     @classmethod
     def _product_is_available(cls, product_id, result_dict):
+        print('MDY114 HITS PRODUCT IS AVAILABLE')
+        print(product_id)
+        print(result_dict)
+        print(isinstance(result_dict, dict) and result_dict['products'] and  product_id in result_dict['products'])
         return \
             isinstance(result_dict, dict) and \
             result_dict['products'] and \
@@ -35,6 +41,10 @@ class EspaWrapper:
 
     @classmethod
     def order_one(cls, collection, scene_id, product_type):
+        print('MDY114 ORDERING ONE IN ESPA')
+        print('SCENE ID')
+        print(scene_id)
+        print(product_type)
         res =  cls.espa_post('order', {
             collection: {
                 'inputs': [scene_id],
@@ -42,10 +52,16 @@ class EspaWrapper:
             },
             'format': 'gtiff'
         })
+        print('MDY114 AFTER POSTING ORDER')
+        print(res)
         return res['orderid']
 
     @classmethod
     def order_all(cls, scene_id, product_type):
+        print('MDY114 SCENE ID')
+        print(scene_id)
+        print('MDY114 PRODUCT TYPE')
+        print(product_type)
         return [
             {
                 'scene_entity_id': scene_id,
@@ -77,10 +93,13 @@ class EspaWrapper:
 
     @classmethod
     def espa_post(cls, url, request_data, **kwargs):
+        print('MDY114 HITS ESPA POST')
         new_args = cls.espa_prepare(request_data, **kwargs)
         new_url = cls.api_url(url)
         if request_data:
             new_args = {**new_args, **{'json': request_data}}
+        print(new_url)
+        print(new_args)
         return requests.post(new_url, **new_args).json()
 
     @classmethod

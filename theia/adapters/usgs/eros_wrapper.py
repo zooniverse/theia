@@ -5,6 +5,7 @@ import requests
 import sys
 import datetime
 import time
+import threading
 from sentry_sdk import capture_message
 EROS_SERVICE_URL = "https://m2m.cr.usgs.gov/api/api/json/stable/"
 MAX_THREADS = 5
@@ -14,6 +15,10 @@ class ErosWrapper():
     def __init__(self):
         self.api_key = None
         self.login_time = None
+        self.sema = threading.Semaphore(value=MAX_THREADS)
+        self.threads = []
+
+
 
     def login(self):
         if self.login_time is None or self.is_token_expired():
@@ -21,7 +26,7 @@ class ErosWrapper():
                 'username': Utils.get_username(),
                 'password': Utils.get_password()
             }
-            self.apiKey = self.send_request(EROS_SERVICE_URL + "login", loginParameters)
+            self.api_key = self.send_request(EROS_SERVICE_URL + "login", loginParameters)
             self.login_time = datetime.datetime.utcnow()
 
 
@@ -61,10 +66,45 @@ class ErosWrapper():
 
         for result in results:
             if result["bulkAvailable"] and result['downloadSystem'] != 'folder':
-                products.append({"entityId": result['entityId'], "productId": result['id']})
+                products.append(
+                {
+                "entityId": result['entityId'],
+                "productId": result['id']
+                })
         return products
 
-    def download_request(self, products):
+    def request_download(self, products):
+        self.login()
+
+        download_request_label = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+
+        download_request_payload = {
+            "downloads": products,
+            "label": download_request_label
+        }
+
+        #returns format like
+        #{
+        #     "requestId": 1591674034,
+        #     "version": "stable",
+        #     "data": {
+        #         "availableDownloads": [],
+        #         "duplicateProducts": [],
+        #         "preparingDownloads": [],
+        #         "failed": [],
+        #         "newRecords": [],
+        #         "numInvalidScenes": 0
+        #     },
+        #     "errorCode": null,
+        #     "errorMessage": null
+        # }
+
+        # {'availableDownloads': [], 'duplicateProducts': [], 'preparingDownloads': [{'downloadId': 550754832, 'eulaCode': None, 'url': 'https://dds.cr.usgs.gov/download-staging/eyJpZCI6NTUwNzU0ODMyLCJjb250YWN0SWQiOjI2MzY4NDQ1fQ=='}, {'downloadId': 550752861, 'eulaCode': None, 'url': 'https://dds.cr.usgs.gov/download-staging/eyJpZCI6NTUwNzUyODYxLCJjb250YWN0SWQiOjI2MzY4NDQ1fQ=='}], 'failed': [], 'newRecords': {'550754832': '20240131_143747', '550752861': '20240131_143747'}, 'numInvalidScenes': 0}
+        results = self.send_request(EROS_SERVICE_URL + "download-request", download_request_payload)
+        return results
+
+
+    def download_urls(self, products):
         self.login()
 
         download_request_label = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -76,38 +116,53 @@ class ErosWrapper():
 
         product_urls = []
 
+        #returns format like
+        #{
+        #     "requestId": 1591674034,
+        #     "version": "stable",
+        #     "data": {
+        #         "availableDownloads": [],
+        #         "duplicateProducts": [],
+        #         "preparingDownloads": [],
+        #         "failed": [],
+        #         "newRecords": [],
+        #         "numInvalidScenes": 0
+        #     },
+        #     "errorCode": null,
+        #     "errorMessage": null
+        # }
         results = self.send_request(EROS_SERVICE_URL + "download-request", download_request_payload)
 
         for result in results['availableDownloads']:
             product_urls.append(result['url'])
 
-        preparingDownloadCount = len(results['preparingDownloads'])
-        preparingDownloadIds = []
-        if preparingDownloadCount > 0:
+        preparing_download_count = len(results['preparingDownloads'])
+        preparing_download_ids = []
+        if preparing_download_count > 0:
             for result in results['preparingDownloads']:
-                preparingDownloadIds.append(result['downloadId'])
+                preparing_download_ids.append(result['downloadId'])
 
             payload = {"label": download_request_label}
             results = self.send_request("download-retrieve", payload)
             if results != False:
                 for result in results['available']:
-                    if result['downloadId'] in preparingDownloadIds:
-                        preparingDownloadIds.remove(result['downloadId'])
+                    if result['downloadId'] in preparing_download_ids:
+                        preparing_download_ids.remove(result['downloadId'])
                         product_urls.append(result['url'])
 
                 for result in results['requested']:
-                    if result['downloadId'] in preparingDownloadIds:
-                        preparingDownloadIds.remove(result['downloadId'])
+                    if result['downloadId'] in preparing_download_ids:
+                        preparing_download_ids.remove(result['downloadId'])
                         product_urls.append(result['url'])
             # Don't get all download urls, retrieve again after 30 seconds
-            while len(preparingDownloadIds) > 0:
-                print(f"{len(preparingDownloadIds)} downloads are not available yet. Waiting for 30s to retrieve again\n")
+            while len(preparing_download_ids) > 0:
+                print(f"{len(preparing_download_ids)} downloads are not available yet. Waiting for 30s to retrieve again\n")
                 time.sleep(30)
                 results =  self.send_request("download-retrieve", payload)
                 if results != False:
                     for result in results['available']:
-                        if result['downloadId'] in preparingDownloadIds:
-                            preparingDownloadIds.remove(result['downloadId'])
+                        if result['downloadId'] in preparing_download_ids:
+                            preparing_download_ids.remove(result['downloadId'])
                             product_urls.append(result['url'])
 
         return product_urls
@@ -121,10 +176,10 @@ class ErosWrapper():
     def send_request(self, url, data):
         json_data = json.dumps(data)
 
-        if self.apiKey == None:
+        if self.api_key == None:
             response = requests.post(url, json_data)
         else:
-            headers = {'X-Auth-Token': self.apiKey}
+            headers = {'X-Auth-Token': self.api_key}
             response = requests.post(url, json_data, headers=headers)
 
         try:
