@@ -494,7 +494,7 @@ def parse_metadata(scene, xml_filename):
     #         result['!cloud_cover'] = cover.text
     #     if cover.get("type") == "water":
     #         result['!water_cover'] = cover.text
-    result['!cloud_cover'] = get_field_text("//IMAGE_ATTRIBUTES/CLOUD_COVER")
+    result['!cloud_cover'] = get_field_text(tree,"//IMAGE_ATTRIBUTES/CLOUD_COVER")
 
     # result['#utm_zone'] = get_field_text(
     #     tree,
