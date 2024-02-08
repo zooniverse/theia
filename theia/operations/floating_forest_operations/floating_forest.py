@@ -58,8 +58,8 @@ class FloatingForest(AbstractOperation):
 
 def parse_options(filenames):
     ff_config.SCENE_NAME = path.dirname(filenames[0])
-    ff_config.NEW_MASK = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_pixel_qa.tif")
-    ff_config.METADATA_SRC = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + ".xml")
+    ff_config.NEW_MASK = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_qa_pixel.tif")
+    ff_config.METADATA_SRC = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_mtl.xml")
     ff_config.INPUT_FILE = ff_config.NEW_MASK
 
 #===========SIMPLE======================
@@ -125,8 +125,8 @@ def parse_options(filenames):
     ff_config.SCENE_DIR = path.dirname(filenames[0])
     path_components = ff_config.SCENE_DIR.split('/')
     ff_config.SCENE_NAME = path_components[len(path_components) - 1]
-    ff_config.NEW_MASK = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_pixel_qa.tif")
-    ff_config.METADATA_SRC = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + ".xml")
+    ff_config.NEW_MASK = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_qa_pixel.tif")
+    ff_config.METADATA_SRC = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_mtl.xml")
     ff_config.INPUT_FILE = ff_config.NEW_MASK
 
 def generate_mask_tiles():
@@ -443,8 +443,10 @@ def maybe_clean_scratch(config):
 #=========XML OPERATIONS=============================
 
 def get_field_text(tree, path):
-    nsmap = {"espa": tree.getroot().nsmap[None]}
-    node = tree.xpath(path, namespaces=nsmap)
+    # nsmap = {"espa": tree.getroot().nsmap[None]}
+    # node = tree.xpath(path, namespaces=nsmap)
+    # node = tree.xpath(path, namespaces=nsmap)
+    node = tree.xpath(path)
     if len(node) > 0:
         return node[0].text
     return ''
@@ -456,41 +458,62 @@ def parse_metadata(scene, xml_filename):
     result = {'!scene': scene}
 
     tree = etree.parse(xml_filename)
-    nsmap = {"espa": tree.getroot().nsmap[None]}
+    print('MDY114 XML NSMAP')
+    # print(tree.getroot().nsmap)
+    # nsmap = {"espa": tree.getroot().nsmap[None]}
 
-    result['acquired_date'] = get_field_text(tree, "espa:global_metadata/espa:acquisition_date")
-    result['acquired_time'] = get_field_text(tree, "espa:global_metadata/espa:scene_center_time")
-    result['sensor_id'] = get_field_text(tree, "espa:global_metadata/espa:instrument")
-    result['spacecraft'] = get_field_text(tree, 'espa:global_metadata/espa:satellite')
+    # result['acquired_date'] = get_field_text(tree, "espa:global_metadata/espa:acquisition_date")
+    result['acquired_date'] = get_field_text(tree, "//IMAGE_ATTRIBUTES/DATE_ACQUIRED")
+    # result['acquired_time'] = get_field_text(tree, "espa:global_metadata/espa:scene_center_time")
+    result['acquired_time'] = get_field_text(tree, "//IMAGE_ATTRIBUTES/SPACE_CENTER_TIME")
+    # result['sensor_id'] = get_field_text(tree, "espa:global_metadata/espa:instrument")
+    result['sensor_id'] = get_field_text(tree, "//IMAGE_ATTRIBUTES/SENSOR_ID")
+    # result['spacecraft'] = get_field_text(tree, 'espa:global_metadata/espa:satellite')
+    result['spacecraft'] = get_field_text(tree, '//IMAGE_ATTRIBUTES/SPACECRAFT_ID')
 
+    # result['!earth_sun_distance'] = get_field_text(
+    #     tree,
+    #     "espa:global_metadata/espa:earth_sun_distance")
     result['!earth_sun_distance'] = get_field_text(
         tree,
-        "espa:global_metadata/espa:earth_sun_distance")
+        "//IMAGE_ATTRIBUTES/EARTH_SUN_DISTANCE")
 
-    angles = tree.xpath("espa:global_metadata/espa:solar_angles", namespaces=nsmap)
-    if len(angles) > 0:
-        result['!sun_azimuth'] = angles[0].get("azimuth")
-        result['!sun_zenith'] = angles[0].get("zenith")
+    # angles = tree.xpath("espa:global_metadata/espa:solar_angles", namespaces=nsmap)
+    #  angles = tree.xpath("espa:global_metadata/espa:solar_angles")
+    # if len(angles) > 0:
+        # result['!sun_azimuth'] = angles[0].get("azimuth")
+        # result['!sun_zenith'] = angles[0].get("zenith")
+    result['!sun_azimuth'] = get_field_text(tree, "//IMAGE_ATTRIBUTES/SUN_AZIMUTH")
+    result['!sun_zenith'] = get_field_text(tree, "//IMAGE_ATTRIBUTES/SUN_ELEVATION")
 
-    covers = tree.xpath(
-        "espa:bands/espa:band[@name='cfmask']/espa:percent_coverage/espa:cover",
-        namespaces=nsmap)
-    for cover in covers:
-        if cover.get("type") == "cloud":
-            result['!cloud_cover'] = cover.text
-        if cover.get("type") == "water":
-            result['!water_cover'] = cover.text
+    # covers = tree.xpath(
+    #     "espa:bands/espa:band[@name='cfmask']/espa:percent_coverage/espa:cover",
+    #     namespaces=nsmap)
+    # for cover in covers:
+    #     if cover.get("type") == "cloud":
+    #         result['!cloud_cover'] = cover.text
+    #     if cover.get("type") == "water":
+    #         result['!water_cover'] = cover.text
+    result['!cloud_cover'] = get_field_text("//IMAGE_ATTRIBUTES/CLOUD_COVER")
 
+    # result['#utm_zone'] = get_field_text(
+    #     tree,
+    #     "espa:global_metadata/espa:projection_information/espa:utm_proj_params/espa:zone_code")
     result['#utm_zone'] = get_field_text(
         tree,
-        "espa:global_metadata/espa:projection_information/espa:utm_proj_params/espa:zone_code")
+        "//LEVEL1_PROJECTION_PARAMETERS/UTM_ZONE")
 
-    corners = tree.xpath(
-        "espa:global_metadata/espa:projection_information/espa:corner_point",
-        namespaces=nsmap)
-    for corner in corners:
-        result["#scene_corner_{0}_x".format(corner.get("location"))] = corner.get("x")
-        result["#scene_corner_{0}_y".format(corner.get("location"))] = corner.get("y")
+    # TODO ASK CLIFF ABOUT THIS ON CORNERS AND THERE IS NO WATER COVER CODE IN NEW XML
+    # corners = tree.xpath(
+    #     "espa:global_metadata/espa:projection_information/espa:corner_point",
+    #     namespaces=nsmap)
+    # for corner in corners:
+    #     result["#scene_corner_{0}_x".format(corner.get("location"))] = corner.get("x")
+    #     result["#scene_corner_{0}_y".format(corner.get("location"))] = corner.get("y")
+    result["#scene_corner_UL_x"] = get_field_text(tree, '//PROJECTION_ATTRIBUTES/CORNER_UL_PROJECTION_X_PRODUCT')
+    result["#scene_corner_UL_y"] = get_field_text(tree, '//PROJECTION_ATTRIBUTES/CORNER_UL_PROJECTION_Y_PRODUCT')
+    result["#scene_corner_LR_x"] = get_field_text(tree, '//PROJECTION_ATTRIBUTES/CORNER_LR_PROJECTION_X_PRODUCT')
+    result["#scene_corner_LR_y"] = get_field_text(tree, '//PROJECTION_ATTRIBUTES/CORNER_LR_PROJECTION_Y_PRODUCT')
 
     return result
 

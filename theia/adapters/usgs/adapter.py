@@ -91,13 +91,14 @@ class Adapter:
             print(available_products)
             result = eros_wrapper.request_download(available_products)
             print(result)
+
             print('MDY114 AFTER ESPA')
             for item in available_products:
                 print('MDY114')
                 print(item)
                 # req = models.RequestedScene.objects.create(**{**item, **{'imagery_request': imagery_request}})
                 req = models.RequestedScene.objects.create(
-                    scene_entity_id = item['entityId'],
+                    scene_entity_id = item['displayId'],
                     scene_order_id = item['productId'],
                     **{'imagery_request': imagery_request}
                 )
@@ -128,8 +129,10 @@ class Adapter:
 
             # get the compressed scene data if we don't have it
             if not os.path.isfile(zip_path):
+                print('MDY114 HITS HERE?')
                 urllib.request.urlretrieve(job_bundle.requested_scene.scene_url, zip_path)
-
+            print('MDY114 ZIP PATH')
+            print(zip_path)
             FileUtils.untar(zip_path, job_bundle.local_path)
 
     def default_extension(self):

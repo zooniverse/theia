@@ -17,6 +17,7 @@ class ErosWrapper():
         self.login_time = None
         self.sema = threading.Semaphore(value=MAX_THREADS)
         self.threads = []
+        self.download_request_label = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
 
 
@@ -69,18 +70,17 @@ class ErosWrapper():
                 products.append(
                 {
                 "entityId": result['entityId'],
-                "productId": result['id']
+                "productId": result['id'],
+                "displayId": result['displayId']
                 })
         return products
 
     def request_download(self, products):
         self.login()
 
-        download_request_label = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-
         download_request_payload = {
             "downloads": products,
-            "label": download_request_label
+            "label": self.download_request_label
         }
 
         #returns format like
@@ -100,38 +100,13 @@ class ErosWrapper():
         # }
 
         # {'availableDownloads': [], 'duplicateProducts': [], 'preparingDownloads': [{'downloadId': 550754832, 'eulaCode': None, 'url': 'https://dds.cr.usgs.gov/download-staging/eyJpZCI6NTUwNzU0ODMyLCJjb250YWN0SWQiOjI2MzY4NDQ1fQ=='}, {'downloadId': 550752861, 'eulaCode': None, 'url': 'https://dds.cr.usgs.gov/download-staging/eyJpZCI6NTUwNzUyODYxLCJjb250YWN0SWQiOjI2MzY4NDQ1fQ=='}], 'failed': [], 'newRecords': {'550754832': '20240131_143747', '550752861': '20240131_143747'}, 'numInvalidScenes': 0}
-        results = self.send_request(EROS_SERVICE_URL + "download-request", download_request_payload)
-        return results
+        return self.send_request(EROS_SERVICE_URL + "download-request", download_request_payload)
 
 
-    def download_urls(self, products):
+
+    def download_urls(self):
         self.login()
-
-        download_request_label = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-
-        download_request_payload = {
-            "downloads": products,
-            "label": download_request_label
-        }
-
         product_urls = []
-
-        #returns format like
-        #{
-        #     "requestId": 1591674034,
-        #     "version": "stable",
-        #     "data": {
-        #         "availableDownloads": [],
-        #         "duplicateProducts": [],
-        #         "preparingDownloads": [],
-        #         "failed": [],
-        #         "newRecords": [],
-        #         "numInvalidScenes": 0
-        #     },
-        #     "errorCode": null,
-        #     "errorMessage": null
-        # }
-        results = self.send_request(EROS_SERVICE_URL + "download-request", download_request_payload)
 
         for result in results['availableDownloads']:
             product_urls.append(result['url'])
@@ -142,7 +117,7 @@ class ErosWrapper():
             for result in results['preparingDownloads']:
                 preparing_download_ids.append(result['downloadId'])
 
-            payload = {"label": download_request_label}
+            payload = {"label": self.download_request_label}
             results = self.send_request("download-retrieve", payload)
             if results != False:
                 for result in results['available']:
