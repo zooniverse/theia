@@ -12,11 +12,13 @@ from pyproj import Proj
 from ..abstract_operation import AbstractOperation
 
 # https://docs.python.org/3/library/csv.html
-LANDSAT = {'red': 'band5', 'green': 'band2', 'blue': 'band3', 'infrared': 'band4'}
-LANDSAT8 = {'red': 'band6', 'green': 'band3', 'blue': 'band4', 'infrared': 'band5'}
+LANDSAT = {'red': 'B5', 'green': 'B2', 'blue': 'B3', 'infrared': 'B4'}
+# LANDSAT8 = {'red': 'band6', 'green': 'band3', 'blue': 'band4', 'infrared': 'band5'}
+LANDSAT8 = {'red': 'B6', 'green': 'B3', 'blue': 'B4', 'infrared': 'B5'}
 # https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/atoms/files/LSDS-1822_Landsat8-9-OLI-TIRS-C2-L1-DFCB-v6.pdf
 # https://www.usgs.gov/faqs/what-are-band-designations-landsat-satellites
-LANDSAT9 = {'red': 'band4', 'green': 'band3', 'blue': 'band2', 'infrared': 'band5' }
+# LANDSAT9 = {'red': 'band4', 'green': 'band3', 'blue': 'band2', 'infrared': 'band5' }
+LANDSAT9 = {'red': 'B6', 'green': 'B3', 'blue': 'B4', 'infrared': 'B5' }
 
 
 ff_config = type('Config', (object,), {
@@ -66,10 +68,6 @@ def parse_options(filenames):
 logging.basicConfig(
     format='[ff-import %(name)s] %(levelname)s %(asctime)-15s %(message)s'
 )
-
-LANDSAT = {'red': 'band5', 'green': 'band2', 'blue': 'band3', 'infrared': 'band4'}
-LANDSAT8 = {'red': 'band6', 'green': 'band3', 'blue': 'band4', 'infrared': 'band5'}
-LANDSAT9 = {'red': 'band4', 'green': 'band3', 'blue': 'band2', 'infrared': 'band5' }
 
 def usage():
     print("""
@@ -229,13 +227,13 @@ def run_ff(filenames, output_directory, manifest_directory):
         ff_config.SATELLITE = LANDSAT9
 
     ff_config.RED_CHANNEL = path.join(
-        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['red'] + ".tif")
+        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_SR_" + ff_config.SATELLITE['red'] + ".tif")
     ff_config.GREEN_CHANNEL = path.join(
-        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['green'] + ".tif")
+        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_SR_" + ff_config.SATELLITE['green'] + ".tif")
     ff_config.BLUE_CHANNEL = path.join(
-        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['blue'] + ".tif")
+        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_SR_" + ff_config.SATELLITE['blue'] + ".tif")
     ff_config.INFRARED_CHANNEL = path.join(
-        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['infrared'] + ".tif")
+        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_SR_" + ff_config.SATELLITE['infrared'] + ".tif")
 
     ff_config.YOU_ARE_HERE = path.dirname(path.realpath(__file__))
 
@@ -254,6 +252,8 @@ def run_ff(filenames, output_directory, manifest_directory):
         logger.info("Processing source data to remove negative pixels")
         clamp = clamp_image
         boost = boost_image
+        print('MDY114 FF CONFIG BEFORE CLAMPING AND BOOSTING')
+        print(ff_config)
         clamp(ff_config.RED_CHANNEL, "red", ff_config, False)
         clamp(ff_config.INFRARED_CHANNEL, "green", ff_config, False)
         clamp(ff_config.BLUE_CHANNEL, "blue", ff_config, True)
