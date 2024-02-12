@@ -1,6 +1,5 @@
 import os.path
 import platform
-import re
 import urllib.request
 import numpy as np
 
@@ -8,7 +7,6 @@ from theia.api import models
 from theia.utils import FileUtils
 
 from .eros_wrapper import ErosWrapper
-from .espa_wrapper import EspaWrapper
 from .imagery_search import ImagerySearch
 from .tasks import wait_for_scene
 from .xml_helper import XmlHelper
@@ -70,39 +68,23 @@ class Adapter:
     def process_request(self, imagery_request):
         search = ImagerySearch.build_search(imagery_request)
         eros_wrapper = ErosWrapper()
-        print('MDY114 BEFORE EROS WRAPPER')
         scenes = eros_wrapper.search(search)
-        print('MDY114 AFTER EROS WRAPPER SCENES')
-        print(scenes)
+
         if imagery_request.max_results:
             scenes = scenes[0:imagery_request.max_results]
-            print('MDY114 SCENES')
-            print(scenes)
 
         for scene in scenes:
-            print('MDY114 BEFORE EROS ADD SCENES TO ORDER LIST')
             eros_wrapper.add_scenes_to_order_list(scene, search)
-            print('MDY114 AFTER ADDING TO LIST')
-            print('MDY114 AVAILABLE PRODUCTS BEFORE')
             available_products = eros_wrapper.available_products(scene, search)
-            print('MDY114 AVAIALBLE PRODUCTS AFTER')
 
-            # result = EspaWrapper.order_all(scene, 'sr')
-            print(available_products)
-            result = eros_wrapper.request_download(available_products)
-            print(result)
+            eros_wrapper.request_download(available_products)
 
-            print('MDY114 AFTER ESPA')
             for item in available_products:
-                print('MDY114')
-                print(item)
-                # req = models.RequestedScene.objects.create(**{**item, **{'imagery_request': imagery_request}})
                 req = models.RequestedScene.objects.create(
                     scene_entity_id = item['displayId'],
                     scene_order_id = item['productId'],
                     **{'imagery_request': imagery_request}
                 )
-                print(req)
                 wait_for_scene.delay(req.id, available_products)
 
     def construct_filename(self, bundle, suffix):
@@ -129,10 +111,7 @@ class Adapter:
 
             # get the compressed scene data if we don't have it
             if not os.path.isfile(zip_path):
-                print('MDY114 HITS HERE?')
                 urllib.request.urlretrieve(job_bundle.requested_scene.scene_url, zip_path)
-            print('MDY114 ZIP PATH')
-            print(zip_path)
             FileUtils.untar(zip_path, job_bundle.local_path)
 
     def default_extension(self):
