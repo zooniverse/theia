@@ -1,22 +1,16 @@
 from .utils import Utils
-from urllib.parse import urljoin
 import json
 import requests
 import sys
 import datetime
-import time
-import threading
 from sentry_sdk import capture_message
 EROS_SERVICE_URL = "https://m2m.cr.usgs.gov/api/api/json/stable/"
-MAX_THREADS = 5
 TOKEN_EXPIRY_HOURS = 2
 
 class ErosWrapper():
     def __init__(self):
         self.api_key = None
         self.login_time = None
-        self.sema = threading.Semaphore(value=MAX_THREADS)
-        self.threads = []
         self.download_request_label = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
 
