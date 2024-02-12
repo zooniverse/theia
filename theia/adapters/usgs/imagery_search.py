@@ -8,8 +8,9 @@ class ImagerySearch:
     @classmethod
     def build_search(cls, imagery_request):
         search = {}
-
         search['datasetName'] = imagery_request.dataset_name
+        if imagery_request.dataset_name is None:
+            search['datasetName'] = 'LANDSAT_OT_C2_L2'
 
         if imagery_request.wgs_row and imagery_request.wgs_path:
             cls.add_wgs_row_and_path(search, row=imagery_request.wgs_row, path=imagery_request.wgs_path)

@@ -41,6 +41,7 @@ class ErosWrapper():
 
     def add_scenes_to_order_list(self, scene_id, search):
         self.login()
+
         scene_list_add_payload = {
             "listId": scene_id,
             "idField": "displayId", #default is search by entityId
@@ -59,14 +60,15 @@ class ErosWrapper():
         results =  self.send_request(EROS_SERVICE_URL + "download-options", download_options_payload)
         products = []
 
-        for result in results:
-            if result["bulkAvailable"] and result['downloadSystem'] != 'folder':
-                products.append(
-                {
-                "entityId": result['entityId'],
-                "productId": result['id'],
-                "displayId": result['displayId']
-                })
+        if results is not None:
+            for result in results:
+                if result["bulkAvailable"] and result['downloadSystem'] != 'folder':
+                    products.append(
+                    {
+                    "entityId": result['entityId'],
+                    "productId": result['id'],
+                    "displayId": result['displayId']
+                    })
         return products
 
     def request_download(self, products):

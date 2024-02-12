@@ -8,6 +8,9 @@ from theia.api.models import ImageryRequest, JobBundle, RequestedScene
 
 import tarfile
 
+EROS_AVAILABLE_PRODUCTS_EXAMPLE = [{'entityId': 'LANDSATIMAGE123', 'productId': 123, 'displayId': 'LANDSAT_IMAGE_123'}]
+DEFAULT_SEARCH = {'datasetName': 'LANDSAT_OT_C2_L2'}
+
 class TestUsgsAdapter:
     def test_resolve_relative_image(self):
         request = ImageryRequest(adapter_name='usgs', dataset_name='LANDSAT_8_C1')
@@ -18,20 +21,22 @@ class TestUsgsAdapter:
         bundle = JobBundle(scene_entity_id='LC08', local_path='tmp/')
         assert(Adapter().construct_filename(bundle, 'aerosol')=='LC08_sr_aerosol.tif')
 
-    @patch('theia.adapters.usgs.ImagerySearch.build_search', return_value={})
+    @patch('theia.adapters.usgs.ErosWrapper.available_products', return_value=EROS_AVAILABLE_PRODUCTS_EXAMPLE)
+    @patch('theia.adapters.usgs.ImagerySearch.build_search', return_value=DEFAULT_SEARCH)
     @patch('theia.adapters.usgs.ErosWrapper.search', return_value=['some scene id'])
-    @patch('theia.adapters.usgs.EspaWrapper.order_all', return_value=[{}])
+    @patch('theia.adapters.usgs.ErosWrapper.add_scenes_to_order_list', return_value=[{}])
     @patch('theia.api.models.RequestedScene.objects.create', return_value=RequestedScene(id=3))
     @patch('theia.adapters.usgs.tasks.wait_for_scene.delay')
-    def test_process_request(self, mock_wait, mock_rso, mock_order_all, mock_search, mock_build):
+    def test_process_request(self, mock_wait, mock_requested_scene_creation, mock_add_scene_to_order, mock_search, mock_build, mock_avail_prods):
         request = ImageryRequest()
         Adapter().process_request(request)
 
         mock_build.assert_called_once_with(request)
-        mock_search.assert_called_once_with({})
-        mock_order_all.assert_called_once_with('some scene id', 'sr')
-        mock_rso.assert_called_once()
-        mock_wait.assert_called_once_with(3)
+        mock_search.assert_called_once_with(DEFAULT_SEARCH)
+        mock_add_scene_to_order.assert_called_once_with('some scene id', DEFAULT_SEARCH)
+        mock_avail_prods.assert_called_once_with('some scene id', DEFAULT_SEARCH)
+        mock_requested_scene_creation.assert_called_once()
+        mock_wait.assert_called_once_with(3, EROS_AVAILABLE_PRODUCTS_EXAMPLE)
 
     @patch('os.path.isfile', return_value=False)
     @patch('platform.uname_result.node', new_callable=PropertyMock, return_value='testhostname')
@@ -57,16 +62,16 @@ class TestUsgsAdapter:
         assert(remap.tolist()==[0, 0, 125, 250, 255])
         assert(remap.dtype==np.uint8)
 
-    @patch('theia.adapters.usgs.ImagerySearch.build_search', return_value={})
+    @patch('theia.adapters.usgs.ImagerySearch.build_search', return_value=DEFAULT_SEARCH)
     @patch('theia.adapters.usgs.ErosWrapper.search', return_value=[1, 2, 3, 4, 5])
-    @patch('theia.adapters.usgs.EspaWrapper.order_all', return_value=[{}])
+    @patch('theia.adapters.usgs.ErosWrapper.add_scenes_to_order_list', return_value=[{}])
     @patch('theia.api.models.RequestedScene.objects.create', return_value=RequestedScene(id=3))
     @patch('theia.adapters.usgs.tasks.wait_for_scene.delay')
-    def test_limit_scenes(self, mock_wait, mock_rso, mock_order_all, mock_search, mock_build):
+    def test_limit_scenes(self, mock_wait, mock_rso, mock_add_scenes_to_order, mock_search, mock_build):
         request = ImageryRequest(max_results=3)
         Adapter().process_request(request)
 
-        assert(mock_order_all.call_count==3)
+        assert(mock_add_scenes_to_order.call_count==3)
 
     @patch('theia.adapters.usgs.XmlHelper.get_tree', autospec=True)
     @patch('theia.adapters.usgs.XmlHelper.resolve')
