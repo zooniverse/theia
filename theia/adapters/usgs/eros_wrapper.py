@@ -87,60 +87,40 @@ class ErosWrapper():
         #{
         #     "requestId": 1591674034,
         #     "version": "stable",
-        #     "data": {
-        #         "availableDownloads": [],
-        #         "duplicateProducts": [],
-        #         "preparingDownloads": [],
-        #         "failed": [],
-        #         "newRecords": [],
-        #         "numInvalidScenes": 0
+        #     "data":  # {
+            #    "availableDownloads":[
+
+            #    ],
+            #    "duplicateProducts":[
+
+            #    ],
+            #    "preparingDownloads":[
+            #       {
+            #          "downloadId":550754832,
+            #          "eulaCode":"None",
+            #          "url":"https://dds.cr.usgs.gov/download-staging/eyJpZCI6NTUwNzU0ODMyLCJjb250YWN0SWQiOjI2MzY4NDQ1fQ=="
+            #       },
+            #       {
+            #          "downloadId":550752861,
+            #          "eulaCode":"None",
+            #          "url":"https://dds.cr.usgs.gov/download-staging/eyJpZCI6NTUwNzUyODYxLCJjb250YWN0SWQiOjI2MzY4NDQ1fQ=="
+            #       }
+            #    ],
+            #    "failed":[
+
+            #    ],
+            #    "newRecords":{
+            #       "550754832":"20240131_143747",
+            #       "550752861":"20240131_143747"
+            #    },
+            #    "numInvalidScenes":0
         #     },
         #     "errorCode": null,
         #     "errorMessage": null
         # }
 
-        # {'availableDownloads': [], 'duplicateProducts': [], 'preparingDownloads': [{'downloadId': 550754832, 'eulaCode': None, 'url': 'https://dds.cr.usgs.gov/download-staging/eyJpZCI6NTUwNzU0ODMyLCJjb250YWN0SWQiOjI2MzY4NDQ1fQ=='}, {'downloadId': 550752861, 'eulaCode': None, 'url': 'https://dds.cr.usgs.gov/download-staging/eyJpZCI6NTUwNzUyODYxLCJjb250YWN0SWQiOjI2MzY4NDQ1fQ=='}], 'failed': [], 'newRecords': {'550754832': '20240131_143747', '550752861': '20240131_143747'}, 'numInvalidScenes': 0}
         return self.send_request(EROS_SERVICE_URL + "download-request", download_request_payload)
 
-
-
-    def download_urls(self):
-        self.login()
-        product_urls = []
-
-        for result in results['availableDownloads']:
-            product_urls.append(result['url'])
-
-        preparing_download_count = len(results['preparingDownloads'])
-        preparing_download_ids = []
-        if preparing_download_count > 0:
-            for result in results['preparingDownloads']:
-                preparing_download_ids.append(result['downloadId'])
-
-            payload = {"label": self.download_request_label}
-            results = self.send_request("download-retrieve", payload)
-            if results != False:
-                for result in results['available']:
-                    if result['downloadId'] in preparing_download_ids:
-                        preparing_download_ids.remove(result['downloadId'])
-                        product_urls.append(result['url'])
-
-                for result in results['requested']:
-                    if result['downloadId'] in preparing_download_ids:
-                        preparing_download_ids.remove(result['downloadId'])
-                        product_urls.append(result['url'])
-            # Don't get all download urls, retrieve again after 30 seconds
-            while len(preparing_download_ids) > 0:
-                print(f"{len(preparing_download_ids)} downloads are not available yet. Waiting for 30s to retrieve again\n")
-                time.sleep(30)
-                results =  self.send_request("download-retrieve", payload)
-                if results != False:
-                    for result in results['available']:
-                        if result['downloadId'] in preparing_download_ids:
-                            preparing_download_ids.remove(result['downloadId'])
-                            product_urls.append(result['url'])
-
-        return product_urls
 
     def parse_result_set(self, result_set):
         if not result_set:
