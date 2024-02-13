@@ -17,8 +17,7 @@ class TestErosWrapper:
                  ),
             call(
                 'https://m2m.cr.usgs.gov/api/api/json/stable/scene-search',
-                {'datasetName': 'LANDSAT_BAND'},
-                {'results': ['LC01_FAKESCENE_007']}
+                {'datasetName': 'LANDSAT_BAND'}
             )
         ],
         any_order=False)
