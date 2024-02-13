@@ -1,12 +1,9 @@
-import pytest
-from unittest import mock
 from unittest.mock import patch, PropertyMock
 import numpy as np
 
-from theia.adapters.usgs import Adapter, ErosWrapper, EspaWrapper, ImagerySearch
+from theia.adapters.usgs import Adapter
 from theia.api.models import ImageryRequest, JobBundle, RequestedScene
 
-import tarfile
 
 EROS_AVAILABLE_PRODUCTS_EXAMPLE = [{'entityId': 'LANDSATIMAGE123', 'productId': 123, 'displayId': 'LANDSAT_IMAGE_123'}]
 DEFAULT_SEARCH = {'datasetName': 'LANDSAT_OT_C2_L2'}
