@@ -1,13 +1,14 @@
 from theia.adapters.usgs import ErosWrapper
 
-from unittest.mock import patch, PropertyMock, call
+from unittest.mock import patch, call
+import datetime
 
 class TestErosWrapper:
 
     @patch('theia.adapters.usgs.Utils.get_username', return_value='Richard Feynman')
     @patch('theia.adapters.usgs.Utils.get_password', return_value='feynmansSuperSecurePassowrd')
     @patch('theia.adapters.usgs.ErosWrapper.send_request', return_value={'results': ['LC01_FAKESCENE_007']})
-    def test_send_search_request(self, mockRequestSend, mockPassword, mockUsername):
+    def test_send_search_request(self, mockRequestSend, *_):
         fakeSearch = {'datasetName' : 'LANDSAT_BAND'}
         ErosWrapper().search(search=fakeSearch)
         mockRequestSend.assert_has_calls([
@@ -52,4 +53,27 @@ class TestErosWrapper:
             ]
         )
         assert result == ['a']
+
+    @patch('theia.adapters.usgs.ErosWrapper.send_request', return_value=200)
+    def test_add_scene_to_order_list(self, mock_send_request):
+        fakeSearch = {'datasetName' : 'LANDSAT_BAND'}
+        eros_wrapper = ErosWrapper()
+        eros_wrapper.login_time = datetime.datetime.utcnow()
+        eros_wrapper.add_scenes_to_order_list(scene_id=1, search=fakeSearch)
+        mock_send_request.assert_has_calls([
+            call(
+                'https://m2m.cr.usgs.gov/api/api/json/stable/scene-list-add',
+                 {'listId': 1, 'idField': 'displayId', 'entityId': 1, 'datasetName': 'LANDSAT_BAND'}
+            )
+        ],
+        any_order=False)
+
+    @patch('theia.adapters.usgs.ErosWrapper.login')
+    @patch('theia.adapters.usgs.ErosWrapper.send_request', return_value=200)
+    def test_add_scene_to_order_list_logs_in(self, _, mock_login):
+        fakeSearch = {'datasetName' : 'LANDSAT_BAND'}
+        eros_wrapper = ErosWrapper()
+        eros_wrapper.add_scenes_to_order_list(scene_id=1, search=fakeSearch)
+        mock_login.assert_called_once()
+
 
