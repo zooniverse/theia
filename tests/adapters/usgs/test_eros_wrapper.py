@@ -167,3 +167,32 @@ class TestErosWrapper:
         avail_products = eros_wrapper.available_products(list_id=1, search=FAKE_SEARCH)
         assert avail_products == []
 
+    @patch('theia.adapters.usgs.ErosWrapper.login')
+    @patch('theia.adapters.usgs.ErosWrapper.send_request')
+    def test_request_download_logs_in(self, _, mock_login):
+        eros_wrapper = ErosWrapper()
+        eros_wrapper.request_download([{
+            'entityId': 'LC01_FAKESCENE_007',
+            'productId': 1,
+            'displayId': 'LC01FAKESCENE007'
+        }])
+        mock_login.assert_called_once()
+
+    @patch('theia.adapters.usgs.ErosWrapper.send_request')
+    def test_request_download(self, mock_send_request):
+        eros_wrapper = ErosWrapper()
+        eros_wrapper.login_time = datetime.datetime.utcnow()
+        avail_products = [{
+            'entityId': 'LC01_FAKESCENE_007',
+            'productId': 1,
+            'displayId': 'LC01FAKESCENE007'
+        }]
+        eros_wrapper.request_download(avail_products)
+
+        mock_send_request.assert_has_calls([
+            call(
+                'https://m2m.cr.usgs.gov/api/api/json/stable/download-request',
+                 {'downloads': avail_products, 'label': eros_wrapper.download_request_label}
+            )
+        ]
+       )
