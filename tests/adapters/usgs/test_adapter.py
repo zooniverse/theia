@@ -1,6 +1,6 @@
 from unittest.mock import patch, PropertyMock
 import numpy as np
-
+import datetime
 from theia.adapters.usgs import Adapter
 from theia.api.models import ImageryRequest, JobBundle, RequestedScene
 
@@ -18,13 +18,14 @@ class TestUsgsAdapter:
         bundle = JobBundle(scene_entity_id='LC08', local_path='tmp/')
         assert(Adapter().construct_filename(bundle, 'aerosol')=='LC08_sr_aerosol.tif')
 
+    @patch('theia.adapters.usgs.ErosWrapper.send_request', return_value=200)
     @patch('theia.adapters.usgs.ErosWrapper.available_products', return_value=EROS_AVAILABLE_PRODUCTS_EXAMPLE)
     @patch('theia.adapters.usgs.ImagerySearch.build_search', return_value=DEFAULT_SEARCH)
     @patch('theia.adapters.usgs.ErosWrapper.search', return_value=['some scene id'])
     @patch('theia.adapters.usgs.ErosWrapper.add_scenes_to_order_list', return_value=[{}])
     @patch('theia.api.models.RequestedScene.objects.create', return_value=RequestedScene(id=3))
     @patch('theia.adapters.usgs.tasks.wait_for_scene.delay')
-    def test_process_request(self, mock_wait, mock_requested_scene_creation, mock_add_scene_to_order, mock_search, mock_build, mock_avail_prods):
+    def test_process_request(self, mock_wait, mock_requested_scene_creation, mock_add_scene_to_order, mock_search, mock_build, mock_avail_prods, _):
         request = ImageryRequest()
         Adapter().process_request(request)
 
@@ -59,12 +60,14 @@ class TestUsgsAdapter:
         assert(remap.tolist()==[0, 0, 125, 250, 255])
         assert(remap.dtype==np.uint8)
 
+    @patch('theia.adapters.usgs.ErosWrapper.send_request', return_value=200)
+    @patch('theia.adapters.usgs.ErosWrapper.available_products', return_value=EROS_AVAILABLE_PRODUCTS_EXAMPLE)
     @patch('theia.adapters.usgs.ImagerySearch.build_search', return_value=DEFAULT_SEARCH)
     @patch('theia.adapters.usgs.ErosWrapper.search', return_value=[1, 2, 3, 4, 5])
-    @patch('theia.adapters.usgs.ErosWrapper.add_scenes_to_order_list', return_value=[{}])
     @patch('theia.api.models.RequestedScene.objects.create', return_value=RequestedScene(id=3))
     @patch('theia.adapters.usgs.tasks.wait_for_scene.delay')
-    def test_limit_scenes(self, mock_wait, mock_rso, mock_add_scenes_to_order, mock_search, mock_build):
+    @patch('theia.adapters.usgs.ErosWrapper.add_scenes_to_order_list', return_value=[{}])
+    def test_limit_scenes(self, mock_add_scenes_to_order, *_):
         request = ImageryRequest(max_results=3)
         Adapter().process_request(request)
 
