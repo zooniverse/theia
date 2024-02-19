@@ -12,11 +12,9 @@ from pyproj import Proj
 from ..abstract_operation import AbstractOperation
 
 # https://docs.python.org/3/library/csv.html
-LANDSAT = {'red': 'band5', 'green': 'band2', 'blue': 'band3', 'infrared': 'band4'}
-LANDSAT8 = {'red': 'band6', 'green': 'band3', 'blue': 'band4', 'infrared': 'band5'}
-# https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/atoms/files/LSDS-1822_Landsat8-9-OLI-TIRS-C2-L1-DFCB-v6.pdf
-# https://www.usgs.gov/faqs/what-are-band-designations-landsat-satellites
-LANDSAT9 = {'red': 'band4', 'green': 'band3', 'blue': 'band2', 'infrared': 'band5' }
+LANDSAT = {'red': 'B5', 'green': 'B2', 'blue': 'B3', 'infrared': 'B4'}
+LANDSAT8 = {'red': 'B6', 'green': 'B3', 'blue': 'B4', 'infrared': 'B5'}
+LANDSAT9 = {'red': 'B6', 'green': 'B3', 'blue': 'B4', 'infrared': 'B5' }
 
 
 ff_config = type('Config', (object,), {
@@ -58,18 +56,14 @@ class FloatingForest(AbstractOperation):
 
 def parse_options(filenames):
     ff_config.SCENE_NAME = path.dirname(filenames[0])
-    ff_config.NEW_MASK = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_pixel_qa.tif")
-    ff_config.METADATA_SRC = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + ".xml")
+    ff_config.NEW_MASK = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_qa_pixel.tif")
+    ff_config.METADATA_SRC = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_mtl.xml")
     ff_config.INPUT_FILE = ff_config.NEW_MASK
 
 #===========SIMPLE======================
 logging.basicConfig(
     format='[ff-import %(name)s] %(levelname)s %(asctime)-15s %(message)s'
 )
-
-LANDSAT = {'red': 'band5', 'green': 'band2', 'blue': 'band3', 'infrared': 'band4'}
-LANDSAT8 = {'red': 'band6', 'green': 'band3', 'blue': 'band4', 'infrared': 'band5'}
-LANDSAT9 = {'red': 'band4', 'green': 'band3', 'blue': 'band2', 'infrared': 'band5' }
 
 def usage():
     print("""
@@ -125,8 +119,8 @@ def parse_options(filenames):
     ff_config.SCENE_DIR = path.dirname(filenames[0])
     path_components = ff_config.SCENE_DIR.split('/')
     ff_config.SCENE_NAME = path_components[len(path_components) - 1]
-    ff_config.NEW_MASK = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_pixel_qa.tif")
-    ff_config.METADATA_SRC = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + ".xml")
+    ff_config.NEW_MASK = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_qa_pixel.tif")
+    ff_config.METADATA_SRC = path.join(ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_mtl.xml")
     ff_config.INPUT_FILE = ff_config.NEW_MASK
 
 def generate_mask_tiles():
@@ -229,13 +223,13 @@ def run_ff(filenames, output_directory, manifest_directory):
         ff_config.SATELLITE = LANDSAT9
 
     ff_config.RED_CHANNEL = path.join(
-        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['red'] + ".tif")
+        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_SR_" + ff_config.SATELLITE['red'] + ".tif")
     ff_config.GREEN_CHANNEL = path.join(
-        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['green'] + ".tif")
+        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_SR_" + ff_config.SATELLITE['green'] + ".tif")
     ff_config.BLUE_CHANNEL = path.join(
-        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['blue'] + ".tif")
+        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_SR_" + ff_config.SATELLITE['blue'] + ".tif")
     ff_config.INFRARED_CHANNEL = path.join(
-        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_sr_" + ff_config.SATELLITE['infrared'] + ".tif")
+        ff_config.SCENE_DIR, ff_config.SCENE_NAME + "_SR_" + ff_config.SATELLITE['infrared'] + ".tif")
 
     ff_config.YOU_ARE_HERE = path.dirname(path.realpath(__file__))
 
@@ -443,8 +437,7 @@ def maybe_clean_scratch(config):
 #=========XML OPERATIONS=============================
 
 def get_field_text(tree, path):
-    nsmap = {"espa": tree.getroot().nsmap[None]}
-    node = tree.xpath(path, namespaces=nsmap)
+    node = tree.xpath(path)
     if len(node) > 0:
         return node[0].text
     return ''
@@ -456,41 +449,28 @@ def parse_metadata(scene, xml_filename):
     result = {'!scene': scene}
 
     tree = etree.parse(xml_filename)
-    nsmap = {"espa": tree.getroot().nsmap[None]}
-
-    result['acquired_date'] = get_field_text(tree, "espa:global_metadata/espa:acquisition_date")
-    result['acquired_time'] = get_field_text(tree, "espa:global_metadata/espa:scene_center_time")
-    result['sensor_id'] = get_field_text(tree, "espa:global_metadata/espa:instrument")
-    result['spacecraft'] = get_field_text(tree, 'espa:global_metadata/espa:satellite')
+    result['acquired_date'] = get_field_text(tree, "//IMAGE_ATTRIBUTES/DATE_ACQUIRED")
+    result['acquired_time'] = get_field_text(tree, "//IMAGE_ATTRIBUTES/SPACE_CENTER_TIME")
+    result['sensor_id'] = get_field_text(tree, "//IMAGE_ATTRIBUTES/SENSOR_ID")
+    result['spacecraft'] = get_field_text(tree, '//IMAGE_ATTRIBUTES/SPACECRAFT_ID')
 
     result['!earth_sun_distance'] = get_field_text(
         tree,
-        "espa:global_metadata/espa:earth_sun_distance")
+        "//IMAGE_ATTRIBUTES/EARTH_SUN_DISTANCE")
 
-    angles = tree.xpath("espa:global_metadata/espa:solar_angles", namespaces=nsmap)
-    if len(angles) > 0:
-        result['!sun_azimuth'] = angles[0].get("azimuth")
-        result['!sun_zenith'] = angles[0].get("zenith")
+    result['!sun_azimuth'] = get_field_text(tree, "//IMAGE_ATTRIBUTES/SUN_AZIMUTH")
+    result['!sun_zenith'] = get_field_text(tree, "//IMAGE_ATTRIBUTES/SUN_ELEVATION")
 
-    covers = tree.xpath(
-        "espa:bands/espa:band[@name='cfmask']/espa:percent_coverage/espa:cover",
-        namespaces=nsmap)
-    for cover in covers:
-        if cover.get("type") == "cloud":
-            result['!cloud_cover'] = cover.text
-        if cover.get("type") == "water":
-            result['!water_cover'] = cover.text
+    result['!cloud_cover'] = get_field_text(tree,"//IMAGE_ATTRIBUTES/CLOUD_COVER")
 
     result['#utm_zone'] = get_field_text(
         tree,
-        "espa:global_metadata/espa:projection_information/espa:utm_proj_params/espa:zone_code")
+        "//LEVEL1_PROJECTION_PARAMETERS/UTM_ZONE")
 
-    corners = tree.xpath(
-        "espa:global_metadata/espa:projection_information/espa:corner_point",
-        namespaces=nsmap)
-    for corner in corners:
-        result["#scene_corner_{0}_x".format(corner.get("location"))] = corner.get("x")
-        result["#scene_corner_{0}_y".format(corner.get("location"))] = corner.get("y")
+    result["#scene_corner_UL_x"] = get_field_text(tree, '//PROJECTION_ATTRIBUTES/CORNER_UL_PROJECTION_X_PRODUCT')
+    result["#scene_corner_UL_y"] = get_field_text(tree, '//PROJECTION_ATTRIBUTES/CORNER_UL_PROJECTION_Y_PRODUCT')
+    result["#scene_corner_LR_x"] = get_field_text(tree, '//PROJECTION_ATTRIBUTES/CORNER_LR_PROJECTION_X_PRODUCT')
+    result["#scene_corner_LR_y"] = get_field_text(tree, '//PROJECTION_ATTRIBUTES/CORNER_LR_PROJECTION_Y_PRODUCT')
 
     return result
 

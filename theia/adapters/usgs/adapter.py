@@ -1,6 +1,5 @@
 import os.path
 import platform
-import re
 import urllib.request
 import numpy as np
 
@@ -8,7 +7,6 @@ from theia.api import models
 from theia.utils import FileUtils
 
 from .eros_wrapper import ErosWrapper
-from .espa_wrapper import EspaWrapper
 from .imagery_search import ImagerySearch
 from .tasks import wait_for_scene
 from .xml_helper import XmlHelper
@@ -69,15 +67,25 @@ class Adapter:
 
     def process_request(self, imagery_request):
         search = ImagerySearch.build_search(imagery_request)
-        scenes = ErosWrapper().search(search)
+        eros_wrapper = ErosWrapper()
+        scenes = eros_wrapper.search(search)
+
         if imagery_request.max_results:
             scenes = scenes[0:imagery_request.max_results]
 
         for scene in scenes:
-            result = EspaWrapper.order_all(scene, 'sr')
-            for item in result:
-                req = models.RequestedScene.objects.create(**{**item, **{'imagery_request': imagery_request}})
-                wait_for_scene.delay(req.id)
+            eros_wrapper.add_scenes_to_order_list(scene, search)
+            available_products = eros_wrapper.available_products(scene, search)
+
+            eros_wrapper.request_download(available_products)
+
+            for item in available_products:
+                req = models.RequestedScene.objects.create(
+                    scene_entity_id = item['displayId'],
+                    scene_order_id = item['productId'],
+                    **{'imagery_request': imagery_request}
+                )
+                wait_for_scene.delay(req.id, available_products)
 
     def construct_filename(self, bundle, suffix):
         product = "sr"
@@ -104,7 +112,6 @@ class Adapter:
             # get the compressed scene data if we don't have it
             if not os.path.isfile(zip_path):
                 urllib.request.urlretrieve(job_bundle.requested_scene.scene_url, zip_path)
-
             FileUtils.untar(zip_path, job_bundle.local_path)
 
     def default_extension(self):
