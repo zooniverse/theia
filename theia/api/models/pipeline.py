@@ -4,10 +4,10 @@ from .project import Project
 
 class Pipeline(models.Model):
     name = models.CharField(max_length=128, null=False)
-    workflow_id = models.IntegerField(null=True)
+    workflow_id = models.IntegerField(blank=True, null=True)
 
     multiple_subject_sets = models.BooleanField(default=False)
-    subject_set_id = models.IntegerField(null=True)
+    subject_set_id = models.IntegerField(blank=True, null=True)
 
     project = models.ForeignKey(Project, related_name='pipelines', on_delete=models.CASCADE)
 
